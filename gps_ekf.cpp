@@ -49,17 +49,14 @@ static bool readdata(FILE * fp, double * SV_Pos, double * SV_Rho)
 
     for (int k=0; k<12; ++k) {
         SV_Pos[k] = atof(p);
-        printf("%2d: %f\n", k, SV_Pos[k]);
         p = strtok(NULL, ",");
     }
-    printf("\n");
+    
     for (int k=0; k<4; ++k) {
         SV_Rho[k] = atof(p);
-        printf("%2d: %f\n", k, SV_Rho[k]);
         p = strtok(NULL, ",");
     }
-    printf("-----\n");
-    
+ 
     return true;
 }
 
@@ -156,8 +153,6 @@ int main(int argc, char ** argv)
     // Variance of measurement error
     double R[16];
     eye(R, 4, 36);
-    dump(R, 4, 4);
-    return 0;
     
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
@@ -173,8 +168,6 @@ int main(int argc, char ** argv)
 
         if (!readdata(fp, SV_Pos, SV_Rho))
             break;
-        
-        const double Rhoerror = 36;
 
    }
 
