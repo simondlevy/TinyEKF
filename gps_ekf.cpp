@@ -1,15 +1,20 @@
 #include <stdio.h>
 
+static char * readline(char * line, FILE * fp)
+{
+    return fgets(line, 1000, fp);
+}
+
 int main(int argc, char ** argv)
 {
     FILE * fp = fopen("gps.csv", "r");
     char line[1000];
 
     // skip header
-    fgets(line, 1000, fp);
+    readline(line, fp);
 
     while (true) {
-        if (!fgets(line, 1000, fp))
+        if (!readline(line, fp))
             break;
         printf("%s", line);
     }
