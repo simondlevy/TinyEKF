@@ -154,7 +154,6 @@ int main(int argc, char ** argv)
     eye(P, 8, 10.0);
     
     FILE * fp = fopen("gps.csv", "r");
-    char line[1000];
     
     // Skip CSV header
     skipline(fp);
