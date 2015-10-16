@@ -50,12 +50,14 @@ static void fill(char * line, double * SV_Pos, double * SV_Rho)
 int main(int argc, char ** argv)
 {
     GPS_EKF ekf(3, 4);
+    
+    double T = 1; // positioning interval
 
     // Set Q, see [1]
-    double Sf    = 36;
-    double Sg    = 0.01;
-    double sigma = 5;         // state transition variance
-    //Qb = [Sf*T+Sg*T*T*T/3 Sg*T*T/2; Sg*T*T/2 Sg*T];
+    const double Sf    = 36;
+    const double Sg    = 0.01;
+    const double sigma = 5;         // state transition variance
+    const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
     //Qxyz = sigma^2 * [T^3/3 T^2/2; T^2/2 T];
     //Q = blkdiag(Qxyz,Qxyz,Qxyz,Qb);
 
