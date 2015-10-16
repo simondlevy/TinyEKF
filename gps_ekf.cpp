@@ -62,6 +62,11 @@ static void blkdiag4(double * out,
         const double * c, const double * d)
 {
     bzero(out, 64*sizeof(double));
+    
+    out[0] = a[0];
+    out[1] = a[1];
+    out[8] = a[2];
+    out[9] = a[3];
 }
 
 int main(int argc, char ** argv)
