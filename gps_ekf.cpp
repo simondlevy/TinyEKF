@@ -87,6 +87,14 @@ static void blkdiag4(double * out,
     blkfill(out, d, 3);
 }
 
+static void eye(double * a, int n, double s)
+{
+    bzero(a, n*n*sizeof(double));
+    
+    for (int k=0; k<n; ++k)
+        a[k*n+k] = s;
+}
+
 int main(int argc, char ** argv)
 {
     GPS_EKF ekf(3, 4);
@@ -120,12 +128,11 @@ int main(int argc, char ** argv)
     
     // clock drift
     X[7] = 4.549246345845814e+001;         
-    
-    dumpmat(X, 1, 8);
-   
+       
     // Initial prediction covariance
-    //P = eye(8)*10;
-    
+    double P[64];
+    eye(P, 8, 10.0);
+    dumpmat(P, 8, 8);
     
     return 0;
 
