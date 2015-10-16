@@ -76,6 +76,10 @@ class TinyEKF {
             this->n = n;
             this->m = m;
         }
+        
+        ~TinyEKF()
+        {
+        }
 
         void update(double * Q, double * R, double * Z, double * X, double * P)
         {
