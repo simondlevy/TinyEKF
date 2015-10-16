@@ -153,11 +153,13 @@ int main(int argc, char ** argv)
     double P[64];
     eye(P, 8, 10.0);
     
+    // Open data file
     FILE * fp = fopen("gps.csv", "r");
     
     // Skip CSV header
     skipline(fp);
 
+    // Loop till no more data
     while (true) {
         
         double SV_Pos[12];
