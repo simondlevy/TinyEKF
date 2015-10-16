@@ -67,8 +67,8 @@ int main(int argc, char ** argv)
     const double Sg    = 0.01;
     const double sigma = 5;         // state transition variance
     const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-    dumpmat((double *)Qb, 2, 2);
     const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
+    dumpmat((double *)Qxyz, 2, 2);
     //double Q[64];
     //blkdiag(Q, Qxyz,Qxyz,Qxyz,Qb);
     
