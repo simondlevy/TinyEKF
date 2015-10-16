@@ -29,6 +29,24 @@ static char * readline(char * line, FILE * fp)
     return fgets(line, 1000, fp);
 }
 
+static void fill(char * line, double * SV_Pos, double * SV_Rho)
+{
+    char * p = strtok(line, ",");
+
+    for (int k=0; k<12; ++k) {
+        SV_Pos[k] = atof(p);
+        printf("%2d: %f\n", k, SV_Pos[k]);
+        p = strtok(NULL, ",");
+    }
+    printf("\n");
+    for (int k=0; k<4; ++k) {
+        SV_Rho[k] = atof(p);
+        printf("%2d: %f\n", k, SV_Rho[k]);
+        p = strtok(NULL, ",");
+    }
+    printf("-----\n");
+}
+
 int main(int argc, char ** argv)
 {
     GPS_EKF ekf(3, 4);
@@ -47,21 +65,8 @@ int main(int argc, char ** argv)
         double SV_Pos[12];
         double SV_Rho[4];
 
-        char * p = strtok(line, ",");
-
-        for (int k=0; k<12; ++k) {
-            SV_Pos[k] = atof(p);
-            printf("%2d: %f\n", k, SV_Pos[k]);
-            p = strtok(NULL, ",");
-        }
-        printf("\n");
-        for (int k=0; k<4; ++k) {
-            SV_Rho[k] = atof(p);
-            printf("%2d: %f\n", k, SV_Rho[k]);
-            p = strtok(NULL, ",");
-        }
-        printf("-----\n");
-    }
+        fill(line, SV_Pos, SV_Rho);
+   }
 
     fclose(fp);
 }
