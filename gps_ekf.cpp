@@ -8,6 +8,9 @@ int main(int argc, char ** argv)
     // skip header
     fread(line, 1, 1000, fp);
 
+    printf("%s", line);
+    return 0;
+
     while (true) {
         if (!fread(line, 1, 1000, fp))
             break;
