@@ -58,7 +58,7 @@ int main(int argc, char ** argv)
     const double Sg    = 0.01;
     const double sigma = 5;         // state transition variance
     const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-    //Qxyz = sigma^2 * [T^3/3 T^2/2; T^2/2 T];
+    const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
     //Q = blkdiag(Qxyz,Qxyz,Qxyz,Qb);
 
     FILE * fp = fopen("gps.csv", "r");
