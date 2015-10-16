@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <strings.h>
 
 #include "tinyekf.hpp"
 
@@ -56,6 +57,13 @@ static void dumpmat(double * a, int m, int n)
     }
 }
 
+static void blkdiag4(double * out, 
+        const double * a, const double * b, 
+        const double * c, const double * d)
+{
+    bzero(out, 64*sizeof(double));
+}
+
 int main(int argc, char ** argv)
 {
     GPS_EKF ekf(3, 4);
@@ -68,10 +76,9 @@ int main(int argc, char ** argv)
     const double sigma = 5;         // state transition variance
     const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
     const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
-    dumpmat((double *)Qxyz, 2, 2);
-    //double Q[64];
-    //blkdiag(Q, Qxyz,Qxyz,Qxyz,Qb);
-    
+    double Q[64];
+    blkdiag4(Q, Qxyz, Qxyz, Qxyz, Qb);
+    dumpmat(Q, 8, 8);
     return 0;
 
     FILE * fp = fopen("gps.csv", "r");
