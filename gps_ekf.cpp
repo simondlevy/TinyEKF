@@ -38,8 +38,13 @@ static char * readline(char * line, FILE * fp)
     return fgets(line, 1000, fp);
 }
 
-static void fill(char * line, double * SV_Pos, double * SV_Rho)
+static bool readdata(FILE * fp, double * SV_Pos, double * SV_Rho)
 {
+    char line[1000];
+    
+    if (!readline(line, fp))
+        return false;
+    
     char * p = strtok(line, ",");
 
     for (int k=0; k<12; ++k) {
@@ -54,6 +59,8 @@ static void fill(char * line, double * SV_Pos, double * SV_Rho)
         p = strtok(NULL, ",");
     }
     printf("-----\n");
+    
+    return true;
 }
 
 static void dumpmat(double * a, int m, int n)
@@ -148,19 +155,18 @@ int main(int argc, char ** argv)
     
     FILE * fp = fopen("gps.csv", "r");
     char line[1000];
-
-    double SV_Pos[12];
-    double SV_Rho[4];
     
     // Skip CSV header
     skipline(fp);
 
     while (true) {
+        
+        double SV_Pos[12];
+        double SV_Rho[4];
 
-        if (!readline(line, fp))
+        if (!readdata(fp, SV_Pos, SV_Rho))
             break;
 
-        fill(line, SV_Pos, SV_Rho);
    }
 
     fclose(fp);
