@@ -63,7 +63,7 @@ static bool readdata(FILE * fp, double * SV_Pos, double * SV_Rho)
     return true;
 }
 
-static void dumpmat(double * a, int m, int n)
+static void dump(double * a, int m, int n)
 {
     for (int j=0; j<m; ++j) {
         for (int k=0; k<n; ++k)
@@ -152,6 +152,12 @@ int main(int argc, char ** argv)
     // Initial prediction covariance
     double P[64];
     eye(P, 8, 10.0);
+    
+    // Variance of measurement error
+    double R[16];
+    eye(R, 4, 36);
+    dump(R, 4, 4);
+    return 0;
     
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
