@@ -67,6 +67,15 @@ TinyEKF - Extended Kalman Filter in a small amount of code
  7. Po = [I - K * H] * Pp          : Covariance of Xo
 */
 
+static void dump(double * a, int m, int n)
+{
+    for (int j=0; j<m; ++j) {
+        for (int k=0; k<n; ++k)
+            printf("%10.6e ", a[j*n+k]);
+        printf("\n");
+    }
+}
+
 class TinyEKF {
 
     public:
@@ -87,6 +96,9 @@ class TinyEKF {
         void update(double * Q, double * R, double * Z, double * X, double * P)
         {
             this->f(X, this->Xp);
+            
+            dump(this->Xp, 8, 1);
+            exit(0);
         }
 
     protected:

@@ -36,7 +36,7 @@ class GPS_EKF : public TinyEKF {
             
             for (int j=0; j<8; j+=2) {
                 fx[j] = x[j] + this->T * x[j+1];
-                fx[j+1] = x[j+j];
+                fx[j+1] = x[j+1];
             }
         }
         
@@ -80,15 +80,6 @@ static bool readdata(FILE * fp, double * SV_Pos, double * SV_Rho)
     }
  
     return true;
-}
-
-static void dump(double * a, int m, int n)
-{
-    for (int j=0; j<m; ++j) {
-        for (int k=0; k<n; ++k)
-            printf("%10.6e ", a[j*n+k]);
-        printf("\n");
-    }
 }
 
 static void blkfill(double * out, const double * a, int off)
