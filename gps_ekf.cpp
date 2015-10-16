@@ -30,13 +30,13 @@ int main(int argc, char ** argv)
             printf("%2d: %f\n", k, SV_Pos[k]);
             p = strtok(NULL, ",");
         }
-        printf("\n");
+        printf("-----\n");
         for (int k=0; k<4; ++k) {
             SV_Rho[k] = atof(p);
             printf("%2d: %f\n", k, SV_Rho[k]);
             p = strtok(NULL, ",");
         }
-        exit(0);
+        printf("\n");
     }
 
     fclose(fp);
