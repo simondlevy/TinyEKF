@@ -13,7 +13,7 @@
 
 #include "tinyekf.hpp"
 
-class GPS_EKF : TinyEKF {
+class GPS_EKF : public TinyEKF {
 
     public:
 
@@ -168,6 +168,8 @@ int main(int argc, char ** argv)
 
         if (!readdata(fp, SV_Pos, SV_Rho))
             break;
+        
+        ekf.update(Q,R,SV_Rho,X,P);
 
    }
 
