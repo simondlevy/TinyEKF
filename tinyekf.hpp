@@ -73,12 +73,15 @@ class TinyEKF {
 
         TinyEKF(int n, int m)
         {
+            this->Xp = new double [n];
+
             this->n = n;
             this->m = m;
         }
         
         ~TinyEKF()
         {
+            delete this->Xp;
         }
 
         void update(double * Q, double * R, double * Z, double * X, double * P)
@@ -95,4 +98,6 @@ class TinyEKF {
         
         int n; // states
         int m; // measurements
+        
+        double * Xp; // output of state-transition function
 };
