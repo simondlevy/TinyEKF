@@ -16,8 +16,6 @@ static void scan(char * s, double * dst, int off, int len)
         printf("%2d: %f\n", k, dst[k]);
         p = strtok(NULL, ",");
     }
-
-    exit(0);
 }
 
 int main(int argc, char ** argv)
@@ -35,6 +33,7 @@ int main(int argc, char ** argv)
         double SV_Rho[4];
         scan(line, SV_Pos, 0, 12);
         scan(line, SV_Rho, 12, 4);
+        exit(0);
     }
 
     fclose(fp);
