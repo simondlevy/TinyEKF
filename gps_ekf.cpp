@@ -74,6 +74,9 @@ static void blkdiag4(double * out,
     bzero(out, 64*sizeof(double));
 
     blkfill(out, a, 0);
+    blkfill(out, b, 1);
+    blkfill(out, c, 2);
+    blkfill(out, d, 3);
 }
 
 int main(int argc, char ** argv)
