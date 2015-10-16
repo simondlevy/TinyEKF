@@ -71,13 +71,24 @@ class TinyEKF {
 
     public:
 
-        TinyEKF(int m, int n);
+        TinyEKF(int n, int m)
+        {
+            this->n = n;
+            this->m = m;
+        }
 
-        void update(double * Q, double * R, double * Z, double * X, double * P);
+        void update(double * Q, double * R, double * Z, double * X, double * P)
+        {
+        }
 
     protected:
 
         virtual void f(float * x, float * fx, float * dfx) = 0;
 
         virtual void g(float * x, float * gx, float * dgx) = 0;
+        
+    private:
+        
+        int n; // states
+        int m; // measurements
 };

@@ -113,7 +113,8 @@ static void skipline(FILE * fp)
 
 int main(int argc, char ** argv)
 {
-    GPS_EKF ekf(3, 4);
+    // Our EKF will have eight states and four measurement values
+    GPS_EKF ekf(8, 4);
     
     double T = 1; // positioning interval
 
