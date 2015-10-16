@@ -83,7 +83,7 @@ class TinyEKF {
         TinyEKF(int n)
         {
             this->Xp = new double [n];
-            this->fy = new double [n];
+            this->fy = new double [n*n];
         }
         
         ~TinyEKF()
@@ -97,7 +97,7 @@ class TinyEKF {
              
             this->df(this->Xp, this->fy); // 2
             
-            dump(this->fy, 8, 1);
+            dump(this->fy, 8, 8);
             exit(0);
         }
 
