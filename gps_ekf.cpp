@@ -52,7 +52,7 @@ static void dumpmat(double * a, int m, int n)
 {
     for (int j=0; j<m; ++j) {
         for (int k=0; k<n; ++k)
-            printf("%6.6f ", a[j*n+k]);
+            printf("%10.6f ", a[j*n+k]);
         printf("\n");
     }
 }
