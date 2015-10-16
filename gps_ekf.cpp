@@ -60,20 +60,18 @@ class GPS_EKF : public TinyEKF {
 
         void g(double * xp, double * gx, double * dgx)
         {
-            dump(this->X, 8, 1);
+            dump(this->SV, 4, 3);
             exit(0);
             
             //dX = bsxfun(@minus, X([1,3,5])', SV);% X - Xs
             //Val = sum(dX .^2, 2) .^0.5 + X(7);
         }
         
-
     private:
         
-        double X[8]; // constant velocity
-        double T;    // positioning interval
+        double X[8];   // constant velocity
+        double T;      // positioning interval
         double SV[12]; // pseudorange for g function
-
 };
 
 static char * readline(char * line, FILE * fp)
