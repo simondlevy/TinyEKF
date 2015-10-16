@@ -95,11 +95,11 @@ class TinyEKF {
 
         void update(double * Q, double * R, double * Z, double * X, double * P)
         {
-            this->f(X, this->Xp);                   // 1
+            this->f(X, this->Xp);                      // 1
              
-            this->df(this->Xp, this->fy);           // 2
+            this->df(this->Xp, this->fy);              // 2
             
-            this->g(this->Xp, this->gXp, this->H);  // 3
+            this->g(X, this->Xp, this->gXp, this->H);  // 3
 
             dump(this->gXp, 4, 1);
             exit(0);
@@ -111,7 +111,7 @@ class TinyEKF {
         
         virtual void df(double * x, double * dfx) = 0;
 
-        virtual void g(double * x, double * gx, double * dgx) = 0;
+        virtual void g(double * x, double * xp, double * gx, double * dgx) = 0;
         
     private:
         

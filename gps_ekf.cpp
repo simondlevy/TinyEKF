@@ -52,8 +52,10 @@ class GPS_EKF : public TinyEKF {
         }
 
 
-        void g(double * x, double * fx, double * dfx)
+        void g(double * x, double * xp, double * gx, double * dgx)
         {
+            //dX = bsxfun(@minus, X([1,3,5])', SV);% X - Xs
+            //Val = sum(dX .^2, 2) .^0.5 + X(7);
         }
         
     private:
