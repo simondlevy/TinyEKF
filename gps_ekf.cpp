@@ -137,13 +137,13 @@ int main(int argc, char ** argv)
     // Initial prediction covariance
     double P[64];
     eye(P, 8, 10.0);
-    dumpmat(P, 8, 8);
     
-    return 0;
-
     FILE * fp = fopen("gps.csv", "r");
     char line[1000];
 
+    double SV_Pos[12];
+    double SV_Rho[4];
+    
     // skip header
     readline(line, fp);
 
@@ -151,9 +151,6 @@ int main(int argc, char ** argv)
 
         if (!readline(line, fp))
             break;
-
-        double SV_Pos[12];
-        double SV_Rho[4];
 
         fill(line, SV_Pos, SV_Rho);
    }
