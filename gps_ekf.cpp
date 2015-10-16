@@ -42,6 +42,11 @@ class GPS_EKF : public TinyEKF {
         
         void df(double * x, double * dfx)
         {
+            zeros(dfx, 64);
+            
+            for (int j=0; j<8; ++j) {
+                dfx[j*8+j] = 1;
+            }
         }
 
 
@@ -123,7 +128,7 @@ static void skipline(FILE * fp)
 int main(int argc, char ** argv)
 {
     // Positioning interval
-    double T = 1; 
+    double T = 2; 
     
     // Set Q, see [1]
     const double Sf    = 36;
