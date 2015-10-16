@@ -13,18 +13,31 @@
 
 #include "tinyekf.hpp"
 
+static void zeros(double * a, int n)
+{
+    bzero(a, n*sizeof(double));
+}
+
 class GPS_EKF : public TinyEKF {
 
     public:
 
-        GPS_EKF(int m, int n) : TinyEKF(m, n) 
+        // Eight state values, four measurement values
+        GPS_EKF(double T) : TinyEKF(8, 4) 
         {
+            this->T = T;
         }
 
     protected:
 
         void f(double * x, double * fx)
         {
+            zeros(fx, 8);
+            
+            for (int j=0; j<8; j+=2) {
+                fx[j] = x[j] + this->T * x[j+1];
+                fx[j+1] = x[j+j];
+            }
         }
         
         void df(double * x, double * dfx)
@@ -35,6 +48,10 @@ class GPS_EKF : public TinyEKF {
         void g(double * x, double * fx, double * dfx)
         {
         }
+        
+    private:
+        
+        double T; // positioning interval
 
 };
 
@@ -84,10 +101,6 @@ static void blkfill(double * out, const double * a, int off)
     out[k+9] = a[3];    
 }
 
-static void zeros(double * a, int n)
-{
-    bzero(a, n*sizeof(double));
-}
 
 static void blkdiag4(double * out, 
         const double * a, const double * b, 
@@ -118,11 +131,9 @@ static void skipline(FILE * fp)
 
 int main(int argc, char ** argv)
 {
-    // Our EKF will have eight states and four measurement values
-    GPS_EKF ekf(8, 4);
+    // Positioning interval
+    double T = 1; 
     
-    double T = 1; // positioning interval
-
     // Set Q, see [1]
     const double Sf    = 36;
     const double Sg    = 0.01;
@@ -165,6 +176,9 @@ int main(int argc, char ** argv)
     
     // Skip CSV header
     skipline(fp);
+    
+    // Our EKF has eight states and four measurement values
+    GPS_EKF ekf(T);
 
     // Loop till no more data
     while (true) {
