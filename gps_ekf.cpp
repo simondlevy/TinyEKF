@@ -57,16 +57,21 @@ static void dumpmat(double * a, int m, int n)
     }
 }
 
+static void blkfill(double * out, const double * a, int off)
+{
+    out[0] = a[0];
+    out[1] = a[1];
+    out[8] = a[2];
+    out[9] = a[3];    
+}
+
 static void blkdiag4(double * out, 
         const double * a, const double * b, 
         const double * c, const double * d)
 {
     bzero(out, 64*sizeof(double));
-    
-    out[0] = a[0];
-    out[1] = a[1];
-    out[8] = a[2];
-    out[9] = a[3];
+
+    blkfill(out, a, 0);
 }
 
 int main(int argc, char ** argv)
