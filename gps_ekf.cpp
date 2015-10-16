@@ -6,13 +6,10 @@ int main(int argc, char ** argv)
     char line[1000];
 
     // skip header
-    fread(line, 1, 1000, fp);
-
-    printf("%s", line);
-    return 0;
+    fgets(line, 1000, fp);
 
     while (true) {
-        if (!fread(line, 1, 1000, fp))
+        if (!fgets(line, 1000, fp))
             break;
         printf("%s", line);
     }
