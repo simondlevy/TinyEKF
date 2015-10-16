@@ -51,6 +51,14 @@ int main(int argc, char ** argv)
 {
     GPS_EKF ekf(3, 4);
 
+    // Set Q, see [1]
+    double Sf    = 36;
+    double Sg    = 0.01;
+    double sigma = 5;         // state transition variance
+    //Qb = [Sf*T+Sg*T*T*T/3 Sg*T*T/2; Sg*T*T/2 Sg*T];
+    //Qxyz = sigma^2 * [T^3/3 T^2/2; T^2/2 T];
+    //Q = blkdiag(Qxyz,Qxyz,Qxyz,Qb);
+
     FILE * fp = fopen("gps.csv", "r");
     char line[1000];
 
