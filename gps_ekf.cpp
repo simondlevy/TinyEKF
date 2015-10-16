@@ -1,3 +1,11 @@
+/*
+ References:
+ 1. R G Brown, P Y C Hwang, "Introduction to random signals and applied 
+   Kalman filtering : with MATLAB exercises and solutions",1996
+ 2. Pratap Misra, Per Enge, "Global Positioning System Signals, 
+   Measurements, and Performance(Second Edition)",2006
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -52,7 +60,7 @@ static void dumpmat(double * a, int m, int n)
 {
     for (int j=0; j<m; ++j) {
         for (int k=0; k<n; ++k)
-            printf("%10.6f ", a[j*n+k]);
+            printf("%10.6e ", a[j*n+k]);
         printf("\n");
     }
 }
@@ -93,7 +101,32 @@ int main(int argc, char ** argv)
     const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
     double Q[64];
     blkdiag4(Q, Qxyz, Qxyz, Qxyz, Qb);
-    dumpmat(Q, 8, 8);
+    
+    // Initial state X
+    double X[8];
+    
+    // position
+    X[0] = -2.168816181271560e+006;
+    X[2] =  4.386648549091666e+006;
+    X[4] =  4.077161596428751e+006;
+    
+    // velocity
+    X[1] = 0;
+    X[3] = 0;
+    X[5] = 0;
+    
+    // clock bias
+    X[6] = 3.575261153706439e+006;
+    
+    // clock drift
+    X[7] = 4.549246345845814e+001;         
+    
+    dumpmat(X, 1, 8);
+   
+    // Initial prediction covariance
+    //P = eye(8)*10;
+    
+    
     return 0;
 
     FILE * fp = fopen("gps.csv", "r");
