@@ -80,7 +80,7 @@ class TinyEKF {
 
     public:
 
-        TinyEKF(int n)
+        TinyEKF(int n, int m)
         {
             this->Xp = new double [n];
             this->fy = new double [n*n];
@@ -93,10 +93,12 @@ class TinyEKF {
 
         void update(double * Q, double * R, double * Z, double * X, double * P)
         {
-            this->f(X, this->Xp);         // 1
+            this->f(X, this->Xp);                   // 1
              
-            this->df(this->Xp, this->fy); // 2
+            this->df(this->Xp, this->fy);           // 2
             
+            //this->g(this->Xp, this->gXp, this->H);  // 3
+
             dump(this->fy, 8, 8);
             exit(0);
         }

@@ -22,8 +22,8 @@ class GPS_EKF : public TinyEKF {
 
     public:
 
-        // Eight state values
-        GPS_EKF(double T) : TinyEKF(8) 
+        // Eight state values, four measurement values
+        GPS_EKF(double T) : TinyEKF(8, 4) 
         {
             this->T = T;
         }
@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
     // Skip CSV header
     skipline(fp);
     
-    // Our EKF has eight states and four measurement values
+    // Inititilize EKF with positioning interval
     GPS_EKF ekf(T);
 
     // Loop till no more data
