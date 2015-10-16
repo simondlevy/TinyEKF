@@ -60,7 +60,13 @@ class GPS_EKF : public TinyEKF {
 
         void g(double * xp, double * gx, double * dgx)
         {
-            dump(this->SV, 4, 3);
+            
+            for (int i=0; i<4; ++i) {
+                for (int j=0; j<3; ++j) {
+                    printf("%12.6e ", this->X[j*2]-this->SV[i*3+j]);
+                }
+                printf("\n");
+            }
             exit(0);
             
             //dX = bsxfun(@minus, X([1,3,5])', SV);% X - Xs
