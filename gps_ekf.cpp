@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "tinyekf.hpp"
+
 static char * readline(char * line, FILE * fp)
 {
     return fgets(line, 1000, fp);
