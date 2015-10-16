@@ -75,11 +75,16 @@ static void blkfill(double * out, const double * a, int off)
     out[k+9] = a[3];    
 }
 
+static void zeros(double * a, int n)
+{
+    bzero(a, n*sizeof(double));
+}
+
 static void blkdiag4(double * out, 
         const double * a, const double * b, 
         const double * c, const double * d)
 {
-    bzero(out, 64*sizeof(double));
+    zeros(out, 64);
 
     blkfill(out, a, 0);
     blkfill(out, b, 1);
@@ -89,7 +94,7 @@ static void blkdiag4(double * out,
 
 static void eye(double * a, int n, double s)
 {
-    bzero(a, n*n*sizeof(double));
+    zeros(a, n*n);
     
     for (int k=0; k<n; ++k)
         a[k*n+k] = s;
