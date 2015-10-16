@@ -167,6 +167,8 @@ int main(int argc, char ** argv)
 
         if (!readdata(fp, SV_Pos, SV_Rho))
             break;
+        
+        const double Rhoerror = 36;
 
    }
 
