@@ -28,7 +28,12 @@ class GPS_EKF : public TinyEKF {
             this->T = T;
             memcpy(this->X, X, 8*sizeof(double));
         }
-
+        
+        void setPseudorange(double * SV)
+        {
+            memcpy(this->SV, SV, 12*sizeof(double));
+        }
+                
     protected:
 
         void f(double * x, double * fx)
@@ -53,19 +58,21 @@ class GPS_EKF : public TinyEKF {
         }
 
 
-        void g(double * x, double * xp, double * gx, double * dgx)
+        void g(double * xp, double * gx, double * dgx)
         {
-            dump(x, 8, 1);
+            dump(this->X, 8, 1);
             exit(0);
             
             //dX = bsxfun(@minus, X([1,3,5])', SV);% X - Xs
             //Val = sum(dX .^2, 2) .^0.5 + X(7);
         }
         
+
     private:
         
         double X[8]; // constant velocity
         double T;    // positioning interval
+        double SV[12]; // pseudorange for g function
 
 };
 
@@ -194,8 +201,9 @@ int main(int argc, char ** argv)
         if (!readdata(fp, SV_Pos, SV_Rho))
             break;
         
-        ekf.update(Q,R,SV_Rho,X,P);
-
+        ekf.setPseudorange(SV_Pos);
+        
+        ekf.update(Q, R, SV_Rho, X, P);
    }
 
     fclose(fp);

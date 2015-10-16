@@ -99,7 +99,7 @@ class TinyEKF {
              
             this->df(this->Xp, this->fy);              // 2
             
-            this->g(X, this->Xp, this->gXp, this->H);  // 3
+            this->g(this->Xp, this->gXp, this->H);     // 3
 
             dump(this->gXp, 4, 1);
             exit(0);
@@ -111,7 +111,7 @@ class TinyEKF {
         
         virtual void df(double * x, double * dfx) = 0;
 
-        virtual void g(double * x, double * xp, double * gx, double * dgx) = 0;
+        virtual void g(double * xp, double * gx, double * dgx) = 0;
         
     private:
         
