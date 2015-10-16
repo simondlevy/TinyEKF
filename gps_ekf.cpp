@@ -22,8 +22,8 @@ class GPS_EKF : public TinyEKF {
 
     public:
 
-        // Eight state values, four measurement values
-        GPS_EKF(double T) : TinyEKF(8, 4) 
+        // Eight state values
+        GPS_EKF(double T) : TinyEKF(8) 
         {
             this->T = T;
         }

@@ -80,12 +80,10 @@ class TinyEKF {
 
     public:
 
-        TinyEKF(int n, int m)
+        TinyEKF(int n)
         {
             this->Xp = new double [n];
-
-            this->n = n;
-            this->m = m;
+            this->fy = new double [n];
         }
         
         ~TinyEKF()
@@ -95,9 +93,11 @@ class TinyEKF {
 
         void update(double * Q, double * R, double * Z, double * X, double * P)
         {
-            this->f(X, this->Xp);
+            this->f(X, this->Xp);         // 1
+             
+            this->df(this->Xp, this->fy); // 2
             
-            dump(this->Xp, 8, 1);
+            dump(this->fy, 8, 1);
             exit(0);
         }
 
@@ -111,8 +111,6 @@ class TinyEKF {
         
     private:
         
-        int n; // states
-        int m; // measurements
-        
         double * Xp; // output of state-transition function
+        double * fy; // output of Jacobean of state-transition function
 };
