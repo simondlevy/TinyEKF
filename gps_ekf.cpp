@@ -23,11 +23,16 @@ class GPS_EKF : public TinyEKF {
 
     protected:
 
-        void f(float * x, float * fx, float * dfx)
+        void f(double * x, double * fx)
+        {
+        }
+        
+        void df(double * x, double * dfx)
         {
         }
 
-        void g(float * x, float * fx, float * dfx)
+
+        void g(double * x, double * fx, double * dfx)
         {
         }
 

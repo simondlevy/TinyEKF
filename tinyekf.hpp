@@ -86,13 +86,16 @@ class TinyEKF {
 
         void update(double * Q, double * R, double * Z, double * X, double * P)
         {
+            this->f(X, this->Xp);
         }
 
     protected:
 
-        virtual void f(float * x, float * fx, float * dfx) = 0;
+        virtual void f(double * x, double * fx) = 0;
+        
+        virtual void df(double * x, double * dfx) = 0;
 
-        virtual void g(float * x, float * gx, float * dgx) = 0;
+        virtual void g(double * x, double * gx, double * dgx) = 0;
         
     private:
         
