@@ -100,6 +100,13 @@ static void eye(double * a, int n, double s)
         a[k*n+k] = s;
 }
 
+static void skipline(FILE * fp)
+{
+    char line[1000];
+    readline(line, fp);
+}
+
+
 int main(int argc, char ** argv)
 {
     GPS_EKF ekf(3, 4);
@@ -111,7 +118,8 @@ int main(int argc, char ** argv)
     const double Sg    = 0.01;
     const double sigma = 5;         // state transition variance
     const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-    const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
+    const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, 
+                            sigma*sigma*T*T/2, sigma*sigma*T};
     double Q[64];
     blkdiag4(Q, Qxyz, Qxyz, Qxyz, Qb);
     
@@ -144,8 +152,8 @@ int main(int argc, char ** argv)
     double SV_Pos[12];
     double SV_Rho[4];
     
-    // skip header
-    readline(line, fp);
+    // Skip CSV header
+    skipline(fp);
 
     while (true) {
 
