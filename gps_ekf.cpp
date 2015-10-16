@@ -23,9 +23,10 @@ class GPS_EKF : public TinyEKF {
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF(double T) : TinyEKF(8, 4) 
+        GPS_EKF(double * X, double T) : TinyEKF(8, 4) 
         {
             this->T = T;
+            memcpy(this->X, X, 8*sizeof(double));
         }
 
     protected:
@@ -54,13 +55,17 @@ class GPS_EKF : public TinyEKF {
 
         void g(double * x, double * xp, double * gx, double * dgx)
         {
+            dump(x, 8, 1);
+            exit(0);
+            
             //dX = bsxfun(@minus, X([1,3,5])', SV);% X - Xs
             //Val = sum(dX .^2, 2) .^0.5 + X(7);
         }
         
     private:
         
-        double T; // positioning interval
+        double X[8]; // constant velocity
+        double T;    // positioning interval
 
 };
 
@@ -177,8 +182,8 @@ int main(int argc, char ** argv)
     // Skip CSV header
     skipline(fp);
     
-    // Inititilize EKF with positioning interval
-    GPS_EKF ekf(T);
+    // Inititilize EKF with constant velocity and positioning interval
+    GPS_EKF ekf(X, T);
 
     // Loop till no more data
     while (true) {
