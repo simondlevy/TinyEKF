@@ -61,7 +61,6 @@ class GPS_EKF : public TinyEKF {
 
         void g(double * xp, double * gx, double * dgx)
         {
-            
             for (int i=0; i<4; ++i) {
                 gx[i] = 0;
                 for (int j=0; j<3; ++j) {
@@ -69,12 +68,13 @@ class GPS_EKF : public TinyEKF {
                     gx[i] += dx*dx;
                 }
                 gx[i] = sqrt(gx[i]) + this->X[6];
-                printf("%10.6e\n", gx[i]);
             }
-            exit(0);
             
-            //dX = bsxfun(@minus, X([1,3,5])', SV);% X - Xs
-            //Val = sum(dX .^2, 2) .^0.5 + X(7);
+            bzero(dgx, 32*sizeof(double));
+            
+            dump(dgx, 4, 8);
+            
+            exit(0);
         }
         
     private:
