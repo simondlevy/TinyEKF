@@ -117,12 +117,11 @@ public:
     void update(double * Z, double * X)
     {        
         this->f(X, this->Xp, this->fy);            // 1, 2
-        
-        dump(this->fy, 8, 8);
-        
-        exit(0);
-        
+                
         this->g(this->Xp, this->gXp, this->H);     // 3
+        
+        dump(this->gXp, 4);
+        exit(0);
         
         //Pp = fy * Pi * fy.' + Q;%4
         
