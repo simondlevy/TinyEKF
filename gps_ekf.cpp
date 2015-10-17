@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <math.h>
 
 #include "tinyekf.hpp"
 
@@ -62,10 +63,13 @@ class GPS_EKF : public TinyEKF {
         {
             
             for (int i=0; i<4; ++i) {
+                gx[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    printf("%12.6e ", this->X[j*2]-this->SV[i*3+j]);
+                    double dx = this->X[j*2] - this->SV[i*3+j];
+                    gx[i] += dx*dx;
                 }
-                printf("\n");
+                gx[i] = sqrt(gx[i]) + this->X[6];
+                printf("%10.6e\n", gx[i]);
             }
             exit(0);
             
