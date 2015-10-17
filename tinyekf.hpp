@@ -120,7 +120,7 @@ public:
                 
         this->g(this->Xp, this->gXp, this->H);     // 3
         
-        dump(this->gXp, 4);
+        dump(this->H, 4, 8);
         exit(0);
         
         //Pp = fy * Pi * fy.' + Q;%4
