@@ -70,7 +70,7 @@ class GPS_EKF : public TinyEKF {
                 gx[i] = sqrt(gx[i]) + this->X[6];
             }
             
-            bzero(dgx, 32*sizeof(double));
+            zeros(dgx, 32);
             
             dump(dgx, 4, 8);
             
