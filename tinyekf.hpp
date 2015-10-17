@@ -118,7 +118,7 @@ public:
     {        
         this->f(X, this->Xp, this->fy);            // 1, 2
         
-        dump(this->Xp, 8);
+        dump(this->fy, 8, 8);
         
         exit(0);
         

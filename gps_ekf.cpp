@@ -134,7 +134,7 @@ static void skipline(FILE * fp)
 int main(int argc, char ** argv)
 {
     // Positioning interval
-    double T = 2; 
+    double T = 1; 
     
     // Set Q, see [1]
     const double Sf    = 36;
