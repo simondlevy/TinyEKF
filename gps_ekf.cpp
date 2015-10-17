@@ -14,89 +14,75 @@
 
 #include "tinyekf.hpp"
 
-static void zeros(double * a, int n)
-{
-    bzero(a, n*sizeof(double));
-}
-
-static void copy(double * dst, double * src, int n)
-{
-    memcpy(dst, src, n*sizeof(double));
-}
-
 class GPS_EKF : public TinyEKF {
 
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF(double * X, double T) : TinyEKF(8, 4) 
+        GPS_EKF(double * X, double T, double P0, double R0) : TinyEKF(8, 4) 
         {
             this->T = T;
             copy(this->X, X, 8);
+            this->SV = newmat(4, 3);
+            
+            eye(this->P, 8, P0);
+            eye(this->R, 4, R0);
         }
         
-        void setPseudorange(double * SV)
+        void setPseudorange(double ** SV)
         {
-            copy(this->SV, SV, 12);
+            copy(this->SV, SV, 4, 3);
         }
                 
     protected:
-
-        void f(double * x, double * fx)
+    
+        void f(double * X, double * Xp, double ** fy)
         {
-            zeros(fx, 8);
+            zeros(Xp, 8);
             
             for (int j=0; j<8; j+=2) {
-                fx[j] = x[j] + this->T * x[j+1];
-                fx[j+1] = x[j+1];
+                Xp[j] = X[j] + this->T * X[j+1];
+                Xp[j+1] = X[j+1];
             }
-        }
-        
-        void df(double * x, double * dfx)
-        {
-            zeros(dfx, 64);
+            
+            zeros(fy, 8, 8);
             
             for (int j=0; j<8; ++j)
-                dfx[j*8+j] = 1;
-            
+                fy[j][j] = 1;
+                
             for (int j=0; j<7; ++j)
-                dfx[j*8+j+1] = this->T;
+                fy[j][j+1] = this->T;
         }
 
 
-        void g(double * xp, double * gx, double * dgx)
+        void g(double * Xp, double * gXp, double ** H)
         {
             double dx[12];
             
             for (int i=0; i<4; ++i) {
-                gx[i] = 0;
+                gXp[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    double d = this->X[j*2] - this->SV[i*3+j];
+                    double d = this->X[j*2] - this->SV[i][j];
                     dx[i*3+j] = d;
-                    gx[i] += d*d;
+                    gXp[i] += d*d;
                 }
-                gx[i] = sqrt(gx[i]) + this->X[6];
+                gXp[i] = sqrt(gXp[i]) + this->X[6];
             }
             
-            zeros(dgx, 32);
+            zeros(H, 4, 8);
             for (int i=0; i<4; ++i) {
-                int ii = i * 8;
                 for (int j=0; j<3; ++j) {
-                    dgx[ii+j*2] = dx[i*3+j] / gx[i];
+                    H[i][j*2] = dx[i*3+j] / gXp[i];
                 }
-                dgx[ii+6] = 1;
-            }
-            
-            dump(dgx, 4, 8);
-            
-            exit(0);
+                H[i][6] = 1;
+            }   
         }
         
     private:
         
-        double X[8];   // constant velocity
-        double T;      // positioning interval
-        double SV[12]; // pseudorange for g function
+        double    X[8]; // constant velocity
+        double    T;    // positioning interval
+        double ** SV;   // pseudorange for g function
 };
 
 static char * readline(char * line, FILE * fp)
@@ -104,7 +90,7 @@ static char * readline(char * line, FILE * fp)
     return fgets(line, 1000, fp);
 }
 
-static bool readdata(FILE * fp, double * SV_Pos, double * SV_Rho)
+static bool readdata(FILE * fp, double ** SV_Pos, double * SV_Rho)
 {
     char line[1000];
     
@@ -113,49 +99,30 @@ static bool readdata(FILE * fp, double * SV_Pos, double * SV_Rho)
     
     char * p = strtok(line, ",");
 
-    for (int k=0; k<12; ++k) {
-        SV_Pos[k] = atof(p);
-        p = strtok(NULL, ",");
-    }
+    for (int i=0; i<4; ++i)
+        for (int j=0; j<3; ++j) {
+            SV_Pos[i][j] = atof(p);
+            p = strtok(NULL, ",");
+        }
     
-    for (int k=0; k<4; ++k) {
-        SV_Rho[k] = atof(p);
+    for (int j=0; j<4; ++j) {
+        SV_Rho[j] = atof(p);
         p = strtok(NULL, ",");
     }
  
     return true;
 }
 
-static void blkfill(double * out, const double * a, int off)
-{
-    int k = off*18;
+static void blkfill(double ** out, const double * a, int off)
+{   
+    off *= 2;
     
-    out[k]   = a[0];
-    out[k+1] = a[1];
-    out[k+8] = a[2];
-    out[k+9] = a[3];    
+    out[off][off]     = a[0];
+    out[off][off+1]   = a[1];
+    out[off+1][off]   = a[2];
+    out[off+1][off+1] = a[3];    
 }
 
-
-static void blkdiag4(double * out, 
-        const double * a, const double * b, 
-        const double * c, const double * d)
-{
-    zeros(out, 64);
-
-    blkfill(out, a, 0);
-    blkfill(out, b, 1);
-    blkfill(out, c, 2);
-    blkfill(out, d, 3);
-}
-
-static void eye(double * a, int n, double s)
-{
-    zeros(a, n*n);
-    
-    for (int k=0; k<n; ++k)
-        a[k*n+k] = s;
-}
 
 static void skipline(FILE * fp)
 {
@@ -176,8 +143,12 @@ int main(int argc, char ** argv)
     const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
     const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, 
                             sigma*sigma*T*T/2, sigma*sigma*T};
-    double Q[64];
-    blkdiag4(Q, Qxyz, Qxyz, Qxyz, Qb);
+                            
+    double ** Q = TinyEKF::newmat(8,8);
+    blkfill(Q, Qxyz, 0);
+    blkfill(Q, Qxyz, 1);
+    blkfill(Q, Qxyz, 2);
+    blkfill(Q, Qb,   3);    
     
     // Initial state X
     double X[8];
@@ -198,35 +169,28 @@ int main(int argc, char ** argv)
     // clock drift
     X[7] = 4.549246345845814e+001;         
        
-    // Initial prediction covariance
-    double P[64];
-    eye(P, 8, 10.0);
-    
-    // Variance of measurement error
-    double R[16];
-    eye(R, 4, 36);
+    // Inititilize EKF with constant velocity and positioning interval
+    // initial prediction covariance 10, initial measurement error 36
+    GPS_EKF ekf(X, T, 10, 36);
     
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
     
     // Skip CSV header
     skipline(fp);
+        
+    double ** SV_Pos = TinyEKF::newmat(4,3);
+    double SV_Rho[4];
     
-    // Inititilize EKF with constant velocity and positioning interval
-    GPS_EKF ekf(X, T);
-
     // Loop till no more data
     while (true) {
         
-        double SV_Pos[12];
-        double SV_Rho[4];
-
         if (!readdata(fp, SV_Pos, SV_Rho))
             break;
-        
+                
         ekf.setPseudorange(SV_Pos);
         
-        ekf.update(Q, R, SV_Rho, X, P);
+        ekf.update(SV_Rho, X);
    }
 
     fclose(fp);
