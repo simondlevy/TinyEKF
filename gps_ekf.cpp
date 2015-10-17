@@ -66,16 +66,31 @@ class GPS_EKF : public TinyEKF {
 
         void g(double * xp, double * gx, double * dgx)
         {
+            
+// dX = bsxfun(@minus, X([1,3,5])', SV); % X - Xs
+// Val = sum(dX .^2, 2) .^0.5 + X(7);
+// Jacob = zeros(size(SV, 1), size(X, 1))
+// Jacob(:, [1,3,5]) = bsxfun(@rdivide, dX, Val);
+// Jacob(:, 7) = 1
+        
+            double dx[12];
+            
             for (int i=0; i<4; ++i) {
                 gx[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    double dx = this->X[j*2] - this->SV[i*3+j];
-                    gx[i] += dx*dx;
+                    double d = this->X[j*2] - this->SV[i*3+j];
+                    dx[i*3+j] = d;
+                    gx[i] += d*d;
                 }
                 gx[i] = sqrt(gx[i]) + this->X[6];
             }
             
+            dump(gx, 4, 1);
+            exit(0);
+            
             zeros(dgx, 32);
+            
+            
             
             dump(dgx, 4, 8);
             
