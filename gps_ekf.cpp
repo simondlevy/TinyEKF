@@ -19,6 +19,11 @@ static void zeros(double * a, int n)
     bzero(a, n*sizeof(double));
 }
 
+static void copy(double * dst, double * src, int n)
+{
+    memcpy(dst, src, n*sizeof(double));
+}
+
 class GPS_EKF : public TinyEKF {
 
     public:
@@ -27,12 +32,12 @@ class GPS_EKF : public TinyEKF {
         GPS_EKF(double * X, double T) : TinyEKF(8, 4) 
         {
             this->T = T;
-            memcpy(this->X, X, 8*sizeof(double));
+            copy(this->X, X, 8);
         }
         
         void setPseudorange(double * SV)
         {
-            memcpy(this->SV, SV, 12*sizeof(double));
+            copy(this->SV, SV, 12);
         }
                 
     protected:
