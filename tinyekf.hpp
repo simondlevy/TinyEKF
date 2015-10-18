@@ -89,6 +89,7 @@ public:
         this->gXp = new double[m];
         
         this->Ht   = newmat(n, m);
+        this->PpHt = newmat(n, m);
         this->fyP  = newmat(n, n);
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
@@ -110,6 +111,8 @@ public:
         deletemat(this->fyP, this->n);
         deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
+        deletemat(this->Ht, this->n);
+        deletemat(this->PpHt, this->n);
     }
     
     void update(double * X)
@@ -216,6 +219,7 @@ protected:
     double *  gXp;
     
     double ** Ht;
+    double ** PpHt;
     double ** fyP;
     double ** fyt;
     double ** Pp;
