@@ -111,14 +111,12 @@ public:
     {        
         this->f(X, this->Xp, this->fy);            // 1, 2
         
-        dump(this->fy, this->n, this->n);
-        exit(0);
-                
         this->g(this->Xp, this->gXp, this->H);     // 3
         
         matmul(this->fy, this->P, this->Pp, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
-        printf("\n");
+        
+        
         dump(this->fyt, this->n, this->n);
         exit(0);
         
