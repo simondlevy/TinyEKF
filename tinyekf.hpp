@@ -68,20 +68,6 @@
  */
 
 
-
-/*
- * static double dotprod(double * a, double * b, int i, int j)
- * {
- * }
- *
- * static void matmul(double * a, double * b, double * c, int m, int n)
- * {
- * for (int i=0; i<m; ++i)
- * for (int j=0; j<n; ++j)
- * c[i*n+j] = dotprod(a, b, i, j);
- * }
- */
-
 class TinyEKF {
     
 public:
@@ -124,7 +110,7 @@ public:
                 
         this->g(this->Xp, this->gXp, this->H);     // 3
         
-        matmul(this->fy, this->P, this->Pp, this->n, this->n);
+        matmul(this->fy, this->P, this->Pp, this->n);
         dump(this->Pp, this->n, this->n);
         exit(0);
         
@@ -216,16 +202,19 @@ protected:
     
 private:
     
-    static void matmul(double ** a, double **b, double **c, int rows, int cols)
+    static void matmul(double ** a, double **b, double **c, int rowscols)
     {
-        for (int i=0; i<rows; ++i)
-            for (int j=0; j<cols; ++j)
-                c[i][j] = dotprod(a, b, i, j, rows, cols);
+        for (int i=0; i<rowscols; ++i)
+            for (int j=0; j<rowscols; ++j)
+                c[i][j] = dotprod(a, b, i, j, rowscols);
     }
     
-    static double dotprod(double ** a, double ** b, int i, int j, int rows, int cols) 
+    static double dotprod(double ** a, double ** b, int row, int col, int rowscols) 
     {
         double d = 0;
+        
+        for (int l=0; l<rowscols; ++l)
+            d += a[row][l] * b[l][col];
                 
         return d;
     }
