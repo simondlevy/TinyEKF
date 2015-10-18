@@ -94,6 +94,7 @@ public:
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
         this->H_Pp = newmat(m, n);
+        this->H_Pp_Ht = newmat(m, m);
     }
     
     ~TinyEKF()
@@ -115,6 +116,7 @@ public:
         deletemat(this->Ht, this->n);
         deletemat(this->Pp_Ht, this->n);        
         deletemat(this->H_Pp,  this->m);
+        deletemat(this->H_Pp_Ht,  this->m);
     }
     
     void update(double * X)
@@ -228,6 +230,7 @@ protected:
     double ** fyt;
     double ** Pp;
     double ** H_Pp;
+    double ** H_Pp_Ht;
     
 private:
     
