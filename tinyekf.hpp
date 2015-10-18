@@ -93,6 +93,7 @@ public:
         this->fy_P  = newmat(n, n);
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
+        this->Pp_H = newmat(n, m);
     }
     
     ~TinyEKF()
@@ -112,7 +113,8 @@ public:
         deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
-        deletemat(this->Pp_Ht, this->n);
+        deletemat(this->Pp_Ht, this->n);        
+        deletemat(this->Pp_H,  this->n);
     }
     
     void update(double * X)
@@ -132,7 +134,8 @@ public:
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
         matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
-        dump(this->Pp_Ht, this->n, this->m);
+        //matmul(this->Pp, this->H, this->Pp_H, this->n, this->m);
+        dump(this->Pp_H, this->n, this->m);
         exit(0);            
     }
     
@@ -224,6 +227,7 @@ protected:
     double ** fy_P;
     double ** fyt;
     double ** Pp;
+    double ** Pp_H;
     
 private:
     
