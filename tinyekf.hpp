@@ -121,8 +121,8 @@ public:
         matmul(this->fy, this->P, this->fyP, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
         matmul(this->fyP, this->fyt, this->Pp, this->n);
-
-        dump(this->Q, this->n, this->n);
+        add(this->Pp, this->Q, this->n, this->n);
+        dump(this->Pp, this->n, this->n);
         exit(0);
         
         //fyP = fy * Pi * fy.' + Q;%4
@@ -240,4 +240,11 @@ private:
                 at[j][i] = a[i][j];
     }
     
+    // A = A + B
+    static void add(double ** a, double ** b, int rows, int cols) 
+    {        
+        for (int i=0; i<rows; ++i)
+            for (int j=0; j<cols; ++j)
+                a[i][j] += b[i][j];
+    }    
 };
