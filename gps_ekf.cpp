@@ -166,10 +166,6 @@ int main(int argc, char ** argv)
     // Positioning interval
     double T = 1; 
     
-    // Initial state X
-    double X[8];
-    
-       
     // Inititilize EKF with initial prediction covariance 10, initial 
     // measurement error 36
     GPS_EKF ekf(T, 10, 36);
