@@ -100,11 +100,15 @@ public:
 
         this->Xp  = new double [n];
         this->gXp = new double[m];
+        
+        this->Pp = newmat(n, n);
+
     }
     
     ~TinyEKF()
     {
         deletemat(this->P, this->n);
+        deletemat(this->Pp, this->n);
         deletemat(this->Q, this->n);
         deletemat(this->R, this->m);
         deletemat(this->H, this->m);
@@ -120,7 +124,7 @@ public:
                 
         this->g(this->Xp, this->gXp, this->H);     // 3
         
-        dump(this->H, 4, 8);
+        dump(this->P, 8, 8);
         exit(0);
         
         //Pp = fy * Pi * fy.' + Q;%4
@@ -192,7 +196,9 @@ protected:
         for (int i=0; i<m; ++i)
             copy(dst[i], src[i], n);
     }
-        
+    
+    // XXX see what can be made private
+    
     int n;          // state values
     int m;          // measurement values
     
@@ -204,4 +210,7 @@ protected:
     double ** fy;   // Jacobean of process model
     double ** H;    // Jacobean of measurement model
     double *  gXp;
+    
+    double ** Pp;
+    
 };
