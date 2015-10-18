@@ -88,6 +88,7 @@ public:
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
+        this->Ht   = newmat(n, m);
         this->fyP  = newmat(n, n);
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
@@ -124,11 +125,11 @@ public:
         transpose(this->fy, this->fyt, this->n, this->n);
         matmul(this->fyP, this->fyt, this->Pp, this->n);
         add(this->Pp, this->Q, this->n, this->n);
-        dump(this->Pp, this->n, this->n);
+
+        // 5
+        dump(this->Ht, this->n, this->m);
         exit(0);
-        
-        //fyP = fy * Pi * fy.' + Q;%4
-        
+            
     }
     
     static double ** newmat(int m, int n)
@@ -213,6 +214,7 @@ protected:
     double ** H;    // Jacobean of measurement model
     double *  gXp;
     
+    double ** Ht;
     double ** fyP;
     double ** fyt;
     double ** Pp;
