@@ -19,11 +19,26 @@ class GPS_EKF : public TinyEKF {
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF(double * X, double T, double P0, double R0) : TinyEKF(8, 4) 
+        GPS_EKF(double T, double P0, double R0) : TinyEKF(8, 4) 
         {
             this->T = T;
-            copy(this->X, X, 8);
             this->SV = newmat(4, 3);
+            
+            // position
+            this->X[0] = -2.168816181271560e+006;
+            this->X[2] =  4.386648549091666e+006;
+            this->X[4] =  4.077161596428751e+006;
+            
+            // velocity
+            this->X[1] = 0;
+            this->X[3] = 0;
+            this->X[5] = 0;
+            
+            // clock bias
+            this->X[6] = 3.575261153706439e+006;
+            
+            // clock drift
+            this->X[7] = 4.549246345845814e+001;
             
             // Set Q, see [1]
             const double Sf    = 36;
@@ -154,25 +169,10 @@ int main(int argc, char ** argv)
     // Initial state X
     double X[8];
     
-    // position
-    X[0] = -2.168816181271560e+006;
-    X[2] =  4.386648549091666e+006;
-    X[4] =  4.077161596428751e+006;
-    
-    // velocity
-    X[1] = 0;
-    X[3] = 0;
-    X[5] = 0;
-    
-    // clock bias
-    X[6] = 3.575261153706439e+006;
-    
-    // clock drift
-    X[7] = 4.549246345845814e+001;         
        
-    // Inititilize EKF with constant velocity and positioning interval
-    // initial prediction covariance 10, initial measurement error 36
-    GPS_EKF ekf(X, T, 10, 36);
+    // Inititilize EKF with initial prediction covariance 10, initial 
+    // measurement error 36
+    GPS_EKF ekf(T, 10, 36);
     
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
@@ -191,7 +191,7 @@ int main(int argc, char ** argv)
                 
         ekf.setPseudorange(SV_Pos);
         
-        ekf.update(SV_Rho, X);
+        ekf.update(SV_Rho);
    }
 
     fclose(fp);

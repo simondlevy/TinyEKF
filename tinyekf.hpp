@@ -84,6 +84,7 @@ public:
         this->H   = newmat(m, n);
         this->fy  = newmat(n, n);
 
+        this->X   = new double [n];
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
@@ -101,6 +102,7 @@ public:
         deletemat(this->H, this->m);
         deletemat(this->fy, n);
         
+        delete this->X;
         delete this->Xp;
         delete this->gXp;
         
@@ -109,10 +111,10 @@ public:
         deletemat(this->Pp,  this->n);
     }
     
-    void update(double * Z, double * X)
+    void update(double * X)
     {        
         // 1, 2
-        this->f(X, this->Xp, this->fy);           
+        this->f(this->X, this->Xp, this->fy);           
         
         // 3
         this->g(this->Xp, this->gXp, this->H);     
@@ -205,6 +207,7 @@ protected:
     double ** Q;    // covariance of process noise
     double ** R;    // covariance of measurement noise
     
+    double *  X;    // state
     double *  Xp;   // output of state-transition function
     double ** fy;   // Jacobean of process model
     double ** H;    // Jacobean of measurement model
