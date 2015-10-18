@@ -134,7 +134,7 @@ public:
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
         matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
-        //matmul(this->Pp, this->H, this->H_Pp, this->n, this->m);
+        matmul(this->H, this->Pp, this->H_Pp, this->m, this->n);
         dump(this->H_Pp, this->m, this->n);
         exit(0);            
     }
@@ -235,7 +235,7 @@ private:
     {
         for (int i=0; i<rows; ++i)
             for (int j=0; j<cols; ++j)
-                c[i][j] = dotprod(a, b, i, j, rows);
+                c[i][j] = dotprod(a, b, i, j, cols);
     }
     
     static double dotprod(double ** a, double ** b, int row, int col, int rowscols) 
