@@ -58,13 +58,13 @@
  * d X    |X=Xp               the Jacobian of the measurement model
  *
  *
- * 4. Pp = fy * Pi * fy' + Q         : Covariance of Xp
+ * 4. fyP = fy * Pi * fy' + Q         : Covariance of Xp
  *
- * 5. K = Pp * H' * inv(H * Pp * H' + R): Kalman Gain
+ * 5. K = fyP * H' * inv(H * fyP * H' + R): Kalman Gain
  *
  * 6. Xo = Xp + K * (Z - g(Xp))      : Output state
  *
- * 7. Po = [I - K * H] * Pp          : Covariance of Xo
+ * 7. Po = [I - K * H] * fyP          : Covariance of Xo
  */
 
 
@@ -87,7 +87,7 @@ public:
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
-        this->Pp   = newmat(n, n);
+        this->fyP   = newmat(n, n);
         this->fyt  = newmat(n, n);
     }
     
@@ -103,24 +103,27 @@ public:
         delete this->Xp;
         delete this->gXp;
         
-        deletemat(this->Pp, this->n);
+        deletemat(this->fyP, this->n);
         deletemat(this->fyt, this->n);        
     }
     
     void update(double * Z, double * X)
     {        
-        this->f(X, this->Xp, this->fy);            // 1, 2
+        // 1, 2
+        this->f(X, this->Xp, this->fy);           
         
-        this->g(this->Xp, this->gXp, this->H);     // 3
+        // 3
+        this->g(this->Xp, this->gXp, this->H);     
         
-        matmul(this->fy, this->P, this->Pp, this->n);
+        // 4
+        matmul(this->fy, this->P, this->fyP, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
         
         
         dump(this->fyt, this->n, this->n);
         exit(0);
         
-        //Pp = fy * Pi * fy.' + Q;%4
+        //fyP = fy * Pi * fy.' + Q;%4
         
     }
     
@@ -204,7 +207,7 @@ protected:
     double ** H;    // Jacobean of measurement model
     double *  gXp;
     
-    double ** Pp;
+    double ** fyP;
     double ** fyt;
     
 private:
