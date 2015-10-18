@@ -121,9 +121,8 @@ public:
         matmul(this->fy, this->P, this->fyP, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
         matmul(this->fyP, this->fyt, this->Pp, this->n);
-        
-        
-        dump(this->Pp, this->n, this->n);
+
+        dump(this->Q, this->n, this->n);
         exit(0);
         
         //fyP = fy * Pi * fy.' + Q;%4
@@ -147,6 +146,13 @@ public:
         for (int k=0; k<n; ++k)
             a[k][k] = s;
     }
+
+    static void dump(double ** a, int m, int n)
+    {
+        for (int i=0; i<m; ++i) {
+            dump(a[i], n);
+        }
+    }
     
 protected:
     
@@ -161,12 +167,6 @@ protected:
         printf("\n");
     }
     
-    static void dump(double ** a, int m, int n)
-    {
-        for (int i=0; i<m; ++i) {
-            dump(a[i], n);
-        }
-    }
     
     static double deletemat(double ** a, int m)
     {

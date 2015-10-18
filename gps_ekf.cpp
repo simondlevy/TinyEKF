@@ -25,6 +25,19 @@ class GPS_EKF : public TinyEKF {
             copy(this->X, X, 8);
             this->SV = newmat(4, 3);
             
+            // Set Q, see [1]
+            const double Sf    = 36;
+            const double Sg    = 0.01;
+            const double sigma = 5;         // state transition variance
+            const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
+            const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2,
+            sigma*sigma*T*T/2, sigma*sigma*T};
+            
+            blkfill(this->Q, Qxyz, 0);
+            blkfill(this->Q, Qxyz, 1);
+            blkfill(this->Q, Qxyz, 2);
+            blkfill(this->Q, Qb,   3);
+            
             eye(this->P, 8, P0);
             eye(this->R, 4, R0);
         }
@@ -80,6 +93,16 @@ class GPS_EKF : public TinyEKF {
         
     private:
         
+        static void blkfill(double ** out, const double * a, int off)
+        {
+            off *= 2;
+            
+            out[off][off]     = a[0];
+            out[off][off+1]   = a[1];
+            out[off+1][off]   = a[2];
+            out[off+1][off+1] = a[3];
+        }
+        
         double    X[8]; // constant velocity
         double    T;    // positioning interval
         double ** SV;   // pseudorange for g function
@@ -113,15 +136,7 @@ static bool readdata(FILE * fp, double ** SV_Pos, double * SV_Rho)
     return true;
 }
 
-static void blkfill(double ** out, const double * a, int off)
-{   
-    off *= 2;
-    
-    out[off][off]     = a[0];
-    out[off][off+1]   = a[1];
-    out[off+1][off]   = a[2];
-    out[off+1][off+1] = a[3];    
-}
+
 
 
 static void skipline(FILE * fp)
@@ -135,20 +150,6 @@ int main(int argc, char ** argv)
 {
     // Positioning interval
     double T = 1; 
-    
-    // Set Q, see [1]
-    const double Sf    = 36;
-    const double Sg    = 0.01;
-    const double sigma = 5;         // state transition variance
-    const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-    const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, 
-                            sigma*sigma*T*T/2, sigma*sigma*T};
-                            
-    double ** Q = TinyEKF::newmat(8,8);
-    blkfill(Q, Qxyz, 0);
-    blkfill(Q, Qxyz, 1);
-    blkfill(Q, Qxyz, 2);
-    blkfill(Q, Qb,   3);    
     
     // Initial state X
     double X[8];
