@@ -225,7 +225,11 @@ private:
     
     static double dotprod(double ** a, double ** b, int i, int j) 
     {
-        return 0;
+        double d = 0;
+        
+        
+        
+        return d;
     }
     
     
