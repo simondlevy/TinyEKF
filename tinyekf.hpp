@@ -120,9 +120,9 @@ public:
         // 4
         matmul(this->fy, this->P, this->fyP, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
+        matmul(this->fyP, this->fyt, this->Pp, this->n);
         
-        
-        dump(this->fyt, this->n, this->n);
+        dump(this->Pp, this->n, this->n);
         exit(0);
         
         //fyP = fy * Pi * fy.' + Q;%4
