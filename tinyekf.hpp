@@ -124,13 +124,17 @@ public:
         this->g(this->Xp, this->gXp, this->H);     
         
         // 4
-        matmul(this->fy, this->P, this->fyP, this->n);
+        matmul(this->fy, this->P, this->fyP, this->n, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
-        matmul(this->fyP, this->fyt, this->Pp, this->n);
+        matmul(this->fyP, this->fyt, this->Pp, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
-
+        
+        dump(this->Pp, this->n, this->n);
+        exit(0);
+        
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
+        matmul(this->Pp, this->Ht, this->PpHt, this->n, this->m);
         dump(this->Ht, this->n, this->m);
         exit(0);
             
@@ -226,11 +230,11 @@ protected:
     
 private:
     
-    static void matmul(double ** a, double **b, double **c, int rowscols)
+    static void matmul(double ** a, double **b, double **c, int rows, int cols)
     {
-        for (int i=0; i<rowscols; ++i)
-            for (int j=0; j<rowscols; ++j)
-                c[i][j] = dotprod(a, b, i, j, rowscols);
+        for (int i=0; i<rows; ++i)
+            for (int j=0; j<cols; ++j)
+                c[i][j] = dotprod(a, b, i, j, rows);
     }
     
     static double dotprod(double ** a, double ** b, int row, int col, int rowscols) 
