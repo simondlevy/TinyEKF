@@ -129,15 +129,11 @@ public:
         matmul(this->fyP, this->fyt, this->Pp, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
         
-        dump(this->Pp, this->n, this->n);
-        exit(0);
-        
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
         matmul(this->Pp, this->Ht, this->PpHt, this->n, this->m);
-        dump(this->Ht, this->n, this->m);
-        exit(0);
-            
+        dump(this->PpHt, this->n, this->m);
+        exit(0);            
     }
     
     static double ** newmat(int m, int n)
