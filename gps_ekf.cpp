@@ -19,9 +19,15 @@ class GPS_EKF : public TinyEKF {
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF(double T, double P0, double R0) : TinyEKF(8, 4) 
-        {
-            this->T = T;
+        GPS_EKF() : TinyEKF(8, 4) 
+        {            
+            // initial covariances of state, measurement noise 
+            double P0 = 10;
+            double R0 = 36;
+            
+            // positioning interval
+            this->T = 1; 
+
             this->SV = newmat(4, 3);
             
             // position
@@ -162,13 +168,10 @@ static void skipline(FILE * fp)
 
 
 int main(int argc, char ** argv)
-{
-    // Positioning interval
-    double T = 1; 
-    
+{    
     // Inititilize EKF with initial prediction covariance 10, initial 
     // measurement error 36
-    GPS_EKF ekf(T, 10, 36);
+    GPS_EKF ekf;
     
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
