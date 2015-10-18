@@ -127,6 +127,7 @@ public:
         add(this->Pp, this->Q, this->n, this->n);
 
         // 5
+        transpose(this->H, this->Ht, this->m, this->n);
         dump(this->Ht, this->n, this->m);
         exit(0);
             
