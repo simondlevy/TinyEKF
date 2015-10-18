@@ -87,31 +87,39 @@ public:
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
-        this->Pp = newmat(n, n);
-
+        this->Pp   = newmat(n, n);
+        this->fyt  = newmat(n, n);
     }
     
     ~TinyEKF()
     {
         deletemat(this->P, this->n);
-        deletemat(this->Pp, this->n);
         deletemat(this->Q, this->n);
         deletemat(this->R, this->m);
+        
         deletemat(this->H, this->m);
         deletemat(this->fy, n);
         
         delete this->Xp;
         delete this->gXp;
+        
+        deletemat(this->Pp, this->n);
+        deletemat(this->fyt, this->n);        
     }
     
     void update(double * Z, double * X)
     {        
         this->f(X, this->Xp, this->fy);            // 1, 2
+        
+        dump(this->fy, this->n, this->n);
+        exit(0);
                 
         this->g(this->Xp, this->gXp, this->H);     // 3
         
         matmul(this->fy, this->P, this->Pp, this->n);
-        dump(this->Pp, this->n, this->n);
+        transpose(this->fy, this->fyt, this->n, this->n);
+        printf("\n");
+        dump(this->fyt, this->n, this->n);
         exit(0);
         
         //Pp = fy * Pi * fy.' + Q;%4
@@ -199,6 +207,7 @@ protected:
     double *  gXp;
     
     double ** Pp;
+    double ** fyt;
     
 private:
     
@@ -219,5 +228,11 @@ private:
         return d;
     }
     
+    static void transpose(double ** a, double ** at, int rows, int cols)
+    {
+        for (int i=0; i<rows; ++i)
+            for (int j=0; j<cols; ++j) 
+                at[j][i] = a[i][j];
+    }
     
 };

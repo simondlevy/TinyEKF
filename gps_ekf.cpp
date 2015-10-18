@@ -50,8 +50,8 @@ class GPS_EKF : public TinyEKF {
             for (int j=0; j<8; ++j)
                 fy[j][j] = 1;
                 
-            for (int j=0; j<7; ++j)
-                fy[j][j+1] = this->T;
+            for (int j=0; j<4; ++j)
+                fy[2*j][2*j+1] = this->T;
         }
 
 
