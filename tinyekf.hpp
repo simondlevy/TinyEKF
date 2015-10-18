@@ -87,8 +87,9 @@ public:
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
-        this->fyP   = newmat(n, n);
+        this->fyP  = newmat(n, n);
         this->fyt  = newmat(n, n);
+        this->Pp   = newmat(n, n);
     }
     
     ~TinyEKF()
@@ -105,6 +106,7 @@ public:
         
         deletemat(this->fyP, this->n);
         deletemat(this->fyt, this->n);        
+        deletemat(this->Pp,  this->n);
     }
     
     void update(double * Z, double * X)
@@ -209,6 +211,7 @@ protected:
     
     double ** fyP;
     double ** fyt;
+    double ** Pp;
     
 private:
     
