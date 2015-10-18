@@ -58,13 +58,13 @@
  * d X    |X=Xp               the Jacobian of the measurement model
  *
  *
- * 4. fyP = fy * Pi * fy' + Q         : Covariance of Xp
+ * 4. fy_P = fy * Pi * fy' + Q         : Covariance of Xp
  *
- * 5. K = fyP * H' * inv(H * fyP * H' + R): Kalman Gain
+ * 5. K = fy_P * H' * inv(H * fy_P * H' + R): Kalman Gain
  *
  * 6. Xo = Xp + K * (Z - g(Xp))      : Output state
  *
- * 7. Po = [I - K * H] * fyP          : Covariance of Xo
+ * 7. Po = [I - K * H] * fy_P          : Covariance of Xo
  */
 
 
@@ -89,8 +89,8 @@ public:
         this->gXp = new double[m];
         
         this->Ht   = newmat(n, m);
-        this->PpHt = newmat(n, m);
-        this->fyP  = newmat(n, n);
+        this->Pp_Ht = newmat(n, m);
+        this->fy_P  = newmat(n, n);
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
     }
@@ -108,11 +108,11 @@ public:
         delete this->Xp;
         delete this->gXp;
         
-        deletemat(this->fyP, this->n);
+        deletemat(this->fy_P, this->n);
         deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
-        deletemat(this->PpHt, this->n);
+        deletemat(this->Pp_Ht, this->n);
     }
     
     void update(double * X)
@@ -124,15 +124,15 @@ public:
         this->g(this->Xp, this->gXp, this->H);     
         
         // 4
-        matmul(this->fy, this->P, this->fyP, this->n, this->n);
+        matmul(this->fy, this->P, this->fy_P, this->n, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
-        matmul(this->fyP, this->fyt, this->Pp, this->n, this->n);
+        matmul(this->fy_P, this->fyt, this->Pp, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
         
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
-        matmul(this->Pp, this->Ht, this->PpHt, this->n, this->m);
-        dump(this->PpHt, this->n, this->m);
+        matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
+        dump(this->Pp_Ht, this->n, this->m);
         exit(0);            
     }
     
@@ -218,9 +218,10 @@ protected:
     double ** H;    // Jacobean of measurement model
     double *  gXp;
     
+    // temporary storage
     double ** Ht;
-    double ** PpHt;
-    double ** fyP;
+    double ** Pp_Ht;
+    double ** fy_P;
     double ** fyt;
     double ** Pp;
     
