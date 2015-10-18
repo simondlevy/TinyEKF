@@ -137,7 +137,8 @@ public:
         transpose(this->H, this->Ht, this->m, this->n);
         matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n);
-        dump(this->H_Pp, this->m, this->n);
+        matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->n);
+        dump(this->H_Pp_Ht, this->m, this->m);
         exit(0);            
     }
     
