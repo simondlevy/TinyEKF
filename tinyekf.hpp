@@ -124,7 +124,8 @@ public:
                 
         this->g(this->Xp, this->gXp, this->H);     // 3
         
-        dump(this->P, 8, 8);
+        matmul(this->fy, this->P, this->Pp, this->n, this->n);
+        dump(this-Pp, this->n, this->n);
         exit(0);
         
         //Pp = fy * Pi * fy.' + Q;%4
@@ -212,5 +213,20 @@ protected:
     double *  gXp;
     
     double ** Pp;
+    
+private:
+    
+    staic void matmul(double ** a, double **b, double **c, int rows, int cols)
+    {
+        for (int i=0; i<rows; ++i)
+            for (int j=0; j<cols; ++j)
+                c[i][j] = dotprod(a, b, i, j);
+    }
+    
+    static double dotprod(double ** a, double ** b, int i, int j) 
+    {
+        return 0;
+    }
+    
     
 };
