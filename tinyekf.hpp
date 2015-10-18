@@ -220,15 +220,13 @@ private:
     {
         for (int i=0; i<rows; ++i)
             for (int j=0; j<cols; ++j)
-                c[i][j] = dotprod(a, b, i, j);
+                c[i][j] = dotprod(a, b, i, j, rows, cols);
     }
     
-    static double dotprod(double ** a, double ** b, int i, int j) 
+    static double dotprod(double ** a, double ** b, int i, int j, int rows, int cols) 
     {
         double d = 0;
-        
-        
-        
+                
         return d;
     }
     
