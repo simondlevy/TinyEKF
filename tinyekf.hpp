@@ -67,8 +67,6 @@
  * 7. Po = [I - K * H] * fy_P          : Covariance of Xo
  */
 
-// XXX need to change cholesky.h to use double **
-#define N 4
 #include "cholesky.h"
 
 class TinyEKF {
@@ -147,7 +145,7 @@ public:
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
         
-        cholsl(this->H_Pp_Ht, this->inv);
+        cholsl(this->H_Pp_Ht, this->inv, this->m);
         dump(this->inv, this->m, this->m);
         exit(0);            
     }
