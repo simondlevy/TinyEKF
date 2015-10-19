@@ -97,6 +97,7 @@ public:
         this->H_Pp = newmat(m, n);
         this->H_Pp_Ht = newmat(m, m);
         this->inv = newmat(m, m);
+        this->cholsp = new double [n];
     }
     
     ~TinyEKF()
@@ -120,6 +121,8 @@ public:
         deletemat(this->H_Pp,  this->m);
         deletemat(this->H_Pp_Ht,  this->m);
         deletemat(this->inv,  this->m);
+
+        delete this->cholsp;
     }
     
     void update(double * X)
@@ -145,7 +148,7 @@ public:
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
         
-        cholsl(this->H_Pp_Ht, this->inv, this->m);
+        cholsl(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
         dump(this->inv, this->m, this->m);
         exit(0);            
     }
@@ -241,6 +244,7 @@ protected:
     double ** H_Pp;
     double ** H_Pp_Ht;
     double ** inv;
+    double  * cholsp;
     
 private:
     

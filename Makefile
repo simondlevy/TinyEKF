@@ -3,7 +3,7 @@ all: gps_ekf
 gps: gps_ekf
 	./gps_ekf
 
-gps_ekf: gps_ekf.cpp tinyekf.hpp
+gps_ekf: gps_ekf.cpp tinyekf.hpp cholesky.h
 	g++ -o gps_ekf gps_ekf.cpp
 
 clean:

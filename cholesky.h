@@ -44,10 +44,9 @@ static void choldcsl(double ** A, double ** a, double * p, int n)
 }
 
 
-static void cholsl(double ** A, double ** a, int n) 
+static void cholsl(double ** A, double ** a, double * p, int n) 
 {
     int i,j,k;
-    double * p;
     choldcsl(A,a,p,n);
     for (i = 0; i < n; i++) {
         for (j = i + 1; j < n; j++) {
