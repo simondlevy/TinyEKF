@@ -95,6 +95,7 @@ public:
         this->Pp   = newmat(n, n);
         this->H_Pp = newmat(m, n);
         this->H_Pp_Ht = newmat(m, m);
+        this->inv = newmat(m, m);
     }
     
     ~TinyEKF()
@@ -117,10 +118,13 @@ public:
         deletemat(this->Pp_Ht, this->n);        
         deletemat(this->H_Pp,  this->m);
         deletemat(this->H_Pp_Ht,  this->m);
+        deletemat(this->inv,  this->m);
     }
     
     void update(double * X)
     {        
+        
+        
         // 1, 2
         this->f(this->X, this->Xp, this->fy);           
         
@@ -132,14 +136,23 @@ public:
         transpose(this->fy, this->fyt, this->n, this->n);
         matmul(this->fy_P, this->fyt, this->Pp, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
+
+        dump(this->Pp, this->n, this->n);
+        exit(0);
+
         
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
         matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n);
-        matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->n);
+
+       
+        //matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->n);
+        
         add(this->H_Pp_Ht, this->R, this->m, this->m);
-        dump(this->H_Pp_Ht, this->m, this->m);
+        
+        //invert(this->H_Pp_Ht, this->inv, this->m);
+        dump(this->inv, this->m, this->m);
         exit(0);            
     }
     
@@ -233,6 +246,7 @@ protected:
     double ** Pp;
     double ** H_Pp;
     double ** H_Pp_Ht;
+    double ** inv;
     
 private:
     
@@ -266,5 +280,9 @@ private:
         for (int i=0; i<rows; ++i)
             for (int j=0; j<cols; ++j)
                 a[i][j] += b[i][j];
-    }    
+    }
+    
+    static void invert(double ** a, double ** ai, int n)
+    {
+    }
 };
