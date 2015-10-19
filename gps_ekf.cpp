@@ -176,7 +176,7 @@ int main(int argc, char ** argv)
     skipline(fp);
     
     // Make a place to store the data from the file
-    double ** SV_Pos = TinyEKF::newmat(4,3);
+    double ** SV_Pos = newmat(4,3);
     double SV_Rho[4];
     
     // Loop till no more data

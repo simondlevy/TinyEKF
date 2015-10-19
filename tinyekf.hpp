@@ -67,7 +67,7 @@
  * 7. Po = [I - K * H] * fy_P          : Covariance of Xo
  */
 
-#include "cholesky.h"
+#include "linalg.hpp"
 
 class TinyEKF {
     
@@ -176,33 +176,10 @@ public:
         add(this->H_Pp_Ht, this->R, this->m, this->m);
         cholsl(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
         matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
-        dump(this->G, this->n, this->m);
-        exit(0);            
-    }
-    
-    static double ** newmat(int m, int n)
-    {
-        double ** a = new double * [m];
-        
-        for (int i=0; i<m; ++i)
-            a[i] = new double [n];
-        
-        return a;
-    }
-    
-    static void eye(double ** a, int n, double s)
-    {
-        zeros(a, n, n);
-        
-        for (int k=0; k<n; ++k)
-            a[k][k] = s;
-    }
 
-    static void dump(double ** a, int m, int n)
-    {
-        for (int i=0; i<m; ++i) {
-            dump(a[i], n);
-        }
+        // 6
+        dump(this->Xp, this->n);
+        exit(0);
     }
     
 protected:
@@ -210,73 +187,4 @@ protected:
     virtual void f(double * X, double * Xp, double ** fy) = 0;
     
     virtual void g(double * Xp, double * gXp, double ** H) = 0;
-    
-    static void dump(double * x, int n)
-    {
-        for (int j=0; j<n; ++j)
-            printf("%10.6f ", x[j]);
-        printf("\n");
-    }
-    
-    
-    static double deletemat(double ** a, int m)
-    {
-        for (int i=0; i<m; ++i)
-            delete a[i];
-    }
-    
-    static void zeros(double * a, int n)
-    {
-        bzero(a, n*sizeof(double));
-    }
-    
-    static void zeros(double ** a, int m, int n)
-    {
-        for (int i=0; i<m; ++i)
-            zeros(a[i], n);
-    }
-    
-    static void copy(double * dst, double * src, int n)
-    {
-        memcpy(dst, src, n*sizeof(double));
-    }
-    
-    static double copy(double ** dst, double ** src, int m, int n)
-    {
-        for (int i=0; i<m; ++i)
-            copy(dst[i], src[i], n);
-    }
-    
-   
-private:
-    
-    static void matmul(double ** a, double **b, double **c, int m, int n, int p)
-    {
-        for (int i=0; i<m; ++i)
-            for (int j=0; j<n; ++j) {
-                c[i][j] = 0;
-                for (int l=0; l<p; ++l)
-                    c[i][j] += a[i][l] * b[l][j];
-            }
-    }
-    
-    static void transpose(double ** a, double ** at, int rows, int cols)
-    {
-        for (int i=0; i<rows; ++i)
-            for (int j=0; j<cols; ++j) 
-                at[j][i] = a[i][j];
-    }
-    
-    // A = A + B
-    static void add(double ** a, double ** b, int rows, int cols) 
-    {        
-        for (int i=0; i<rows; ++i)
-            for (int j=0; j<cols; ++j)
-                a[i][j] += b[i][j];
-    }
-    
-    static void invert(double ** a, double ** ai, int n)
-    {
-        zeros(ai, n, n);
-    }
 };
