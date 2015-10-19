@@ -166,8 +166,6 @@ public:
         // 1, 2
         this->f(this->Xp, this->fy);           
         
-        dump(this->Xp, this->n); exit(0);
-
         // 3
         this->g(this->Xp, this->gXp, this->H);     
         
@@ -185,6 +183,9 @@ public:
         add(this->H_Pp_Ht, this->R, this->m, this->m);
         cholsl(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
         matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
+
+        dump(this->Xp, this->n); exit(0);
+
 
         // 6
     }
