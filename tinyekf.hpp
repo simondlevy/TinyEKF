@@ -108,8 +108,8 @@ protected:
         this->H_Pp = newmat(m, n);
 
         this->H_tmp_n_m = newmat(m, m);
-        this->inv     = newmat(m, m);
 
+        this->tmp_m_m     = newmat(m, m);
         this->tmp_n = new double [n];
         this->tmp_n_m = newmat(n, m);
     }
@@ -135,7 +135,7 @@ protected:
         deletemat(this->tmp_n_m, this->n);        
         deletemat(this->H_Pp,  this->m);
         deletemat(this->H_tmp_n_m,  this->m);
-        deletemat(this->inv,  this->m);
+        deletemat(this->tmp_m_m,  this->m);
 
         delete this->tmp_n;
     }
@@ -159,9 +159,10 @@ private:
     double ** fyt;
     double ** Pp;
     double ** H_Pp;
-    double ** H_tmp_n_m;
-    double ** inv;
+
     double  * tmp_n;
+    double ** H_tmp_n_m;
+    double ** tmp_m_m;
 
 public:
    
@@ -185,8 +186,8 @@ public:
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
         matmul(this->H_Pp, this->Ht, this->H_tmp_n_m, this->m, this->m, this->n);
         add(this->H_tmp_n_m, this->R, this->m, this->m);
-        invert(this->H_tmp_n_m, this->inv, this->tmp_n, this->m);
-        matmul(this->tmp_n_m, this->inv, this->G, this->n, this->m, this->m);
+        invert(this->H_tmp_n_m, this->tmp_m_m, this->tmp_n, this->m);
+        matmul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
         dump(this->G, this->n, this->m); exit(0);
 
