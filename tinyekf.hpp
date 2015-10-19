@@ -137,13 +137,15 @@ public:
         matmul(this->fy_P, this->fyt, this->Pp, this->n, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
 
-        dump(this->Pp, this->n, this->n);
-        exit(0);
-
-        
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
-        //matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
+
+       
+        matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m, this->n);
+
+        dump(this->Pp_Ht, this->n, this->m);
+        exit(0);
+
         //matmul(this->H, this->Pp, this->H_Pp, this->m, this->n);
 
        
