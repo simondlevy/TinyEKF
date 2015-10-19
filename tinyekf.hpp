@@ -99,19 +99,19 @@ protected:
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
-        this->Ht   = newmat(n, m);
-        this->Pp_Ht = newmat(n, m);
+        this->Ht    = newmat(n, m);
 
-        this->fy_P  = newmat(n, n);
+        this->fy_P = newmat(n, n);
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
 
         this->H_Pp = newmat(m, n);
-        this->H_Pp_Ht = newmat(m, m);
 
-        this->inv = newmat(m, m);
+        this->H_tmp_n_m = newmat(m, m);
+        this->inv     = newmat(m, m);
 
         this->tmp_n = new double [n];
+        this->tmp_n_m = newmat(n, m);
     }
     
    ~TinyEKF()
@@ -132,9 +132,9 @@ protected:
         deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
-        deletemat(this->Pp_Ht, this->n);        
+        deletemat(this->tmp_n_m, this->n);        
         deletemat(this->H_Pp,  this->m);
-        deletemat(this->H_Pp_Ht,  this->m);
+        deletemat(this->H_tmp_n_m,  this->m);
         deletemat(this->inv,  this->m);
 
         delete this->tmp_n;
@@ -154,12 +154,12 @@ private:
     
     // temporary storage
     double ** Ht;
-    double ** Pp_Ht;
+    double ** tmp_n_m;
     double ** fy_P;
     double ** fyt;
     double ** Pp;
     double ** H_Pp;
-    double ** H_Pp_Ht;
+    double ** H_tmp_n_m;
     double ** inv;
     double  * tmp_n;
 
@@ -181,12 +181,12 @@ public:
 
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
-        matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m, this->n);
+        matmul(this->Pp, this->Ht, this->tmp_n_m, this->n, this->m, this->n);
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
-        matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
-        add(this->H_Pp_Ht, this->R, this->m, this->m);
-        invert(this->H_Pp_Ht, this->inv, this->tmp_n, this->m);
-        matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
+        matmul(this->H_Pp, this->Ht, this->H_tmp_n_m, this->m, this->m, this->n);
+        add(this->H_tmp_n_m, this->R, this->m, this->m);
+        invert(this->H_tmp_n_m, this->inv, this->tmp_n, this->m);
+        matmul(this->tmp_n_m, this->inv, this->G, this->n, this->m, this->m);
 
         dump(this->G, this->n, this->m); exit(0);
 
