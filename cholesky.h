@@ -1,11 +1,12 @@
-/* have to define N above here */
+#include <stdio.h>
+#include <math.h>
 
-static void choldc1(double a[N][N], double p[N]) {
+static void choldc1(double ** a, double * p, int n) {
     int i,j,k;
     double sum;
 
-    for (i = 0; i < N; i++) {
-        for (j = i; j < N; j++) {
+    for (i = 0; i < n; i++) {
+        for (j = i; j < n; j++) {
             sum = a[i][j];
             for (k = i - 1; k >= 0; k--) {
                 sum -= a[i][k] * a[j][k];
@@ -23,16 +24,16 @@ static void choldc1(double a[N][N], double p[N]) {
     }
 }
 
-static void choldcsl(double A[N][N], double a[N][N], double p[N]) 
+static void choldcsl(double ** A, double ** a, double * p, int n) 
 {
     int i,j,k; double sum;
-    for (i = 0; i < N; i++) 
-        for (j = 0; j < N; j++) 
+    for (i = 0; i < n; i++) 
+        for (j = 0; j < n; j++) 
             a[i][j] = A[i][j];
-    choldc1(a, p);
-    for (i = 0; i < N; i++) {
+    choldc1(a, p, n);
+    for (i = 0; i < n; i++) {
         a[i][i] = 1 / p[i];
-        for (j = i + 1; j < N; j++) {
+        for (j = i + 1; j < n; j++) {
             sum = 0;
             for (k = i; k < j; k++) {
                 sum -= a[j][k] * a[k][i];
@@ -43,28 +44,28 @@ static void choldcsl(double A[N][N], double a[N][N], double p[N])
 }
 
 
-static void cholsl(double A[N][N], double a[N][N]) 
+static void cholsl(double ** A, double ** a, int n) 
 {
     int i,j,k;
-    double p[N];
-    choldcsl(A,a,p);
-    for (i = 0; i < N; i++) {
-        for (j = i + 1; j < N; j++) {
+    double * p;
+    choldcsl(A,a,p,n);
+    for (i = 0; i < n; i++) {
+        for (j = i + 1; j < n; j++) {
             a[i][j] = 0.0;
         }
     }
-    for (i = 0; i < N; i++) {
+    for (i = 0; i < n; i++) {
         a[i][i] *= a[i][i];
-        for (k = i + 1; k < N; k++) {
+        for (k = i + 1; k < n; k++) {
             a[i][i] += a[k][i] * a[k][i];
         }
-        for (j = i + 1; j < N; j++) {
-            for (k = j; k < N; k++) {
+        for (j = i + 1; j < n; j++) {
+            for (k = j; k < n; k++) {
                 a[i][j] += a[k][i] * a[k][j];
             }
         }
     }
-    for (i = 0; i < N; i++) {
+    for (i = 0; i < n; i++) {
         for (j = 0; j < i; j++) {
             a[i][j] = a[j][i];
         }
