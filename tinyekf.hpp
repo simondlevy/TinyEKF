@@ -157,8 +157,10 @@ public:
     void update(double * X)
     {        
         // 1, 2
-        this->f(this->X, this->Xp, this->fy);           
+        this->f(this->Xp, this->fy);           
         
+        dump(this->Xp, this->n); exit(0);
+
         // 3
         this->g(this->Xp, this->gXp, this->H);     
         
@@ -178,13 +180,11 @@ public:
         matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
 
         // 6
-        dump(this->Xp, this->n);
-        exit(0);
     }
     
 protected:
     
-    virtual void f(double * X, double * Xp, double ** fy) = 0;
+    virtual void f(double * Xp, double ** fy) = 0;
     
     virtual void g(double * Xp, double * gXp, double ** H) = 0;
 };

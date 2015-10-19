@@ -70,14 +70,15 @@ class GPS_EKF : public TinyEKF {
                 
     protected:
     
-        void f(double * X, double * Xp, double ** fy)
+        void f(double * Xp, double ** fy)
         {
             zeros(Xp, 8);
             
             for (int j=0; j<8; j+=2) {
-                Xp[j] = X[j] + this->T * X[j+1];
-                Xp[j+1] = X[j+1];
+                Xp[j] = this->X[j] + this->T * this->X[j+1];
+                Xp[j+1] = this->X[j+1];
             }
+
             
             zeros(fy, 8, 8);
             
