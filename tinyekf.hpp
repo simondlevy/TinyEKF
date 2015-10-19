@@ -143,9 +143,8 @@ public:
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
-        dump(this->H_Pp_Ht, this->m, this->m); exit(0);
         
-        //invert(this->H_Pp_Ht, this->inv, this->m);
+        invert(this->H_Pp_Ht, this->inv, this->m);
         dump(this->inv, this->m, this->m);
         exit(0);            
     }
@@ -271,5 +270,6 @@ private:
     
     static void invert(double ** a, double ** ai, int n)
     {
+        zeros(ai, n, n);
     }
 };
