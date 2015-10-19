@@ -175,6 +175,7 @@ public:
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
         cholsl(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
+        matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
         dump(this->G, this->n, this->m);
         exit(0);            
     }
