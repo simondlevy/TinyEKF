@@ -101,12 +101,16 @@ protected:
         
         this->Ht   = newmat(n, m);
         this->Pp_Ht = newmat(n, m);
+
         this->fy_P  = newmat(n, n);
         this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
+
         this->H_Pp = newmat(m, n);
         this->H_Pp_Ht = newmat(m, m);
+
         this->inv = newmat(m, m);
+
         this->cholsp = new double [n];
     }
     
@@ -181,12 +185,12 @@ public:
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
-        cholsl(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
+        invert(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
         matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
 
         dump(this->Xp, this->n); exit(0);
 
-
         // 6
+        //Xo = Xp + K * (Z - gXp);
     }
 };
