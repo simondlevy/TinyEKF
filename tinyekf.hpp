@@ -90,7 +90,7 @@ protected:
         this->P = newmat(n, n);
         this->Q = newmat(n, n);
         this->R = newmat(m, m);
-        this->G = newmat(n,m);
+        this->G = newmat(n, m);
         
         this->H   = newmat(m, n);
         this->fy  = newmat(n, n);
@@ -111,7 +111,7 @@ protected:
 
         this->inv = newmat(m, m);
 
-        this->cholsp = new double [n];
+        this->tmp_n = new double [n];
     }
     
    ~TinyEKF()
@@ -137,7 +137,7 @@ protected:
         deletemat(this->H_Pp_Ht,  this->m);
         deletemat(this->inv,  this->m);
 
-        delete this->cholsp;
+        delete this->tmp_n;
     }
   
 private:
@@ -161,7 +161,7 @@ private:
     double ** H_Pp;
     double ** H_Pp_Ht;
     double ** inv;
-    double  * cholsp;
+    double  * tmp_n;
 
 public:
    
@@ -185,10 +185,10 @@ public:
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
-        invert(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
+        invert(this->H_Pp_Ht, this->inv, this->tmp_n, this->m);
         matmul(this->Pp_Ht, this->inv, this->G, this->n, this->m, this->m);
 
-        dump(this->Xp, this->n); exit(0);
+        dump(this->G, this->n, this->m); exit(0);
 
         // 6
         //Xo = Xp + K * (Z - gXp);
