@@ -99,19 +99,17 @@ protected:
         this->Xp  = new double [n];
         this->gXp = new double[m];
         
-        this->Ht    = newmat(n, m);
+        this->Ht   = newmat(n, m);
+        this->fyt  = newmat(n, n);
 
         this->fy_P = newmat(n, n);
-        this->fyt  = newmat(n, n);
         this->Pp   = newmat(n, n);
 
-        this->H_Pp = newmat(m, n);
-
+        this->tmp_n    = new double [n];
+        this->tmp_m_m  = newmat(m, m);
+        this->tmp_m_n  = newmat(m, n);
         this->tmp2_n_m = newmat(m, m);
-
-        this->tmp_m_m     = newmat(m, m);
-        this->tmp_n = new double [n];
-        this->tmp_n_m = newmat(n, m);
+        this->tmp_n_m  = newmat(n, m);
     }
     
    ~TinyEKF()
@@ -132,7 +130,7 @@ protected:
         deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
-        deletemat(this->H_Pp,  this->m);
+        deletemat(this->tmp_m_n,  this->m);
 
         deletemat(this->tmp_n_m, this->n);        
         deletemat(this->tmp2_n_m,  this->m);
@@ -158,7 +156,7 @@ private:
     double ** fy_P;
     double ** fyt;
     double ** Pp;
-    double ** H_Pp;
+    double ** tmp_m_n;
 
     double  * tmp_n;
     double ** tmp2_n_m;
@@ -183,8 +181,8 @@ public:
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
         matmul(this->Pp, this->Ht, this->tmp_n_m, this->n, this->m, this->n);
-        matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
-        matmul(this->H_Pp, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
+        matmul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
+        matmul(this->tmp_m_n, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
         add(this->tmp2_n_m, this->R, this->m, this->m);
         invert(this->tmp2_n_m, this->tmp_m_m, this->tmp_n, this->m);
         matmul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
