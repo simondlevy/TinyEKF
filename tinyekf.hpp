@@ -73,6 +73,33 @@ class TinyEKF {
     
 public:
     
+    // XXX see what can be made private
+    
+    int n;          // state values
+    int m;          // measurement values
+    
+    double ** P;    // covariance of prediction
+    double ** Q;    // covariance of process noise
+    double ** R;    // covariance of measurement noise
+    double ** G;    // Kalman gain; a.k.a. K
+    
+    double *  X;    // state
+    double *  Xp;   // output of state-transition function
+    double ** fy;   // Jacobean of process model
+    double ** H;    // Jacobean of measurement model
+    double *  gXp;
+    
+    // temporary storage
+    double ** Ht;
+    double ** Pp_Ht;
+    double ** fy_P;
+    double ** fyt;
+    double ** Pp;
+    double ** H_Pp;
+    double ** H_Pp_Ht;
+    double ** inv;
+    double  * cholsp;
+
     TinyEKF(int n, int m)
     {
         this->n = n;
@@ -81,6 +108,7 @@ public:
         this->P = newmat(n, n);
         this->Q = newmat(n, n);
         this->R = newmat(m, m);
+        this->G = newmat(n,n);
         
         this->H   = newmat(m, n);
         this->fy  = newmat(n, n);
@@ -105,6 +133,7 @@ public:
         deletemat(this->P, this->n);
         deletemat(this->Q, this->n);
         deletemat(this->R, this->m);
+        deletemat(this->G, this->n);
         
         deletemat(this->H, this->m);
         deletemat(this->fy, n);
@@ -220,32 +249,7 @@ protected:
             copy(dst[i], src[i], n);
     }
     
-    // XXX see what can be made private
-    
-    int n;          // state values
-    int m;          // measurement values
-    
-    double ** P;    // covariance of prediction
-    double ** Q;    // covariance of process noise
-    double ** R;    // covariance of measurement noise
-    
-    double *  X;    // state
-    double *  Xp;   // output of state-transition function
-    double ** fy;   // Jacobean of process model
-    double ** H;    // Jacobean of measurement model
-    double *  gXp;
-    
-    // temporary storage
-    double ** Ht;
-    double ** Pp_Ht;
-    double ** fy_P;
-    double ** fyt;
-    double ** Pp;
-    double ** H_Pp;
-    double ** H_Pp_Ht;
-    double ** inv;
-    double  * cholsp;
-    
+   
 private:
     
     static void matmul(double ** a, double **b, double **c, int m, int n, int p)
