@@ -132,9 +132,9 @@ public:
         this->g(this->Xp, this->gXp, this->H);     
         
         // 4
-        matmul(this->fy, this->P, this->fy_P, this->n, this->n);
+        matmul(this->fy, this->P, this->fy_P, this->n, this->n, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
-        matmul(this->fy_P, this->fyt, this->Pp, this->n, this->n);
+        matmul(this->fy_P, this->fyt, this->Pp, this->n, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
 
         dump(this->Pp, this->n, this->n);
@@ -143,8 +143,8 @@ public:
         
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
-        matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
-        matmul(this->H, this->Pp, this->H_Pp, this->m, this->n);
+        //matmul(this->Pp, this->Ht, this->Pp_Ht, this->n, this->m);
+        //matmul(this->H, this->Pp, this->H_Pp, this->m, this->n);
 
        
         //matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->n);
@@ -250,21 +250,14 @@ protected:
     
 private:
     
-    static void matmul(double ** a, double **b, double **c, int rows, int cols)
+    static void matmul(double ** a, double **b, double **c, int m, int n, int p)
     {
-        for (int i=0; i<rows; ++i)
-            for (int j=0; j<cols; ++j)
-                c[i][j] = dotprod(a, b, i, j, cols);
-    }
-    
-    static double dotprod(double ** a, double ** b, int row, int col, int rowscols) 
-    {
-        double d = 0;
-        
-        for (int l=0; l<rowscols; ++l)
-            d += a[row][l] * b[l][col];
-                
-        return d;
+        for (int i=0; i<m; ++i)
+            for (int j=0; j<n; ++j) {
+                c[i][j] = 0;
+                for (int l=0; l<p; ++l)
+                    c[i][j] += a[i][l] * b[l][j];
+            }
     }
     
     static void transpose(double ** a, double ** at, int rows, int cols)
