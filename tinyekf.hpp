@@ -49,22 +49,22 @@
  * 2.
  * d f    |
  * fy = -----------|                 : Linearize state equation, fy is the
- * d X    |X=Xp               Jacobian of the process model
+ * d X    |X=Xp                        Jacobian of the process model
  *
  *
  * 3.
  * d g    |
  * H  = -----------|                 : Linearize observation equation, H is
- * d X    |X=Xp               the Jacobian of the measurement model
+ * d X    |X=Xp                        the Jacobian of the measurement model
  *
  *
- * 4. fy_P = fy * Pi * fy' + Q         : Covariance of Xp
+ * 4. Pp = fy * Pi * fy' + Q         : Covariance of Xp
  *
- * 5. K = fy_P * H' * inv(H * fy_P * H' + R): Kalman Gain
+ * 5. K = Pp * H' * inv(H * Pp * H' + R): Kalman Gain
  *
  * 6. Xo = Xp + K * (Z - g(Xp))      : Output state
  *
- * 7. Po = [I - K * H] * fy_P          : Covariance of Xo
+ * 7. Po = [I - K * H] * Pp          : Covariance of Xo
  */
 
 #include "linalg.hpp"
@@ -98,18 +98,18 @@ protected:
         this->X   = new double [n];
         this->Xp  = new double [n];
         this->gXp = new double[m];
+
+        this->Pp   = newmat(n, n);
         
         this->Ht   = newmat(n, m);
         this->fyt  = newmat(n, n);
 
-        this->fy_P = newmat(n, n);
-        this->Pp   = newmat(n, n);
-
         this->tmp_n    = new double [n];
         this->tmp_m_m  = newmat(m, m);
         this->tmp_m_n  = newmat(m, n);
-        this->tmp2_n_m = newmat(m, m);
         this->tmp_n_m  = newmat(n, m);
+        this->tmp2_n_m = newmat(n, m);
+        this->tmp_n_n  = newmat(n, n);
     }
     
    ~TinyEKF()
@@ -126,7 +126,7 @@ protected:
         delete this->Xp;
         delete this->gXp;
         
-        deletemat(this->fy_P, this->n);
+        deletemat(this->tmp_n_n, this->n);
         deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
@@ -153,7 +153,7 @@ private:
     // temporary storage
     double ** Ht;
     double ** tmp_n_m;
-    double ** fy_P;
+    double ** tmp_n_n;
     double ** fyt;
     double ** Pp;
     double ** tmp_m_n;
@@ -173,9 +173,9 @@ public:
         this->g(this->Xp, this->gXp, this->H);     
         
         // 4
-        matmul(this->fy, this->P, this->fy_P, this->n, this->n, this->n);
+        matmul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
-        matmul(this->fy_P, this->fyt, this->Pp, this->n, this->n, this->n);
+        matmul(this->tmp_n_n, this->fyt, this->Pp, this->n, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
 
         // 5
