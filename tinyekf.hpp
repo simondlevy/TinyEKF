@@ -108,7 +108,7 @@ public:
         this->P = newmat(n, n);
         this->Q = newmat(n, n);
         this->R = newmat(m, m);
-        this->G = newmat(n,n);
+        this->G = newmat(n,m);
         
         this->H   = newmat(m, n);
         this->fy  = newmat(n, n);
@@ -156,8 +156,6 @@ public:
     
     void update(double * X)
     {        
-        
-        
         // 1, 2
         this->f(this->X, this->Xp, this->fy);           
         
@@ -176,9 +174,8 @@ public:
         matmul(this->H, this->Pp, this->H_Pp, this->m, this->n, this->n);
         matmul(this->H_Pp, this->Ht, this->H_Pp_Ht, this->m, this->m, this->n);
         add(this->H_Pp_Ht, this->R, this->m, this->m);
-        
         cholsl(this->H_Pp_Ht, this->inv, this->cholsp, this->m);
-        dump(this->inv, this->m, this->m);
+        dump(this->G, this->n, this->m);
         exit(0);            
     }
     
