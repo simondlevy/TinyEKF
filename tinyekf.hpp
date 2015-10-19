@@ -70,35 +70,17 @@
 #include "linalg.hpp"
 
 class TinyEKF {
-    
-public:
-    
-    // XXX see what can be made private
-    
-    int n;          // state values
-    int m;          // measurement values
-    
+
+protected:
+
+    double *  X;    // state
     double ** P;    // covariance of prediction
     double ** Q;    // covariance of process noise
     double ** R;    // covariance of measurement noise
-    double ** G;    // Kalman gain; a.k.a. K
     
-    double *  X;    // state
-    double *  Xp;   // output of state-transition function
-    double ** fy;   // Jacobean of process model
-    double ** H;    // Jacobean of measurement model
-    double *  gXp;
+    virtual void f(double * Xp, double ** fy) = 0;
     
-    // temporary storage
-    double ** Ht;
-    double ** Pp_Ht;
-    double ** fy_P;
-    double ** fyt;
-    double ** Pp;
-    double ** H_Pp;
-    double ** H_Pp_Ht;
-    double ** inv;
-    double  * cholsp;
+    virtual void g(double * Xp, double * gXp, double ** H) = 0;    
 
     TinyEKF(int n, int m)
     {
@@ -128,7 +110,7 @@ public:
         this->cholsp = new double [n];
     }
     
-    ~TinyEKF()
+   ~TinyEKF()
     {
         deletemat(this->P, this->n);
         deletemat(this->Q, this->n);
@@ -153,8 +135,33 @@ public:
 
         delete this->cholsp;
     }
+  
+private:
     
-    void update(double * X)
+    int n;          // state values
+    int m;          // measurement values
+    
+    double ** G;    // Kalman gain; a.k.a. K
+    
+    double *  Xp;   // output of state-transition function
+    double ** fy;   // Jacobean of process model
+    double ** H;    // Jacobean of measurement model
+    double *  gXp;
+    
+    // temporary storage
+    double ** Ht;
+    double ** Pp_Ht;
+    double ** fy_P;
+    double ** fyt;
+    double ** Pp;
+    double ** H_Pp;
+    double ** H_Pp_Ht;
+    double ** inv;
+    double  * cholsp;
+
+public:
+   
+    void update(double * Z)
     {        
         // 1, 2
         this->f(this->Xp, this->fy);           
@@ -181,10 +188,4 @@ public:
 
         // 6
     }
-    
-protected:
-    
-    virtual void f(double * Xp, double ** fy) = 0;
-    
-    virtual void g(double * Xp, double * gXp, double ** H) = 0;
 };
