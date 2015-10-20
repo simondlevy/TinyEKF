@@ -143,13 +143,6 @@ static void mul(double ** a, double ** b, double ** c, int m, int n, int p)
 
 static void mul(double ** a, double * x, double * y, int rows, int cols)
 {
-    /*
-    dump(a, rows, cols, "%+15.15f");
-    printf("\n");
-    dump(x, cols, "%+15.15f\n");
-    exit(0);
-    */
-
     for (int i=0; i<rows; ++i) {
         y[i] = 0;
         for (int j=0; j<cols; ++j)
