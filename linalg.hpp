@@ -289,6 +289,14 @@ static void add(vec_t * x, vec_t * y)
        x->data[j] += y->data[j];
 }
 
+// A <- A + B
+static void add(mat_t * a, mat_t * b)
+{        
+    for (int i=0; i<a->rows; ++i)
+        for (int j=0; j<a->cols; ++j)
+            a->data[i][j] += b->data[i][j];
+}
+
 
 
 
