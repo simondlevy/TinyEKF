@@ -110,7 +110,11 @@ protected:
         this->tmp2_n_m = newmat(n, m);
         this->tmp_n_n  = newmat(n, n);
 
+
+        // ----------------------------------
+
         this->_X = newvec(n);
+
         this->_P = newnewmat(n, n);
         this->_Q = newnewmat(n, n);
         this->_R = newnewmat(m, m);
@@ -187,6 +191,7 @@ protected:
    void setX(int i, double value)
    {
        this->X[i] = value;
+       this->_X->data[i] = value;
    }
 
  private:
@@ -255,6 +260,11 @@ public:
     {        
         // 1, 2
         this->f(this->X, this->Xp, this->fy);           
+        this->f(this->_X->data, this->_Xp->data, this->_fy->data);
+
+        dump(this->Xp, this->n, "%f");
+        dump(this->_Xp, "%f");
+        exit(0);
 
         // 3
         this->g(this->Xp, this->gXp, this->H);     
