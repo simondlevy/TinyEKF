@@ -99,6 +99,11 @@ static mat_t * newnewmat(int m, int n)
 
 static void deletemat(mat_t * mat)
 {
+    for (int i=0; i<mat->rows; ++i)
+        delete mat->data[i];
+
+    delete mat->data;
+
     delete mat;
 }
 
