@@ -246,3 +246,11 @@ static void eye(mat_t * mat, double s)
         mat->data[k][k] = s;
 }
 
+static void dump(vec_t * vec, const char * fmt)
+{
+    char f[100];
+    sprintf(f, "%s ", fmt);
+    for (int j=0; j<vec->len; ++j)
+        printf(f, vec->data[j]);
+    printf("\n");
+}
