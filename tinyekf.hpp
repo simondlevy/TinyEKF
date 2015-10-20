@@ -308,11 +308,13 @@ public:
         mul(this->_G, this->_tmp_m, this->_X);
         add(this->X, this->Xp, this->n);
 
-        dump(this->Xp, this->n, "%f"); printf("\n");
-        dump(this->_Xp, "%f"); exit(0);
-
         // 7
         mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
+        mul(this->_G, this->_H, this->_tmp_n_n);
+
+        dump(this->G, this->n, this->m, "%f"); printf("\n");
+        dump(this->_G, "%f"); exit(0);
+
         sub(this->eye_n_n, this->tmp_n_n, this->tmp_n_n, this->n, this->n);
         mul(this->tmp_n_n, this->Pp, this->P, this->n, this->n, this->n);
         dump(this->P, this->n, this->n, "%+8.4f  ");
