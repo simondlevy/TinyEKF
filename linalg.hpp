@@ -254,3 +254,14 @@ static void dump(vec_t * vec, const char * fmt)
         printf(f, vec->data[j]);
     printf("\n");
 }
+
+static void dump(mat_t * mat, const char * fmt)
+{
+    char f[100];
+    sprintf(f, "%s ", fmt);
+     for (int i=0; i<mat->rows; ++i) {
+        for (int j=0; j<mat->cols; ++j)
+            printf(fmt, mat->data[i][j]);
+        printf("\n");
+    }
+}
