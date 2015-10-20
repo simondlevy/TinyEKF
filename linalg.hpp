@@ -70,10 +70,17 @@ static void invert(double ** A, double ** a, double * p, int n)
 
 typedef struct {
 
-    double * v;
+    double * a;
     int n;
 
 } vec_t;
+
+typedef struct {
+
+    double * a;
+    int m;
+    int n;
+} mat_t;
 
 static double ** newmat(int m, int n)
 {
