@@ -99,7 +99,8 @@ class GPS_EKF : public TinyEKF {
             for (int i=0; i<4; ++i) {
                 gXp[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    double d = this->X[j*2] - this->SV[i][j];
+                    //double d = this->X[j*2] - this->SV[i][j];
+                    double d = Xp[j*2] - this->SV[i][j];
                     dx[i*3+j] = d;
                     gXp[i] += d*d;
                 }
