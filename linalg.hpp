@@ -322,6 +322,13 @@ static void sub(vec_t * a, vec_t * b)
         a->data[j] -= b->data[j];
 }
 
+static void negate(mat_t * a)
+{        
+    for (int i=0; i<a->rows; ++i)
+        for (int j=0; j<a->cols; ++j)
+            a->data[i][j] = -a->data[i][j];
+}
+
 static void sub(mat_t * a, mat_t * b, mat_t * c)
 {
     for (int i=0; i<a->rows; ++i)
