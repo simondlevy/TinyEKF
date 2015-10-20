@@ -193,6 +193,7 @@ public:
         // 6
         //Xo = Xp + K * (Z - gXp);
         sub(this->tmp_m, Z, this->gXp, this->m);
-        dump(this->tmp_m, this->m, "%15.15f\n"); exit(0);
+        mul(this->G, this->tmp_m, this->X, this->n, this->m);
+        dump(this->X, this->n, "%+15.15f\n"); exit(0);
     }
 };

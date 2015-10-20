@@ -141,6 +141,11 @@ static void mul(double ** a, double **b, double **c, int m, int n, int p)
         }
 }
 
+static void mul(double ** a, double * x, double * y, int m, int n)
+{
+    zeros(y, m);
+}
+
 static void transpose(double ** a, double ** at, int rows, int cols)
 {
     for (int i=0; i<rows; ++i)
