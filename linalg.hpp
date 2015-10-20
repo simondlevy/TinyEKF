@@ -120,17 +120,6 @@ static void dump(double ** a, int m, int n, const char * fmt)
     }
 }
 
-static void copy(double * dst, double * src, int n)
-{
-    memcpy(dst, src, n*sizeof(double));
-}
-
-static double copy(double ** dst, double ** src, int m, int n)
-{
-    for (int i=0; i<m; ++i)
-        copy(dst[i], src[i], n);
-}
-
 // C <- A * B
 static void mul(double ** a, double ** b, double ** c, int m, int n, int p)
 {
