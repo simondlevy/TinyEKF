@@ -31,20 +31,20 @@ class GPS_EKF : public TinyEKF {
             this->SV = newmat(4, 3);
             
             // position
-            this->X[0] = -2.168816181271560e+006;
-            this->X[2] =  4.386648549091666e+006;
-            this->X[4] =  4.077161596428751e+006;
+            this->setX(0, -2.168816181271560e+006);
+            this->setX(2,  4.386648549091666e+006);
+            this->setX(4,  4.077161596428751e+006);
             
             // velocity
-            this->X[1] = 0;
-            this->X[3] = 0;
-            this->X[5] = 0;
+            this->setX(1, 0);
+            this->setX(3, 0);
+            this->setX(5, 0);
             
             // clock bias
-            this->X[6] = 3.575261153706439e+006;
+            this->setX(6, 3.575261153706439e+006);
             
             // clock drift
-            this->X[7] = 4.549246345845814e+001;
+            this->setX(7, 4.549246345845814e+001);
             
             // Set Q, see [1]
             const double Sf    = 36;

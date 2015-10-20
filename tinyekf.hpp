@@ -185,6 +185,11 @@ protected:
        this->R[i][j] = value;
    }
 
+   void setX(int i, double value)
+   {
+       this->X[i] = value;
+   }
+
  private:
 
     int n;          // state values
