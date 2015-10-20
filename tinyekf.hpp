@@ -176,19 +176,19 @@ public:
         this->g(this->Xp, this->gXp, this->H);     
 
         // 4
-        matmul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
+        mul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
-        matmul(this->tmp_n_n, this->fyt, this->Pp, this->n, this->n, this->n);
+        mul(this->tmp_n_n, this->fyt, this->Pp, this->n, this->n, this->n);
         add(this->Pp, this->Q, this->n, this->n);
 
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
-        matmul(this->Pp, this->Ht, this->tmp_n_m, this->n, this->m, this->n);
-        matmul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
-        matmul(this->tmp_m_n, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
+        mul(this->Pp, this->Ht, this->tmp_n_m, this->n, this->m, this->n);
+        mul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
+        mul(this->tmp_m_n, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
         add(this->tmp2_n_m, this->R, this->m, this->m);
         invert(this->tmp2_n_m, this->tmp_m_m, this->tmp_n, this->m);
-        matmul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
+        mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
         // 6
         //Xo = Xp + K * (Z - gXp);

@@ -131,7 +131,7 @@ static double copy(double ** dst, double ** src, int m, int n)
         copy(dst[i], src[i], n);
 }
 
-static void matmul(double ** a, double **b, double **c, int m, int n, int p)
+static void mul(double ** a, double **b, double **c, int m, int n, int p)
 {
     for (int i=0; i<m; ++i)
         for (int j=0; j<n; ++j) {
