@@ -274,11 +274,13 @@ public:
         mul(this->_fy, this->_P, this->_tmp_n_n);
         transpose(this->fy, this->fyt, this->n, this->n);
         transpose(this->_fy, this->_fyt);
-        dump(this->fyt, this->n, this->n, "%f"); exit(0);
-        dump(this->_fyt, "%f"); 
         mul(this->tmp_n_n, this->fyt, this->Pp, this->n, this->n, this->n);
+        mul(this->_tmp_n_n, this->_fyt, this->_Pp);
         add(this->Pp, this->Q, this->n, this->n);
-
+        add(this->_Pp, this->_Q);
+        dump(this->Pp, this->n, this->n, "%f"); printf("\n");
+        dump(this->_Pp, "%f");  exit(0);exit(0);
+ 
         // 5
         transpose(this->H, this->Ht, this->m, this->n);
         mul(this->Pp, this->Ht, this->tmp_n_m, this->n, this->m, this->n);
