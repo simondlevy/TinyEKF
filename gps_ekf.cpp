@@ -65,7 +65,8 @@ class GPS_EKF : public TinyEKF {
         
         void setPseudorange(double ** SV)
         {
-            copy(this->SV, SV, 4, 3);
+            memcpy(this->SV, SV, 12*sizeof(double));
+            //copy(this->SV, SV, 4, 3);
         }
                 
     protected:
