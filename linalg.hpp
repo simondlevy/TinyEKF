@@ -68,6 +68,13 @@ static void invert(double ** A, double ** a, double * p, int n)
     }
 }
 
+typedef struct {
+
+    double * v;
+    int n;
+
+} vec_t;
+
 static double ** newmat(int m, int n)
 {
     double ** a = new double * [m];
