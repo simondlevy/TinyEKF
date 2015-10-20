@@ -82,6 +82,13 @@ typedef struct {
     int n;
 } mat_t;
 
+static mat_t * newnewmat(int m, int n)
+{
+    mat_t * mat = new mat_t;
+
+    return mat;
+}
+
 static double ** newmat(int m, int n)
 {
     double ** a = new double * [m];
