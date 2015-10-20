@@ -176,6 +176,11 @@ protected:
        this->P[i][j] = value;
    }
   
+   void setQ(int i, int j, double value)
+   {
+       this->Q[i][j] = value;
+   }
+
    void setR(int i, int j, double value)
    {
        this->R[i][j] = value;

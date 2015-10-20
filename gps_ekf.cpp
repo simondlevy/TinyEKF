@@ -54,10 +54,10 @@ class GPS_EKF : public TinyEKF {
             const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2,
             sigma*sigma*T*T/2, sigma*sigma*T};
             
-            blkfill(this->Q, Qxyz, 0);
-            blkfill(this->Q, Qxyz, 1);
-            blkfill(this->Q, Qxyz, 2);
-            blkfill(this->Q, Qb,   3);
+            this->blkfill(Qxyz, 0);
+            this->blkfill(Qxyz, 1);
+            this->blkfill(Qxyz, 2);
+            this->blkfill(Qb,   3);
 
             for (int i=0; i<8; ++i)
                 this->setP(i, i, P0);
@@ -117,14 +117,14 @@ class GPS_EKF : public TinyEKF {
         
     private:
         
-        static void blkfill(double ** out, const double * a, int off)
+        void blkfill(const double * a, int off)
         {
             off *= 2;
             
-            out[off][off]     = a[0];
-            out[off][off+1]   = a[1];
-            out[off+1][off]   = a[2];
-            out[off+1][off+1] = a[3];
+            this->setQ(off, off,     a[0]);
+            this->setQ(off, off+1,   a[1]);
+            this->setQ(off+1, off,   a[2]);
+            this->setQ(off+1, off+1, a[3]);
         }
         
         double    X[8]; // constant velocity
