@@ -286,9 +286,10 @@ public:
         mul(this->_Pp, this->_Ht, this->_tmp_n_m);
         mul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
         mul(this->_H, this->_Pp, this->_tmp_m_n);
-        dump(this->tmp_m_n, this->m, this->n, "%f"); printf("\n");
-        dump(this->_tmp_m_n, "%f");  exit(0);
         mul(this->tmp_m_n, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
+        mul(this->_tmp_m_n, this->_Ht, this->_tmp2_n_m);
+        dump(this->tmp2_n_m, this->n, this->m, "%f"); printf("\n");
+        dump(this->_tmp2_n_m, "%f");  exit(0);
         add(this->tmp2_n_m, this->R, this->m, this->m);
         invert(this->tmp2_n_m, this->tmp_m_m, this->tmp_n, this->m);
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
