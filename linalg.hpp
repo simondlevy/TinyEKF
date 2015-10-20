@@ -123,10 +123,16 @@ static double deletemat(double ** a, int m)
         delete a[i];
 }
 
-static void zeros(double * a, int n)
+static void zeros(double * x, int n)
 {
-    bzero(a, n*sizeof(double));
+    bzero(x, n*sizeof(double));
 }
+
+static void zeros(vec_t * vec)
+{
+    bzero(vec->data, vec->len*sizeof(double));
+}
+
 
 static void zeros(double ** a, int m, int n)
 {
