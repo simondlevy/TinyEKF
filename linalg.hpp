@@ -189,6 +189,9 @@ typedef struct {
     double ** data;
     int rows;
     int cols;
+
+    double * tmp;
+
 } mat_t;
 
 static vec_t * newvec(int n)
@@ -214,6 +217,8 @@ static mat_t * newnewmat(int m, int n)
     mat->rows = m;
     mat->cols = n;
 
+    mat->tmp = new double(m);
+
     return mat;
 }
 
@@ -223,6 +228,8 @@ static void deletemat(mat_t * mat)
         delete mat->data[i];
 
     delete mat->data;
+
+    delete mat->tmp;
 
     delete mat;
 }
