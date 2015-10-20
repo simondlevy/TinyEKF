@@ -127,7 +127,6 @@ class GPS_EKF : public TinyEKF {
             this->setQ(off+1, off+1, a[3]);
         }
         
-        double    X[8]; // constant velocity
         double    T;    // positioning interval
         double ** SV;   // pseudorange for g function
 };
