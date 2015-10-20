@@ -68,45 +68,6 @@ static void invert(double ** A, double ** a, double * p, int n)
     }
 }
 
-typedef struct {
-
-    double * data;
-    int len;
-
-} vec_t;
-
-typedef struct {
-
-    double ** data;
-    int rows;
-    int cols;
-} mat_t;
-
-static mat_t * newnewmat(int m, int n)
-{
-    mat_t * mat = new mat_t;
-
-    mat->data = new double * [m];
-
-    for (int i=0; i<m; ++i)
-        mat->data[i] = new double [n];
-
-    mat->rows = m;
-    mat->cols = n;
-
-    return mat;
-}
-
-static void deletemat(mat_t * mat)
-{
-    for (int i=0; i<mat->rows; ++i)
-        delete mat->data[i];
-
-    delete mat->data;
-
-    delete mat;
-}
-
 static double ** newmat(int m, int n)
 {
     double ** a = new double * [m];
@@ -128,17 +89,13 @@ static void zeros(double * x, int n)
     bzero(x, n*sizeof(double));
 }
 
-static void zeros(vec_t * vec)
-{
-    bzero(vec->data, vec->len*sizeof(double));
-}
-
 
 static void zeros(double ** a, int m, int n)
 {
     for (int i=0; i<m; ++i)
         zeros(a[i], n);
 }
+
 
 static void eye(double ** a, int n, double s)
 {
@@ -230,4 +187,48 @@ static void sub(double ** a, double ** b, double ** c, int m, int n)
     for (int i=0; i<m; ++i)
         for (int j=0; j<n; ++j)
             c[i][j] = a[i][j] -  b[i][j];
+}
+
+typedef struct {
+
+    double * data;
+    int len;
+
+} vec_t;
+
+typedef struct {
+
+    double ** data;
+    int rows;
+    int cols;
+} mat_t;
+
+static mat_t * newnewmat(int m, int n)
+{
+    mat_t * mat = new mat_t;
+
+    mat->data = new double * [m];
+
+    for (int i=0; i<m; ++i)
+        mat->data[i] = new double [n];
+
+    mat->rows = m;
+    mat->cols = n;
+
+    return mat;
+}
+
+static void deletemat(mat_t * mat)
+{
+    for (int i=0; i<mat->rows; ++i)
+        delete mat->data[i];
+
+    delete mat->data;
+
+    delete mat;
+}
+
+static void zeros(vec_t * vec)
+{
+    bzero(vec->data, vec->len*sizeof(double));
 }
