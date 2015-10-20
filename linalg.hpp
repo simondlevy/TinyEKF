@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <strings.h>
+#include <math.h>
+
 static void choldc1(double ** a, double * p, int n) {
     int i,j,k;
     double sum;
