@@ -275,5 +275,12 @@ static void mul(mat_t * a, vec_t * x, vec_t * y)
     }
 }
 
+static void transpose(mat_t * a, mat_t * at)
+{
+    for (int i=0; i<a->rows; ++i)
+        for (int j=0; j<a->cols; ++j) 
+            at->data[j][i] = a->data[i][j];
+}
+
 
 
