@@ -254,3 +254,16 @@ static void dump(mat_t * mat, const char * fmt)
         printf("\n");
     }
 }
+
+// C <- A * B
+static void mul(mat_t * a, mat_t * b, mat_t * c)
+{
+    for (int i=0; i<a->rows; ++i)
+        for (int j=0; j<b->cols; ++j) {
+            c->data[i][j] = 0;
+            for (int l=0; l<a->cols; ++l)
+                c->data[i][j] += a->data[i][l] * b->data[l][j];
+        }
+}
+
+
