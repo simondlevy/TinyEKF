@@ -107,6 +107,12 @@ static double ** newmat(int m, int n)
     return a;
 }
 
+static double deletemat(double ** a, int m)
+{
+    for (int i=0; i<m; ++i)
+        delete a[i];
+}
+
 static void zeros(double * a, int n)
 {
     bzero(a, n*sizeof(double));
@@ -141,12 +147,6 @@ static void dump(double ** a, int m, int n, const char * fmt)
     for (int i=0; i<m; ++i) {
         dump(a[i], n, fmt);
     }
-}
-
-static double deletemat(double ** a, int m)
-{
-    for (int i=0; i<m; ++i)
-        delete a[i];
 }
 
 static void copy(double * dst, double * src, int n)
