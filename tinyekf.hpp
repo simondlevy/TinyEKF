@@ -304,11 +304,12 @@ public:
         sub(Z, this->gXp, this->tmp_m, this->m);
         this->_tmp_m->data = Z;
         sub(this->_tmp_m, this->_gXp);
-
-        dump(this->tmp_m, this->m, "%f"); printf("\n");
-        dump(this->_tmp_m, "%f"); exit(0);
-
         mul(this->G, this->tmp_m, this->X, this->n, this->m);
+        mul(this->_G, this->_tmp_m, this->_X);
+
+        dump(this->X, this->n, "%f"); printf("\n");
+        dump(this->_X, "%f"); exit(0);
+
         add(this->X, this->Xp, this->n);
 
         // 7
