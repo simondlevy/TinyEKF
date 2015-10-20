@@ -282,5 +282,13 @@ static void transpose(mat_t * a, mat_t * at)
             at->data[j][i] = a->data[i][j];
 }
 
+// X <- X + Y
+static void add(vec_t * x, vec_t * y)
+{        
+   for (int j=0; j<x->len; ++j)
+       x->data[j] += y->data[j];
+}
+
+
 
 
