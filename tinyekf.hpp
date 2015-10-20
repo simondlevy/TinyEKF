@@ -178,7 +178,12 @@ protected:
        this->P[i][j] = value;
    }
   
-private:
+   void setR(int i, int j, double value)
+   {
+       this->R[i][j] = value;
+   }
+
+ private:
     
     int n;          // state values
     int m;          // measurement values

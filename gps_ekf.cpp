@@ -62,7 +62,8 @@ class GPS_EKF : public TinyEKF {
             for (int i=0; i<8; ++i)
                 this->setP(i, i, P0);
             
-            eye(this->R, 4, R0);
+            for (int i=0; i<4; ++i)
+                this->setR(i, i, R0);
         }
         
         void setPseudorange(double ** SV)
