@@ -81,34 +81,34 @@ protected:
     {
         this->X = newvec(n);
 
-        this->P = newnewmat(n, n);
-        this->Q = newnewmat(n, n);
-        this->R = newnewmat(m, m);
-        this->G = newnewmat(n, m);
+        this->P = newmat(n, n);
+        this->Q = newmat(n, n);
+        this->R = newmat(m, m);
+        this->G = newmat(n, m);
         
-        this->H   = newnewmat(m, n);
-        this->fy  = newnewmat(n, n);
+        this->H   = newmat(m, n);
+        this->fy  = newmat(n, n);
 
         //this->X   = newvec(n);
         this->Xp  = newvec(n);
         this->gXp = newvec(m);
 
-        this->Pp   = newnewmat(n, n);
+        this->Pp   = newmat(n, n);
         
-        this->Ht   = newnewmat(n, m);
-        this->fyt  = newnewmat(n, n);
+        this->Ht   = newmat(n, m);
+        this->fyt  = newmat(n, n);
 
-        this->eye_n_n = newnewmat(n, n);
+        this->eye_n_n = newmat(n, n);
         eye(this->eye_n_n, 1);
 
         this->tmp_m    = newvec(m);
         this->tmp_n    = newvec(n);
-        this->tmp_m_m  = newnewmat(m, m);
-        this->tmp2_m_m  = newnewmat(m, m);
-        this->tmp_m_n  = newnewmat(m, n);
-        this->tmp_n_m  = newnewmat(n, m);
-        this->tmp2_n_m = newnewmat(n, m);
-        this->tmp_n_n  = newnewmat(n, n);
+        this->tmp_m_m  = newmat(m, m);
+        this->tmp2_m_m  = newmat(m, m);
+        this->tmp_m_n  = newmat(m, n);
+        this->tmp_n_m  = newmat(n, m);
+        this->tmp2_n_m = newmat(n, m);
+        this->tmp_n_n  = newmat(n, n);
      }
     
    ~TinyEKF()
@@ -200,9 +200,11 @@ public:
     void update(double * Z)
     {        
         // 1, 2
+        zeros(this->fy);
         this->f(this->X->data, this->Xp->data, this->fy->data);
 
         // 3
+        zeros(this->H);
         this->g(this->Xp->data, this->gXp->data, this->H->data);     
 
         // 4

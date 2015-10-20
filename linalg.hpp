@@ -68,115 +68,6 @@ static void invert(double ** A, double ** a, double * p, int n)
     }
 }
 
-static double ** newmat(int m, int n)
-{
-    double ** a = new double * [m];
-
-    for (int i=0; i<m; ++i)
-        a[i] = new double [n];
-
-    return a;
-}
-
-static double deletemat(double ** a, int m)
-{
-    for (int i=0; i<m; ++i)
-        delete a[i];
-}
-
-static void zeros(double * x, int n)
-{
-    bzero(x, n*sizeof(double));
-}
-
-static void zeros(double ** a, int m, int n)
-{
-    for (int i=0; i<m; ++i)
-        zeros(a[i], n);
-}
-
-
-static void eye(double ** a, int n, double s)
-{
-    zeros(a, n, n);
-
-    for (int k=0; k<n; ++k)
-        a[k][k] = s;
-}
-
-static void dump(double * x, int n, const char * fmt)
-{
-    char f[100];
-    sprintf(f, "%s ", fmt);
-    for (int j=0; j<n; ++j)
-        printf(f, x[j]);
-    printf("\n");
-}
-
-static void dump(double ** a, int m, int n, const char * fmt)
-{
-    for (int i=0; i<m; ++i) {
-        dump(a[i], n, fmt);
-    }
-}
-
-// C <- A * B
-static void mul(double ** a, double ** b, double ** c, int m, int n, int p)
-{
-    for (int i=0; i<m; ++i)
-        for (int j=0; j<n; ++j) {
-            c[i][j] = 0;
-            for (int l=0; l<p; ++l)
-                c[i][j] += a[i][l] * b[l][j];
-        }
-}
-
-static void mul(double ** a, double * x, double * y, int rows, int cols)
-{
-    for (int i=0; i<rows; ++i) {
-        y[i] = 0;
-        for (int j=0; j<cols; ++j)
-            y[i] += x[j] * a[i][j];
-    }
-}
-
-static void transpose(double ** a, double ** at, int rows, int cols)
-{
-    for (int i=0; i<rows; ++i)
-        for (int j=0; j<cols; ++j) 
-            at[j][i] = a[i][j];
-}
-
-// X <- X + Y
-static void add(double * x, double * y, int n)
-{        
-   for (int j=0; j<n; ++j)
-       x[j] += y[j];
-}
-
-// A <- A + B
-static void add(double ** a, double ** b, int rows, int cols) 
-{        
-    for (int i=0; i<rows; ++i)
-        for (int j=0; j<cols; ++j)
-            a[i][j] += b[i][j];
-}
-
-// C <- A - B
-static void sub(double * a, double * b, double * c, int n)
-{
-    for (int j=0; j<n; ++j)
-        c[j] = a[j] - b[j];
-}
-
-// C <- A - B
-static void sub(double ** a, double ** b, double ** c, int m, int n)
-{
-    for (int i=0; i<m; ++i)
-        for (int j=0; j<n; ++j)
-            c[i][j] = a[i][j] -  b[i][j];
-}
-
 typedef struct {
 
     double * data;
@@ -205,7 +96,7 @@ static vec_t * newvec(int n)
     return vec;
 }
 
-static mat_t * newnewmat(int m, int n)
+static mat_t * newmat(int m, int n)
 {
     mat_t * mat = new mat_t;
 

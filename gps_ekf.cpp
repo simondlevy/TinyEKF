@@ -28,8 +28,6 @@ class GPS_EKF : public TinyEKF {
             // positioning interval
             this->T = 1; 
 
-            this->SV = newmat(4, 3);
-            
             // position
             this->setX(0, -2.168816181271560e+006);
             this->setX(2,  4.386648549091666e+006);
@@ -66,24 +64,22 @@ class GPS_EKF : public TinyEKF {
                 this->setR(i, i, R0);
         }
         
-        void setPseudorange(double ** SV)
+        void setPseudorange(double  SV[4][3])
         {
-            memcpy(this->SV, SV, 12*sizeof(double));
+            for (int i=0; i<4; ++i)
+                for (int j=0; j<3; ++j)
+                    this->SV[i][j] = SV[i][j];
         }
                 
     protected:
     
         void f(double * X, double * Xp, double ** fy)
         {
-            zeros(Xp, 8);
-            
             for (int j=0; j<8; j+=2) {
                 Xp[j] = X[j] + this->T * X[j+1];
                 Xp[j+1] = X[j+1];
             }
 
-            zeros(fy, 8, 8);
-            
             for (int j=0; j<8; ++j)
                 fy[j][j] = 1;
                 
@@ -106,7 +102,6 @@ class GPS_EKF : public TinyEKF {
                 gXp[i] = pow(gXp[i], 0.5) + Xp[6];
             }
             
-            zeros(H, 4, 8);
             for (int i=0; i<4; ++i) {
                 for (int j=0; j<3; ++j) {
                     H[i][j*2] = dx[i*3+j] / gXp[i];
@@ -126,9 +121,9 @@ class GPS_EKF : public TinyEKF {
             this->setQ(off+1, off,   a[2]);
             this->setQ(off+1, off+1, a[3]);
         }
-        
-        double    T;    // positioning interval
-        double ** SV;   // pseudorange for g function
+
+        double  T;          // positioning interval
+        double  SV[4][3];   // pseudorange for g function
 };
 
 static char * readline(char * line, FILE * fp)
@@ -136,7 +131,7 @@ static char * readline(char * line, FILE * fp)
     return fgets(line, 1000, fp);
 }
 
-static bool readdata(FILE * fp, double ** SV_Pos, double * SV_Rho)
+static bool readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
 {
     char line[1000];
     
@@ -178,7 +173,7 @@ int main(int argc, char ** argv)
     skipline(fp);
     
     // Make a place to store the data from the file
-    double ** SV_Pos = newmat(4,3);
+    double SV_Pos[4][3];
     double SV_Rho[4];
     
     // Loop till no more data
