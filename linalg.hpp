@@ -41,7 +41,7 @@ static void choldcsl(double ** A, double ** a, double * p, int n)
 }
 
 
-static void invert(double ** A, double ** a, double * p, int n) 
+static void cholsl(double ** A, double ** a, double * p, int n) 
 {
     int i,j,k;
     choldcsl(A,a,p,n);
@@ -210,5 +210,5 @@ static void negate(mat_t * a)
 
 static void invert(mat_t * a, mat_t * at)
 {
-    invert(a->data, at->data, a->tmp, a->rows);
+    cholsl(a->data, at->data, a->tmp, a->rows);
 }
