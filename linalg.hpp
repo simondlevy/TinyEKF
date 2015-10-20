@@ -88,6 +88,9 @@ static mat_t * newnewmat(int m, int n)
 
     mat->data = new double * [m];
 
+    for (int i=0; i<m; ++i)
+        mat->data[i] = new double [n];
+
     mat->rows = m;
     mat->cols = n;
 
