@@ -125,11 +125,6 @@ static void deletemat(mat_t * mat)
     delete mat;
 }
 
-static void zeros(vec_t * vec)
-{
-    bzero(vec->data, vec->len*sizeof(double));
-}
-
 static void zeros(mat_t * mat)
 {
     for (int i=0; i<mat->rows; ++i)
@@ -191,13 +186,6 @@ static void transpose(mat_t * a, mat_t * at)
             at->data[j][i] = a->data[i][j];
 }
 
-// X <- X + Y
-static void add(vec_t * x, vec_t * y)
-{        
-   for (int j=0; j<x->len; ++j)
-       x->data[j] += y->data[j];
-}
-
 // A <- A + B
 static void add(mat_t * a, mat_t * b)
 {        
@@ -218,13 +206,6 @@ static void negate(mat_t * a)
     for (int i=0; i<a->rows; ++i)
         for (int j=0; j<a->cols; ++j)
             a->data[i][j] = -a->data[i][j];
-}
-
-static void sub(mat_t * a, mat_t * b, mat_t * c)
-{
-    for (int i=0; i<a->rows; ++i)
-        for (int j=0; j<a->cols; ++j)
-            c->data[i][j] = a->data[i][j] -  b->data[i][j];
 }
 
 static void invert(mat_t * a, mat_t * at)
