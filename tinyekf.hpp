@@ -205,7 +205,8 @@ public:
         // 7
         mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
         sub(this->tmp_n_n, this->eye_n_n, this->tmp_n_n, this->n, this->n);
-        dump(this->tmp_n_n, this->n, this->n, "%+15.15f");
+        mul(this->tmp_n_n, this->Pp, this->P, this->n, this->n, this->n);
+        dump(this->P, this->n, this->n, "%+20.15f");
         exit(0);
      }
 };

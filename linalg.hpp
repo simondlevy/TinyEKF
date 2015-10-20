@@ -131,6 +131,7 @@ static double copy(double ** dst, double ** src, int m, int n)
         copy(dst[i], src[i], n);
 }
 
+// C <- A * B
 static void mul(double ** a, double ** b, double ** c, int m, int n, int p)
 {
     for (int i=0; i<m; ++i)
