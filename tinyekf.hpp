@@ -104,6 +104,7 @@ protected:
         this->Ht   = newmat(n, m);
         this->fyt  = newmat(n, n);
 
+        this->tmp_m    = new double [m];
         this->tmp_n    = new double [n];
         this->tmp_m_m  = newmat(m, m);
         this->tmp_m_n  = newmat(m, n);
@@ -118,24 +119,25 @@ protected:
         deletemat(this->Q, this->n);
         deletemat(this->R, this->m);
         deletemat(this->G, this->n);
-        
         deletemat(this->H, this->m);
+
         deletemat(this->fy, n);
+        deletemat(this->fyt, this->n);        
         
         delete this->X;
         delete this->Xp;
         delete this->gXp;
-        
-        deletemat(this->tmp_n_n, this->n);
-        deletemat(this->fyt, this->n);        
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
+        
+        deletemat(this->tmp_n_n, this->n);
         deletemat(this->tmp_m_n,  this->m);
 
         deletemat(this->tmp_n_m, this->n);        
         deletemat(this->tmp2_n_m,  this->m);
         deletemat(this->tmp_m_m,  this->m);
         delete this->tmp_n;
+        delete this->tmp_m;
     }
   
 private:
@@ -150,14 +152,15 @@ private:
     double ** H;    // Jacobean of measurement model
     double *  gXp;
     
-    // temporary storage
     double ** Ht;
-    double ** tmp_n_m;
-    double ** tmp_n_n;
     double ** fyt;
     double ** Pp;
-    double ** tmp_m_n;
 
+    // temporary storage
+    double ** tmp_n_m;
+    double ** tmp_n_n;
+    double ** tmp_m_n;
+    double  * tmp_m;
     double  * tmp_n;
     double ** tmp2_n_m;
     double ** tmp_m_m;
@@ -168,10 +171,10 @@ public:
     {        
         // 1, 2
         this->f(this->Xp, this->fy);           
-        
+
         // 3
         this->g(this->Xp, this->gXp, this->H);     
-        
+
         // 4
         matmul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
         transpose(this->fy, this->fyt, this->n, this->n);
@@ -187,9 +190,8 @@ public:
         invert(this->tmp2_n_m, this->tmp_m_m, this->tmp_n, this->m);
         matmul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
-        dump(this->G, this->n, this->m); exit(0);
-
         // 6
+        sub(this->tmp_m, Z, this->gXp, this->m);
         //Xo = Xp + K * (Z - gXp);
     }
 };

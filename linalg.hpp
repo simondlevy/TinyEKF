@@ -1,4 +1,3 @@
-
 static void choldc1(double ** a, double * p, int n) {
     int i,j,k;
     double sum;
@@ -99,17 +98,19 @@ static void eye(double ** a, int n, double s)
         a[k][k] = s;
 }
 
-static void dump(double * x, int n)
+static void dump(double * x, int n, const char * fmt)
 {
+    char f[100];
+    sprintf(f, "%s ", fmt);
     for (int j=0; j<n; ++j)
-        printf("%10.6f ", x[j]);
+        printf(f, x[j]);
     printf("\n");
 }
 
-static void dump(double ** a, int m, int n)
+static void dump(double ** a, int m, int n, const char * fmt)
 {
     for (int i=0; i<m; ++i) {
-        dump(a[i], n);
+        dump(a[i], n, fmt);
     }
 }
 
@@ -155,3 +156,9 @@ static void add(double ** a, double ** b, int rows, int cols)
             a[i][j] += b[i][j];
 }
 
+// C = A - B
+static void sub(double * c, double * a, double * b, int n)
+{
+    for (int j=0; j<n; ++j)
+        c[j] = a[j] - b[j];
+}

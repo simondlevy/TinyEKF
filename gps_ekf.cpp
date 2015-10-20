@@ -99,10 +99,14 @@ class GPS_EKF : public TinyEKF {
                 for (int j=0; j<3; ++j) {
                     double d = this->X[j*2] - this->SV[i][j];
                     dx[i*3+j] = d;
+                    printf("%+15.15e ", dx[i*3+j]);
                     gXp[i] += d*d;
                 }
-                gXp[i] = sqrt(gXp[i]) + this->X[6];
+                printf("\n");
+                gXp[i] = pow(gXp[i], 0.5) + this->X[6];
             }
+
+            exit(0);
             
             zeros(H, 4, 8);
             for (int i=0; i<4; ++i) {
@@ -187,7 +191,7 @@ int main(int argc, char ** argv)
             break;
                 
         ekf.setPseudorange(SV_Pos);
-        
+
         ekf.update(SV_Rho);
    }
 
