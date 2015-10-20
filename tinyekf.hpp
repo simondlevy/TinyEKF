@@ -87,8 +87,8 @@ protected:
         this->R = newmat(m, m);
         this->G = newmat(n, m);
         
-        this->H   = newmat(m, n);
-        this->fy  = newmat(n, n);
+        this->H  = newmat(m, n);
+        this->fy = newmat(n, n);
 
         this->X   = new double [n];
         this->Xp  = new double [n];
@@ -266,8 +266,7 @@ public:
         this->g(this->Xp, this->gXp, this->H);     
         this->g(this->_Xp->data, this->_gXp->data, this->_H->data);     
 
-        dump(this->gXp, this->m, "%f");
-        dump(this->_gXp, "%f");
+        dump(this->_H, "%+10.10f");
         exit(0);
 
         // 4
