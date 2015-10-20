@@ -104,6 +104,9 @@ protected:
         this->Ht   = newmat(n, m);
         this->fyt  = newmat(n, n);
 
+        this->eye_n_n = newmat(n, n);
+        eye(this->eye_n_n, n, 1);
+
         this->tmp_m    = new double [m];
         this->tmp_n    = new double [n];
         this->tmp_m_m  = newmat(m, m);
@@ -129,6 +132,8 @@ protected:
         delete this->gXp;
         deletemat(this->Pp,  this->n);
         deletemat(this->Ht, this->n);
+
+        deletemat(this->eye_n_n, this->n);
         
         deletemat(this->tmp_n_n, this->n);
         deletemat(this->tmp_m_n,  this->m);
@@ -156,6 +161,8 @@ private:
     double ** fyt;
     double ** Pp;
 
+    double ** eye_n_n;
+
     // temporary storage
     double ** tmp_n_m;
     double ** tmp_n_n;
@@ -166,7 +173,7 @@ private:
     double ** tmp_m_m;
 
 public:
-   
+
     void update(double * Z)
     {        
         // 1, 2
@@ -197,6 +204,7 @@ public:
 
         // 7
         mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
+        sub(this->tmp_n_n, this->eye_n_n, this->tmp_n_n, this->n, this->n);
         dump(this->tmp_n_n, this->n, this->n, "%+15.15f");
         exit(0);
      }

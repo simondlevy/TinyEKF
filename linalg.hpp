@@ -172,9 +172,16 @@ static void add(double ** a, double ** b, int rows, int cols)
             a[i][j] += b[i][j];
 }
 
-// C = A - B
+// C <- A - B
 static void sub(double * c, double * a, double * b, int n)
 {
     for (int j=0; j<n; ++j)
         c[j] = a[j] - b[j];
+}
+
+static void sub(double ** c, double ** a, double ** b, int m, int n)
+{
+    for (int i=0; i<m; ++i)
+        for (int j=0; j<n; ++j)
+            c[i][j] = a[i][j] -  b[i][j];
 }
