@@ -265,8 +265,6 @@ public:
         this->f(this->X, this->Xp, this->fy);           
         this->f(this->_X->data, this->_Xp->data, this->_fy->data);
 
-        dump(this->_P, "%10.4f"); exit(0);
-
         // 3
         this->g(this->Xp, this->gXp, this->H);     
         this->g(this->_Xp->data, this->_gXp->data, this->_H->data);     
@@ -275,6 +273,8 @@ public:
         mul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
         mul(this->_fy, this->_P, this->_tmp_n_n);
 
+        dump(this->tmp_n_n, this->n, this->n, "%10.4f"); 
+        printf("\n");
         dump(this->_tmp_n_n, "%10.4f"); exit(0);
         
         transpose(this->fy, this->fyt, this->n, this->n);
