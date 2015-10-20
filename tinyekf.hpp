@@ -172,6 +172,11 @@ protected:
         delete this->tmp_n;
         delete this->tmp_m;
     }
+
+   void setP(int i, int j, double value)
+   {
+       this->P[i][j] = value;
+   }
   
 private:
     

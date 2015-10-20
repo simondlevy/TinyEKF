@@ -58,8 +58,10 @@ class GPS_EKF : public TinyEKF {
             blkfill(this->Q, Qxyz, 1);
             blkfill(this->Q, Qxyz, 2);
             blkfill(this->Q, Qb,   3);
+
+            for (int i=0; i<8; ++i)
+                this->setP(i, i, P0);
             
-            eye(this->P, 8, P0);
             eye(this->R, 4, R0);
         }
         
@@ -79,7 +81,6 @@ class GPS_EKF : public TinyEKF {
                 Xp[j+1] = this->X[j+1];
             }
 
-            
             zeros(fy, 8, 8);
             
             for (int j=0; j<8; ++j)
