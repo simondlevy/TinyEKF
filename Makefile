@@ -4,7 +4,7 @@ gps: gps_ekf
 	./gps_ekf
 
 gps_ekf: gps_ekf.cpp tinyekf.hpp linalg.hpp
-	g++ -o gps_ekf gps_ekf.cpp
+	g++ -Wall -o gps_ekf gps_ekf.cpp
 
 clean:
 	rm -f gps_ekf *~
