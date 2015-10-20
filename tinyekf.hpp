@@ -170,10 +170,10 @@ protected:
     int n;          // state values
     int m;          // measurement values
 
-    vec_t * X;
-    mat_t * P;
-    mat_t * Q;
-    mat_t * R;
+    vec_t * X;      // state
+    mat_t * P;      // prediction error covariance
+    mat_t * Q;      // process noise covariance
+    mat_t * R;      // measurement error covariance
 
     mat_t  * G;    // Kalman gain; a.k.a. K
     
