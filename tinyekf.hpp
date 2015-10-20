@@ -73,9 +73,7 @@ class TinyEKF {
 
 protected:
 
-    double *  X;    // state
-   
-    virtual void f(double * Xp, double ** fy) = 0;
+    virtual void f(double * X, double * Xp, double ** fy) = 0;
     
     virtual void g(double * Xp, double * gXp, double ** H) = 0;    
 
@@ -195,6 +193,8 @@ protected:
     int n;          // state values
     int m;          // measurement values
 
+    double *  X;    // state
+   
     double ** P;    // covariance of prediction
     double ** Q;    // covariance of process noise
     double ** R;    // covariance of measurement noise
@@ -248,7 +248,7 @@ public:
     void update(double * Z)
     {        
         // 1, 2
-        this->f(this->Xp, this->fy);           
+        this->f(this->X, this->Xp, this->fy);           
 
         // 3
         this->g(this->Xp, this->gXp, this->H);     
