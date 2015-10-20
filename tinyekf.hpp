@@ -110,9 +110,10 @@ protected:
         this->tmp2_n_m = newmat(n, m);
         this->tmp_n_n  = newmat(n, n);
 
-        //this->_P = newnewmat(n, n);
-        //this->_Q = newnewmat(n, n);
-        //this->_R = newnewmat(m, m);
+        this->_X = newvec(n);
+        this->_P = newnewmat(n, n);
+        this->_Q = newnewmat(n, n);
+        this->_R = newnewmat(m, m);
         this->_G = newnewmat(n, m);
         
         this->_H   = newnewmat(m, n);
@@ -220,6 +221,11 @@ protected:
     double  * tmp_n;
     double ** tmp2_n_m;
     double ** tmp_m_m;
+
+    vec_t * _X;
+    mat_t * _P;
+    mat_t * _Q;
+    mat_t * _R;
 
     mat_t  * _G;    // Kalman gain; a.k.a. K
     
