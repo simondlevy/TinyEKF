@@ -4,9 +4,6 @@
  * Based on Extended_KF.m by Chong You
  * https://sites.google.com/site/chongyou1987/
  *
- * Syntax:
- * [Xo,Po] = Extended_KF(f,g,Q,R,Z,Xi,Pi)
- *
  * State Equation:
  * X(n+1) = f(X(n)) + w(n)
  * where the state X has the dimension N-by-1

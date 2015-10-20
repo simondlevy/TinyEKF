@@ -74,33 +74,32 @@ TinyEKF::TinyEKF(int n, int m)
 
 TinyEKF::~TinyEKF()
 {
-    /*
-       deletemat(this->P, this->n);
-       deletemat(this->Q, this->n);
-       deletemat(this->R, this->m);
-       deletemat(this->G, this->n);
-       deletemat(this->H, this->m);
+    contents_t * contents = (contents_t *)this->contents;
 
-       deletemat(this->fy, n);
-       deletemat(this->fyt, this->n);        
+    deletemat(contents->P);
+    deletemat(contents->Q);
+    deletemat(contents->R);
+    deletemat(contents->G);
+    deletemat(contents->H);
 
-       delete this->X;
-       delete this->Xp;
-       delete this->gXp;
-       deletemat(this->Pp,  this->n);
-       deletemat(this->Ht, this->n);
+    deletemat(contents->fy);
+    deletemat(contents->fyt);        
 
-       deletemat(this->eye_n_n, this->n);
+    deletevec(contents->X);
+    deletevec(contents->Xp);
+    deletevec(contents->gXp);
+    deletemat(contents->Pp);
+    deletemat(contents->Ht);
 
-       deletemat(this->tmp_n_n, this->n);
-       deletemat(this->tmp_m_n,  this->m);
+    deletemat(contents->eye_n_n);
 
-       deletemat(this->tmp_n_m, this->n);        
-       deletemat(this->tmp2_n_m,  this->m);
-       deletemat(this->tmp_m_m,  this->m);
-       delete this->tmp_n;
-       delete this->tmp_m;
-     */
+    deletemat(contents->tmp_n_n);
+    deletemat(contents->tmp_m_n);
+
+    deletemat(contents->tmp_n_m);        
+    deletemat(contents->tmp2_n_m);
+    deletemat(contents->tmp_m_m);
+    deletevec(contents->tmp_n);
 }
 
 void TinyEKF::setP(int i, int j, double value)

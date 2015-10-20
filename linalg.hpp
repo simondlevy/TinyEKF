@@ -129,6 +129,14 @@ static void deletemat(mat_t * mat)
     delete mat;
 }
 
+static void deletevec(vec_t * vec)
+{
+    delete vec->data;
+
+    delete vec;
+}
+
+
 static void zeros(mat_t * mat)
 {
     for (int i=0; i<mat->rows; ++i)
