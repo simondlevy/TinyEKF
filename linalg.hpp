@@ -237,3 +237,12 @@ static void zeros(mat_t * mat)
     for (int i=0; i<mat->rows; ++i)
         bzero(mat->data[i], mat->cols*sizeof(double));
 }
+
+static void eye(mat_t * mat, double s)
+{
+    zeros(mat);
+
+    for (int k=0; k<mat->rows; ++k)
+        mat->data[k][k] = s;
+}
+
