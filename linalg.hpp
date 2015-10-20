@@ -157,7 +157,14 @@ static void transpose(double ** a, double ** at, int rows, int cols)
             at[j][i] = a[i][j];
 }
 
-// A = A + B
+// X <- X + Y
+static void add(double * x, double * y, int n)
+{        
+   for (int j=0; j<n; ++j)
+       x[j] += y[j];
+}
+
+// A <- A + B
 static void add(double ** a, double ** b, int rows, int cols) 
 {        
     for (int i=0; i<rows; ++i)

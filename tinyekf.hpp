@@ -194,6 +194,12 @@ public:
         //Xo = Xp + K * (Z - gXp);
         sub(this->tmp_m, Z, this->gXp, this->m);
         mul(this->G, this->tmp_m, this->X, this->n, this->m);
-        dump(this->X, this->n, "%+15.15f\n"); exit(0);
-    }
+        dump(this->X, this->n, "%+15.15f\n");
+        printf("\n");
+        dump(this->Xp, this->n, "%+15.15e\n"); 
+        add(this->X, this->Xp, this->n);
+        printf("\n");
+        dump(this->X, this->n, "%+15.15e\n"); 
+        exit(0);
+     }
 };
