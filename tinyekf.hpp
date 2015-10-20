@@ -297,11 +297,11 @@ public:
         add(this->_tmp2_m_m, this->_R);
         invert(this->tmp2_m_m, this->tmp_m_m, this->tmp_n, this->m);
         invert(this->_tmp2_m_m, this->_tmp_m_m);
-
-        dump(this->tmp_m_m, this->m, this->m, "%f"); printf("\n");
-        dump(this->_tmp_m_m, "%f"); exit(0);
-
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
+        mul(this->_tmp_n_m, this->_tmp_m_m, this->_G);
+
+        dump(this->G, this->n, this->m, "%f"); printf("\n");
+        dump(this->_G, "%f"); exit(0);
 
         // 6
         sub(Z, this->gXp, this->tmp_m, this->m);
