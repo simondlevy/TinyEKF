@@ -266,4 +266,14 @@ static void mul(mat_t * a, mat_t * b, mat_t * c)
         }
 }
 
+static void mul(mat_t * a, vec_t * x, vec_t * y)
+{
+    for (int i=0; i<a->rows; ++i) {
+        y->data[i] = 0;
+        for (int j=0; j<a->cols; ++j)
+            y->data[i] += x->data[j] * a->data[i][j];
+    }
+}
+
+
 
