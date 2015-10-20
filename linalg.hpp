@@ -297,6 +297,12 @@ static void add(mat_t * a, mat_t * b)
             a->data[i][j] += b->data[i][j];
 }
 
+// C <- A - B
 
+static void sub(vec_t * a, vec_t * b, vec_t * c)
+{
+    for (int j=0; j<a->len; ++j)
+        c->data[j] = a->data[j] - b->data[j];
+}
 
 
