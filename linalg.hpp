@@ -330,4 +330,7 @@ static void sub(mat_t * a, mat_t * b, mat_t * c)
             c->data[i][j] = a->data[i][j] -  b->data[i][j];
 }
 
-
+static void invert(mat_t * a, mat_t * at)
+{
+    invert(a->data, at->data, a->tmp, a->rows);
+}
