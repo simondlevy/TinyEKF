@@ -191,15 +191,13 @@ public:
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
         // 6
-        //Xo = Xp + K * (Z - gXp);
         sub(this->tmp_m, Z, this->gXp, this->m);
         mul(this->G, this->tmp_m, this->X, this->n, this->m);
-        dump(this->X, this->n, "%+15.15f\n");
-        printf("\n");
-        dump(this->Xp, this->n, "%+15.15e\n"); 
         add(this->X, this->Xp, this->n);
-        printf("\n");
-        dump(this->X, this->n, "%+15.15e\n"); 
+
+        // 7
+        mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
+        dump(this->tmp_n_n, this->n, this->n, "%+15.15f");
         exit(0);
      }
 };
