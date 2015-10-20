@@ -172,6 +172,28 @@ private:
     double ** tmp2_n_m;
     double ** tmp_m_m;
 
+    mat_t  * _G;    // Kalman gain; a.k.a. K
+    
+    vec_t  * _Xp;   // output of state-transition function
+    mat_t  * _fy;   // Jacobean of process model
+    mat_t  * _H;    // Jacobean of measurement model
+    vec_t  * _gXp;
+    
+    mat_t  * _Ht;
+    mat_t  * _fyt;
+    mat_t  * _Pp;
+
+    mat_t  * _eye_n_n;
+
+    // temporary storage
+    mat_t  * _tmp_n_m;
+    mat_t  * _tmp_n_n;
+    mat_t  * _tmp_m_n;
+    vec_t  * _tmp_m;
+    vec_t  * _tmp_n;
+    mat_t  * _tmp2_n_m;
+    mat_t  * _tmp_m_m;
+
 public:
 
     void update(double * Z)
