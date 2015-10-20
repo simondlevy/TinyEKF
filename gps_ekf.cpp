@@ -99,11 +99,9 @@ class GPS_EKF : public TinyEKF {
                 for (int j=0; j<3; ++j) {
                     double d = this->X[j*2] - this->SV[i][j];
                     dx[i*3+j] = d;
-                    printf("%+15.15e ", d);
                     gXp[i] += d*d;
                 }
-                printf("\n");
-                gXp[i] = pow(gXp[i], 0.5) + this->X[6];
+                gXp[i] = pow(gXp[i], 0.5) + Xp[6];
             }
 
             dump(gXp, 4, "%15.15e\n");
