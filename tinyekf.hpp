@@ -306,11 +306,10 @@ public:
         sub(this->_tmp_m, this->_gXp);
         mul(this->G, this->tmp_m, this->X, this->n, this->m);
         mul(this->_G, this->_tmp_m, this->_X);
-
-        dump(this->X, this->n, "%f"); printf("\n");
-        dump(this->_X, "%f"); exit(0);
-
         add(this->X, this->Xp, this->n);
+
+        dump(this->Xp, this->n, "%f"); printf("\n");
+        dump(this->_Xp, "%f"); exit(0);
 
         // 7
         mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
