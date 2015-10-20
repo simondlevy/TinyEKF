@@ -97,6 +97,11 @@ static mat_t * newnewmat(int m, int n)
     return mat;
 }
 
+static void deletemat(mat_t * mat)
+{
+    delete mat;
+}
+
 static double ** newmat(int m, int n)
 {
     double ** a = new double * [m];
@@ -123,7 +128,6 @@ static void zeros(double ** a, int m, int n)
     for (int i=0; i<m; ++i)
         zeros(a[i], n);
 }
-
 
 static void eye(double ** a, int n, double s)
 {
