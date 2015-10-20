@@ -79,9 +79,6 @@ protected:
 
     TinyEKF(int n, int m)
     {
-        this->n = n;
-        this->m = m;
-        
         this->X = newvec(n);
 
         this->P = newnewmat(n, n);
