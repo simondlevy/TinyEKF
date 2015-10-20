@@ -174,13 +174,14 @@ static void add(double ** a, double ** b, int rows, int cols)
 }
 
 // C <- A - B
-static void sub(double * c, double * a, double * b, int n)
+
+static void sub(double * a, double * b, double * c, int n)
 {
     for (int j=0; j<n; ++j)
         c[j] = a[j] - b[j];
 }
 
-static void sub(double ** c, double ** a, double ** b, int m, int n)
+static void sub(double ** a, double ** b, double ** c, int m, int n)
 {
     for (int i=0; i<m; ++i)
         for (int j=0; j<n; ++j)

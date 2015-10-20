@@ -198,13 +198,13 @@ public:
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
         // 6
-        sub(this->tmp_m, Z, this->gXp, this->m);
+        sub(Z, this->gXp, this->tmp_m, this->m);
         mul(this->G, this->tmp_m, this->X, this->n, this->m);
         add(this->X, this->Xp, this->n);
 
         // 7
         mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
-        sub(this->tmp_n_n, this->eye_n_n, this->tmp_n_n, this->n, this->n);
+        sub(this->eye_n_n, this->tmp_n_n, this->tmp_n_n, this->n, this->n);
         mul(this->tmp_n_n, this->Pp, this->P, this->n, this->n, this->n);
         dump(this->P, this->n, this->n, "%+20.15f");
         exit(0);
