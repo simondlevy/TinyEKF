@@ -103,9 +103,6 @@ class GPS_EKF : public TinyEKF {
                 }
                 gXp[i] = pow(gXp[i], 0.5) + Xp[6];
             }
-
-            dump(gXp, 4, "%15.15e\n");
-            exit(0);
             
             zeros(H, 4, 8);
             for (int i=0; i<4; ++i) {

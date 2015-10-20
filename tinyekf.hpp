@@ -191,7 +191,8 @@ public:
         matmul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
         // 6
-        sub(this->tmp_m, Z, this->gXp, this->m);
         //Xo = Xp + K * (Z - gXp);
+        sub(this->tmp_m, Z, this->gXp, this->m);
+        dump(this->tmp_m, this->m, "%15.15f\n"); exit(0);
     }
 };
