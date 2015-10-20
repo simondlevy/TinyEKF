@@ -74,7 +74,6 @@ class TinyEKF {
 protected:
 
     double *  X;    // state
-    double ** Q;    // covariance of process noise
    
     virtual void f(double * Xp, double ** fy) = 0;
     
@@ -187,11 +186,12 @@ protected:
    }
 
  private:
-    
+
     int n;          // state values
     int m;          // measurement values
 
     double ** P;    // covariance of prediction
+    double ** Q;    // covariance of process noise
     double ** R;    // covariance of measurement noise
     
     double ** G;    // Kalman gain; a.k.a. K
