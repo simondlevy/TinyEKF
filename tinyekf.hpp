@@ -262,12 +262,13 @@ public:
         this->f(this->X, this->Xp, this->fy);           
         this->f(this->_X->data, this->_Xp->data, this->_fy->data);
 
-        dump(this->_fy, "%f");
-        printf("\n");
-        exit(0);
-
         // 3
         this->g(this->Xp, this->gXp, this->H);     
+        this->g(this->_Xp->data, this->_gXp->data, this->_H->data);     
+
+        dump(this->gXp, this->m, "%f");
+        dump(this->_gXp, "%f");
+        exit(0);
 
         // 4
         mul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
