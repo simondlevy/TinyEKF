@@ -89,7 +89,6 @@ static void zeros(double * x, int n)
     bzero(x, n*sizeof(double));
 }
 
-
 static void zeros(double ** a, int m, int n)
 {
     for (int i=0; i<m; ++i)
@@ -231,4 +230,10 @@ static void deletemat(mat_t * mat)
 static void zeros(vec_t * vec)
 {
     bzero(vec->data, vec->len*sizeof(double));
+}
+
+static void zeros(mat_t * mat)
+{
+    for (int i=0; i<mat->rows; ++i)
+        bzero(mat->data[i], mat->cols*sizeof(double));
 }
