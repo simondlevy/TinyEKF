@@ -105,6 +105,8 @@ protected:
         this->tmp_m    = new double [m];
         this->tmp_n    = new double [n];
         this->tmp_m_m  = newmat(m, m);
+        this->tmp2_m_m  = newmat(m, m);
+        this->tmp2_m_m  = newmat(m, m);
         this->tmp_m_n  = newmat(m, n);
         this->tmp_n_m  = newmat(n, m);
         this->tmp2_n_m = newmat(n, m);
@@ -229,6 +231,7 @@ protected:
     double  * tmp_n;
     double ** tmp2_n_m;
     double ** tmp_m_m;
+    double ** tmp2_m_m;
 
     vec_t * _X;
     mat_t * _P;
@@ -286,12 +289,9 @@ public:
         mul(this->_Pp, this->_Ht, this->_tmp_n_m);
         mul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
         mul(this->_H, this->_Pp, this->_tmp_m_n);
-        mul(this->tmp_m_n, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
-        mul(this->_tmp_m_n, this->_Ht, this->_tmp2_n_m);
-        dump(this->tmp2_n_m, this->n, this->m, "%f"); printf("\n");
-        dump(this->_tmp2_n_m, "%f");  
-        add(this->tmp2_n_m, this->R, this->m, this->m);
-        invert(this->tmp2_n_m, this->tmp_m_m, this->tmp_n, this->m);
+        mul(this->tmp_m_n, this->Ht, this->tmp2_m_m, this->m, this->m, this->n);
+        add(this->tmp2_m_m, this->R, this->m, this->m);
+        invert(this->tmp2_m_m, this->tmp_m_m, this->tmp_n, this->m);
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
 
         // 6
