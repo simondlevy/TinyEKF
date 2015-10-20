@@ -163,13 +163,13 @@ static void add(double ** a, double ** b, int rows, int cols)
 }
 
 // C <- A - B
-
 static void sub(double * a, double * b, double * c, int n)
 {
     for (int j=0; j<n; ++j)
         c[j] = a[j] - b[j];
 }
 
+// C <- A - B
 static void sub(double ** a, double ** b, double ** c, int m, int n)
 {
     for (int i=0; i<m; ++i)
@@ -315,12 +315,11 @@ static void add(mat_t * a, mat_t * b)
             a->data[i][j] += b->data[i][j];
 }
 
-// C <- A - B
-
-static void sub(vec_t * a, vec_t * b, vec_t * c)
+// A <- A - B
+static void sub(vec_t * a, vec_t * b)
 {
     for (int j=0; j<a->len; ++j)
-        c->data[j] = a->data[j] - b->data[j];
+        a->data[j] -= b->data[j];
 }
 
 static void sub(mat_t * a, mat_t * b, mat_t * c)

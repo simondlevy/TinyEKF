@@ -300,11 +300,14 @@ public:
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
         mul(this->_tmp_n_m, this->_tmp_m_m, this->_G);
 
-        dump(this->G, this->n, this->m, "%f"); printf("\n");
-        dump(this->_G, "%f"); exit(0);
-
         // 6
         sub(Z, this->gXp, this->tmp_m, this->m);
+        this->_tmp_m->data = Z;
+        sub(this->_tmp_m, this->_gXp);
+
+        dump(this->tmp_m, this->m, "%f"); printf("\n");
+        dump(this->_tmp_m, "%f"); exit(0);
+
         mul(this->G, this->tmp_m, this->X, this->n, this->m);
         add(this->X, this->Xp, this->n);
 
