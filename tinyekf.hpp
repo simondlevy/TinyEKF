@@ -82,39 +82,6 @@ protected:
         this->n = n;
         this->m = m;
         
-        this->P = newmat(n, n);
-        this->Q = newmat(n, n);
-        this->R = newmat(m, m);
-        this->G = newmat(n, m);
-        
-        this->H  = newmat(m, n);
-        this->fy = newmat(n, n);
-
-        this->X   = new double [n];
-        this->Xp  = new double [n];
-        this->gXp = new double[m];
-
-        this->Pp   = newmat(n, n);
-        
-        this->Ht   = newmat(n, m);
-        this->fyt  = newmat(n, n);
-
-        this->eye_n_n = newmat(n, n);
-        eye(this->eye_n_n, n, 1);
-
-        this->tmp_m    = new double [m];
-        this->tmp_n    = new double [n];
-        this->tmp_m_m  = newmat(m, m);
-        this->tmp2_m_m  = newmat(m, m);
-        this->tmp2_m_m  = newmat(m, m);
-        this->tmp_m_n  = newmat(m, n);
-        this->tmp_n_m  = newmat(n, m);
-        this->tmp2_n_m = newmat(n, m);
-        this->tmp_n_n  = newmat(n, n);
-
-
-        // ----------------------------------
-
         this->_X = newvec(n);
 
         this->_P = newnewmat(n, n);
@@ -149,6 +116,7 @@ protected:
     
    ~TinyEKF()
     {
+        /*
         deletemat(this->P, this->n);
         deletemat(this->Q, this->n);
         deletemat(this->R, this->m);
@@ -174,29 +142,26 @@ protected:
         deletemat(this->tmp_m_m,  this->m);
         delete this->tmp_n;
         delete this->tmp_m;
+        */
     }
 
    void setP(int i, int j, double value)
    {
-       this->P[i][j] = value;
        this->_P->data[i][j] = value;
    }
   
    void setQ(int i, int j, double value)
    {
-       this->Q[i][j] = value;
        this->_Q->data[i][j] = value;
    }
 
    void setR(int i, int j, double value)
    {
-       this->R[i][j] = value;
        this->_R->data[i][j] = value;
    }
 
    void setX(int i, double value)
    {
-       this->X[i] = value;
        this->_X->data[i] = value;
    }
 
@@ -204,35 +169,6 @@ protected:
 
     int n;          // state values
     int m;          // measurement values
-
-    double *  X;    // state
-   
-    double ** P;    // covariance of prediction
-    double ** Q;    // covariance of process noise
-    double ** R;    // covariance of measurement noise
-    
-    double ** G;    // Kalman gain; a.k.a. K
-    
-    double *  Xp;   // output of state-transition function
-    double ** fy;   // Jacobean of process model
-    double ** H;    // Jacobean of measurement model
-    double *  gXp;
-    
-    double ** Ht;
-    double ** fyt;
-    double ** Pp;
-
-    double ** eye_n_n;
-
-    // temporary storage
-    double ** tmp_n_m;
-    double ** tmp_n_n;
-    double ** tmp_m_n;
-    double  * tmp_m;
-    double  * tmp_n;
-    double ** tmp2_n_m;
-    double ** tmp_m_m;
-    double ** tmp2_m_m;
 
     vec_t * _X;
     mat_t * _P;
@@ -267,57 +203,37 @@ public:
     void update(double * Z)
     {        
         // 1, 2
-        this->f(this->X, this->Xp, this->fy);           
         this->f(this->_X->data, this->_Xp->data, this->_fy->data);
 
         // 3
-        this->g(this->Xp, this->gXp, this->H);     
         this->g(this->_Xp->data, this->_gXp->data, this->_H->data);     
 
         // 4
-        mul(this->fy, this->P, this->tmp_n_n, this->n, this->n, this->n);
         mul(this->_fy, this->_P, this->_tmp_n_n);
-        transpose(this->fy, this->fyt, this->n, this->n);
         transpose(this->_fy, this->_fyt);
-        mul(this->tmp_n_n, this->fyt, this->Pp, this->n, this->n, this->n);
         mul(this->_tmp_n_n, this->_fyt, this->_Pp);
-        add(this->Pp, this->Q, this->n, this->n);
         add(this->_Pp, this->_Q);
 
         // 5
-        transpose(this->H, this->Ht, this->m, this->n);
         transpose(this->_H, this->_Ht);
-        mul(this->Pp, this->Ht, this->tmp_n_m, this->n, this->m, this->n);
         mul(this->_Pp, this->_Ht, this->_tmp_n_m);
-        mul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
         mul(this->_H, this->_Pp, this->_tmp_m_n);
-        mul(this->tmp_m_n, this->Ht, this->tmp2_m_m, this->m, this->m, this->n);
         mul(this->_tmp_m_n, this->_Ht, this->_tmp2_m_m);
-        add(this->tmp2_m_m, this->R, this->m, this->m);
         add(this->_tmp2_m_m, this->_R);
-        invert(this->tmp2_m_m, this->tmp_m_m, this->tmp_n, this->m);
         invert(this->_tmp2_m_m, this->_tmp_m_m);
-        mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
         mul(this->_tmp_n_m, this->_tmp_m_m, this->_G);
 
         // 6
-        sub(Z, this->gXp, this->tmp_m, this->m);
         this->_tmp_m->data = Z;
         sub(this->_tmp_m, this->_gXp);
-        mul(this->G, this->tmp_m, this->X, this->n, this->m);
         mul(this->_G, this->_tmp_m, this->_X);
-        add(this->X, this->Xp, this->n);
 
         // 7
-        mul(this->G, this->H, this->tmp_n_n, this->n, this->n, this->m);
         mul(this->_G, this->_H, this->_tmp_n_n);
-        sub(this->eye_n_n, this->tmp_n_n, this->tmp_n_n, this->n, this->n);
         negate(this->_tmp_n_n);
         add(this->_tmp_n_n, this->_eye_n_n);
-        mul(this->tmp_n_n, this->Pp, this->P, this->n, this->n, this->n);
         mul(this->_tmp_n_n, this->_Pp, this->_P);
 
-        dump(this->P, this->n, this->n, "%+10.4f"); printf("\n");
         dump(this->_P, "%+10.4f"); exit(0);
      }
 };
