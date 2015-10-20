@@ -289,7 +289,7 @@ public:
         mul(this->tmp_m_n, this->Ht, this->tmp2_n_m, this->m, this->m, this->n);
         mul(this->_tmp_m_n, this->_Ht, this->_tmp2_n_m);
         dump(this->tmp2_n_m, this->n, this->m, "%f"); printf("\n");
-        dump(this->_tmp2_n_m, "%f");  exit(0);
+        dump(this->_tmp2_n_m, "%f");  
         add(this->tmp2_n_m, this->R, this->m, this->m);
         invert(this->tmp2_n_m, this->tmp_m_m, this->tmp_n, this->m);
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
