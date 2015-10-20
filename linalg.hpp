@@ -261,7 +261,7 @@ static void dump(mat_t * mat, const char * fmt)
     sprintf(f, "%s ", fmt);
      for (int i=0; i<mat->rows; ++i) {
         for (int j=0; j<mat->cols; ++j)
-            printf(fmt, mat->data[i][j]);
+            printf(f, mat->data[i][j]);
         printf("\n");
     }
 }

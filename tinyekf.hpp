@@ -262,8 +262,8 @@ public:
         this->f(this->X, this->Xp, this->fy);           
         this->f(this->_X->data, this->_Xp->data, this->_fy->data);
 
-        dump(this->Xp, this->n, "%f");
-        dump(this->_Xp, "%f");
+        dump(this->_fy, "%f");
+        printf("\n");
         exit(0);
 
         // 3
