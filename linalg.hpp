@@ -131,7 +131,7 @@ static double copy(double ** dst, double ** src, int m, int n)
         copy(dst[i], src[i], n);
 }
 
-static void mul(double ** a, double **b, double **c, int m, int n, int p)
+static void mul(double ** a, double ** b, double ** c, int m, int n, int p)
 {
     for (int i=0; i<m; ++i)
         for (int j=0; j<n; ++j) {
@@ -143,7 +143,9 @@ static void mul(double ** a, double **b, double **c, int m, int n, int p)
 
 static void mul(double ** a, double * x, double * y, int m, int n)
 {
-    zeros(y, m);
+    for (int i=0; i<n; ++i) {
+        y[i] = 0;
+    }
 }
 
 static void transpose(double ** a, double ** at, int rows, int cols)
