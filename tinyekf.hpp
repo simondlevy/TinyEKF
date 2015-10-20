@@ -114,7 +114,35 @@ protected:
         this->tmp_n_m  = newmat(n, m);
         this->tmp2_n_m = newmat(n, m);
         this->tmp_n_n  = newmat(n, n);
-    }
+
+        //this->_P = newnewmat(n, n);
+        //this->_Q = newnewmat(n, n);
+        //this->_R = newnewmat(m, m);
+        this->_G = newnewmat(n, m);
+        
+        this->_H   = newnewmat(m, n);
+        this->_fy  = newnewmat(n, n);
+
+        //this->_X   = newvec(n);
+        this->_Xp  = newvec(n);
+        this->_gXp = newvec(m);
+
+        this->_Pp   = newnewmat(n, n);
+        
+        this->_Ht   = newnewmat(n, m);
+        this->_fyt  = newnewmat(n, n);
+
+        this->_eye_n_n = newnewmat(n, n);
+        eye(this->_eye_n_n, 1);
+
+        this->_tmp_m    = newvec(m);
+        this->_tmp_n    = newvec(n);
+        this->_tmp_m_m  = newnewmat(m, m);
+        this->_tmp_m_n  = newnewmat(m, n);
+        this->_tmp_n_m  = newnewmat(n, m);
+        this->_tmp2_n_m = newnewmat(n, m);
+        this->_tmp_n_n  = newnewmat(n, n);
+     }
     
    ~TinyEKF()
     {

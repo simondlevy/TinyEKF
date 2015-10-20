@@ -191,6 +191,17 @@ typedef struct {
     int cols;
 } mat_t;
 
+static vec_t * newvec(int n)
+{
+    vec_t * vec = new vec_t;
+
+    vec->data = new double [n];
+
+    vec->len = n;
+
+    return vec;
+}
+
 static mat_t * newnewmat(int m, int n)
 {
     mat_t * mat = new mat_t;
