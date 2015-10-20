@@ -140,6 +140,7 @@ protected:
         this->_tmp_m    = newvec(m);
         this->_tmp_n    = newvec(n);
         this->_tmp_m_m  = newnewmat(m, m);
+        this->_tmp2_m_m  = newnewmat(m, m);
         this->_tmp_m_n  = newnewmat(m, n);
         this->_tmp_n_m  = newnewmat(n, m);
         this->_tmp2_n_m = newnewmat(n, m);
@@ -259,6 +260,7 @@ protected:
     vec_t  * _tmp_n;
     mat_t  * _tmp2_n_m;
     mat_t  * _tmp_m_m;
+    mat_t  * _tmp2_m_m;
 
 public:
 
@@ -290,6 +292,8 @@ public:
         mul(this->H, this->Pp, this->tmp_m_n, this->m, this->n, this->n);
         mul(this->_H, this->_Pp, this->_tmp_m_n);
         mul(this->tmp_m_n, this->Ht, this->tmp2_m_m, this->m, this->m, this->n);
+        mul(this->_tmp_m_n, this->_Ht, this->_tmp2_m_m);
+
         add(this->tmp2_m_m, this->R, this->m, this->m);
         invert(this->tmp2_m_m, this->tmp_m_m, this->tmp_n, this->m);
         mul(this->tmp_n_m, this->tmp_m_m, this->G, this->n, this->m, this->m);
