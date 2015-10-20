@@ -314,11 +314,10 @@ public:
         sub(this->eye_n_n, this->tmp_n_n, this->tmp_n_n, this->n, this->n);
         negate(this->_tmp_n_n);
         add(this->_tmp_n_n, this->_eye_n_n);
-
-        dump(this->tmp_n_n, this->n, this->n, "%f"); printf("\n");
-        dump(this->_tmp_n_n, "%f"); exit(0);
-
         mul(this->tmp_n_n, this->Pp, this->P, this->n, this->n, this->n);
-        dump(this->P, this->n, this->n, "%+8.4f  ");
+        mul(this->_tmp_n_n, this->_Pp, this->_P);
+
+        dump(this->P, this->n, this->n, "%+10.4f"); printf("\n");
+        dump(this->_P, "%+10.4f"); exit(0);
      }
 };
