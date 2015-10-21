@@ -1,7 +1,7 @@
 #include<stdlib.h>
 
 #include "tinyekf.hpp"
-#include "linalg.h"
+#include "linalg.hpp"
 #include "tinyekf.h"
 
 TinyEKF::TinyEKF(int n, int m)
@@ -104,30 +104,30 @@ void TinyEKF::update(double * Z)
     this->g(ekf->Xp->data, ekf->gXp->data, ekf->H->data);     
 
     // 4
-    mulmat(ekf->fy, ekf->P, ekf->tmp_n_n);
+    mul(ekf->fy, ekf->P, ekf->tmp_n_n);
     transpose(ekf->fy, ekf->fyt);
-    mulmat(ekf->tmp_n_n, ekf->fyt, ekf->Pp);
+    mul(ekf->tmp_n_n, ekf->fyt, ekf->Pp);
     add(ekf->Pp, ekf->Q);
 
     // 5
     transpose(ekf->H, ekf->Ht);
-    mulmat(ekf->Pp, ekf->Ht, ekf->tmp_n_m);
-    mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n);
-    mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m);
+    mul(ekf->Pp, ekf->Ht, ekf->tmp_n_m);
+    mul(ekf->H, ekf->Pp, ekf->tmp_m_n);
+    mul(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m);
     add(ekf->tmp2_m_m, ekf->R);
     invert(ekf->tmp2_m_m, ekf->tmp_m_m);
-    mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G);
+    mul(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G);
 
     // 6
     ekf->tmp_m->data = Z;
     sub(ekf->tmp_m, ekf->gXp);
-    mulvec(ekf->G, ekf->tmp_m, ekf->X);
+    mul(ekf->G, ekf->tmp_m, ekf->X);
 
     // 7
-    mulmat(ekf->G, ekf->H, ekf->tmp_n_n);
+    mul(ekf->G, ekf->H, ekf->tmp_n_n);
     negate(ekf->tmp_n_n);
     add(ekf->tmp_n_n, ekf->eye_n_n);
-    mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P);
+    mul(ekf->tmp_n_n, ekf->Pp, ekf->P);
 
-    dumpmat(ekf->P, "%+10.4f"); exit(0);
+    dump(ekf->P, "%+10.4f"); exit(0);
 }

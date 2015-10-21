@@ -3,7 +3,7 @@ all: gps_ekf
 gps: gps_ekf
 	./gps_ekf
 
-gps_ekf: gps_ekf.cpp tinyekf.cpp tinyekf.hpp tinyekf.h linalg.hpp
+gps_ekf: gps_ekf.cpp tinyekf.cpp tinyekf.hpp tinyekf.h linalg.h
 	g++ -Wall -o gps_ekf gps_ekf.cpp tinyekf.cpp
 
 clean:
