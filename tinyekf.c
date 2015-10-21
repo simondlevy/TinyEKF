@@ -15,8 +15,8 @@ void ekf_init(ekf_t * ekf, int n, int m)
     ekf->H   = newmat(m, n);
     ekf->fy  = newmat(n, n);
 
-    ekf->Xp  = newvec(n);
-    ekf->gXp = newvec(m);
+    vec_init(&ekf->Xp, n);
+    vec_init(&ekf->gXp, n);
 
     ekf->Pp   = newmat(n, n);
 
@@ -26,8 +26,7 @@ void ekf_init(ekf_t * ekf, int n, int m)
     ekf->eye_n_n = newmat(n, n);
     eye(ekf->eye_n_n, 1);
 
-    ekf->tmp_m    = newvec(m);
-    ekf->tmp_n    = newvec(n);
+    vec_init(&ekf->tmp_m, m);
     ekf->tmp_m_m  = newmat(m, m);
     ekf->tmp2_m_m  = newmat(m, m);
     ekf->tmp_m_n  = newmat(m, n);
@@ -49,8 +48,8 @@ void ekf_delete(ekf_t * ekf)
 
     vec_free(ekf->X);
 
-    deletevec(ekf->Xp);
-    deletevec(ekf->gXp);
+    vec_free(ekf->Xp);
+    vec_free(ekf->gXp);
     deletemat(ekf->Pp);
     deletemat(ekf->Ht);
 
@@ -62,7 +61,7 @@ void ekf_delete(ekf_t * ekf)
     deletemat(ekf->tmp_n_m);        
     deletemat(ekf->tmp2_n_m);
     deletemat(ekf->tmp_m_m);
-    deletevec(ekf->tmp_n);
+    vec_free(ekf->tmp_m);
 }
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value)
@@ -92,11 +91,11 @@ static void ekf_pre_update(
 {
     // 1, 2
     zeros(ekf->fy);
-    f(ekf->X.data, ekf->Xp->data, ekf->fy->data);
+    f(ekf->X.data, ekf->Xp.data, ekf->fy->data);
 
     // 3
     zeros(ekf->H);
-    g(ekf->Xp->data, ekf->gXp->data, ekf->H->data);     
+    g(ekf->Xp.data, ekf->gXp.data, ekf->H->data);     
 }
 
 void ekf_update(
@@ -130,9 +129,9 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G);
 
     // 6
-    ekf->tmp_m->data = Z;
-    sub(ekf->tmp_m, ekf->gXp);
-    mulvec(ekf->G, ekf->tmp_m, &ekf->X);
+    ekf->tmp_m.data = Z;
+    sub(&ekf->tmp_m, &ekf->gXp);
+    mulvec(ekf->G, &ekf->tmp_m, &ekf->X);
 
     // 7
     mulmat(ekf->G, ekf->H, ekf->tmp_n_n);
