@@ -1,14 +1,11 @@
 #include<stdlib.h>
 
-#include "tinyekf.hpp"
-#include "linalg.hpp"
+#include "linalg.h"
 #include "tinyekf.h"
 
-TinyEKF::TinyEKF(int n, int m)
+ekf_t * ekf_init(int m, int n)
 {
-    ekf_t * ekf = new ekf_t;
-
-    this->ekf = ekf;
+    ekf_t * ekf = (ekf_t *)malloc(sizeof(ekf_t));
 
     ekf->X = newvec(n);
 
@@ -39,12 +36,12 @@ TinyEKF::TinyEKF(int n, int m)
     ekf->tmp_n_m  = newmat(n, m);
     ekf->tmp2_n_m = newmat(n, m);
     ekf->tmp_n_n  = newmat(n, n);
+
+    return ekf;
 }
 
-TinyEKF::~TinyEKF()
+void ekf_delete(ekf_t * ekf)
 {
-    ekf_t * ekf = (ekf_t *)this->ekf;
-
     deletemat(ekf->P);
     deletemat(ekf->Q);
     deletemat(ekf->R);
@@ -69,39 +66,43 @@ TinyEKF::~TinyEKF()
     deletemat(ekf->tmp2_n_m);
     deletemat(ekf->tmp_m_m);
     deletevec(ekf->tmp_n);
+
+    free(ekf);
 }
 
-void TinyEKF::setP(int i, int j, double value)
+void ekf_setP(ekf_t * ekf, int i, int j, double value)
 {
-    ((ekf_t *)this->ekf)->P->data[i][j] = value;
+    ekf->P->data[i][j] = value;
 }
 
-void TinyEKF::setQ(int i, int j, double value)
+void ekf_setQ(ekf_t * ekf, int i, int j, double value)
 {
-    ((ekf_t *)this->ekf)->Q->data[i][j] = value;
+    ekf->Q->data[i][j] = value;
 }
 
-void TinyEKF::setR(int i, int j, double value)
+void ekf_setR(ekf_t * ekf, int i, int j, double value)
 {
-    ((ekf_t *)this->ekf)->R->data[i][j] = value;
+    ekf->R->data[i][j] = value;
 }
 
-void TinyEKF::setX(int i, double value)
+void ekf_setX(ekf_t * ekf, int i, double value)
 {
-    ((ekf_t *)this->ekf)->X->data[i] = value;
+    ekf->X->data[i] = value;
 }
 
-void TinyEKF::update(double * Z)
+void ekf_update(
+        ekf_t * ekf, 
+        double * Z, 
+        void (*f)(double *, double *, double **), 
+        void (*g)(double *, double *, double **))
 {        
-    ekf_t * ekf = (ekf_t *)this->ekf;
-
     // 1, 2
     zeros(ekf->fy);
-    this->f(ekf->X->data, ekf->Xp->data, ekf->fy->data);
+    f(ekf->X->data, ekf->Xp->data, ekf->fy->data);
 
     // 3
     zeros(ekf->H);
-    this->g(ekf->Xp->data, ekf->gXp->data, ekf->H->data);     
+    g(ekf->Xp->data, ekf->gXp->data, ekf->H->data);     
 
     // 4
     mul(ekf->fy, ekf->P, ekf->tmp_n_n);
@@ -129,5 +130,5 @@ void TinyEKF::update(double * Z)
     add(ekf->tmp_n_n, ekf->eye_n_n);
     mul(ekf->tmp_n_n, ekf->Pp, ekf->P);
 
-    dump(ekf->P, "%+10.4f"); exit(0);
+    dumpmat(ekf->P, "%+10.4f"); exit(0);
 }
