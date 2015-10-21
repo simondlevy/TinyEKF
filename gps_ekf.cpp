@@ -21,6 +21,7 @@ class GPS_EKF : public TinyEKF {
         // Eight state values, four measurement values
         GPS_EKF() : TinyEKF(8, 4) 
         {            
+
             // initial covariances of state, measurement noise 
             double P0 = 10;
             double R0 = 36;
@@ -37,7 +38,7 @@ class GPS_EKF : public TinyEKF {
             this->setX(1, 0);
             this->setX(3, 0);
             this->setX(5, 0);
-            
+
             // clock bias
             this->setX(6, 3.575261153706439e+006);
             
@@ -62,6 +63,7 @@ class GPS_EKF : public TinyEKF {
             
             for (int i=0; i<4; ++i)
                 this->setR(i, i, R0);
+
         }
         
         void setPseudorange(double  SV[4][3])
@@ -115,8 +117,8 @@ class GPS_EKF : public TinyEKF {
         void blkfill(const double * a, int off)
         {
             off *= 2;
-            
-            this->setQ(off, off,     a[0]);
+
+            this->setQ(off, off,     a[0]); 
             this->setQ(off, off+1,   a[1]);
             this->setQ(off+1, off,   a[2]);
             this->setQ(off+1, off+1, a[3]);
@@ -165,7 +167,7 @@ int main(int argc, char ** argv)
 {    
     // Create the EKF
     GPS_EKF ekf;
-    
+
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
     
@@ -175,7 +177,7 @@ int main(int argc, char ** argv)
     // Make a place to store the data from the file
     double SV_Pos[4][3];
     double SV_Rho[4];
-    
+
     // Loop till no more data
     while (true) {
         

@@ -29,3 +29,23 @@ typedef struct {
     mat_t  * tmp2_m_m;
 
 } ekf_t; 
+
+ekf_t * ekf_init(int m, int n);
+
+void ekf_delete(ekf_t * ekf);
+
+void ekf_setP(ekf_t * ekf, int i, int j, double value);
+
+void ekf_setQ(ekf_t * ekf, int i, int j, double value);
+
+void ekf_setR(ekf_t * ekf, int i, int j, double value);
+
+void ekf_setX(ekf_t * ekf, int i, double value);
+
+void ekf_update(
+        ekf_t * ekf, 
+        double * Z, 
+        void (*f)(double *, double *, double **), 
+        void (*g)(double *, double *, double **));
+
+void ekf_post_update(ekf_t * ekf, double * Z);
