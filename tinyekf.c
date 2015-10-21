@@ -3,10 +3,8 @@
 #include "linalg.h"
 #include "tinyekf.h"
 
-ekf_t * ekf_init(int n, int m)
+void ekf_init(ekf_t * ekf, int n, int m)
 {
-    ekf_t * ekf = (ekf_t *)malloc(sizeof(ekf_t));
-
     ekf->X = newvec(n);
 
     ekf->P = newmat(n, n);
@@ -36,8 +34,6 @@ ekf_t * ekf_init(int n, int m)
     ekf->tmp_n_m  = newmat(n, m);
     ekf->tmp2_n_m = newmat(n, m);
     ekf->tmp_n_n  = newmat(n, n);
-
-    return ekf;
 }
 
 void ekf_delete(ekf_t * ekf)
@@ -66,8 +62,6 @@ void ekf_delete(ekf_t * ekf)
     deletemat(ekf->tmp2_n_m);
     deletemat(ekf->tmp_m_m);
     deletevec(ekf->tmp_n);
-
-    free(ekf);
 }
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value)

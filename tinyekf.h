@@ -30,7 +30,7 @@ typedef struct {
 
 } ekf_t; 
 
-ekf_t * ekf_init(int m, int n);
+void ekf_init(ekf_t * ekf, int n, int m);
 
 void ekf_delete(ekf_t * ekf);
 
