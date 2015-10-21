@@ -86,6 +86,19 @@ vec_t * newvec(int n)
     return vec;
 }
 
+void vec_init(vec_t * vec, int n)
+{
+    vec->data = (double *)malloc(n*sizeof(double));
+
+    vec->len = n;
+}
+
+void vec_free(vec_t vec)
+{
+    free(vec.data);
+}
+
+
 mat_t * newmat(int m, int n)
 {
     int i;

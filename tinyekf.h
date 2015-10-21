@@ -1,6 +1,6 @@
 typedef struct {
 
-    vec_t * X;      // state
+    vec_t X;      // state
     mat_t * P;      // prediction error covariance
     mat_t * Q;      // process noise covariance
     mat_t * R;      // measurement error covariance

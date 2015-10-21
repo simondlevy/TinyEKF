@@ -5,7 +5,7 @@
 
 void ekf_init(ekf_t * ekf, int n, int m)
 {
-    ekf->X = newvec(n);
+    vec_init(&ekf->X, n);
 
     ekf->P = newmat(n, n);
     ekf->Q = newmat(n, n);
@@ -47,7 +47,8 @@ void ekf_delete(ekf_t * ekf)
     deletemat(ekf->fy);
     deletemat(ekf->fyt);        
 
-    deletevec(ekf->X);
+    vec_free(ekf->X);
+
     deletevec(ekf->Xp);
     deletevec(ekf->gXp);
     deletemat(ekf->Pp);
@@ -81,7 +82,7 @@ void ekf_setR(ekf_t * ekf, int i, int j, double value)
 
 void ekf_setX(ekf_t * ekf, int i, double value)
 {
-    ekf->X->data[i] = value;
+    ekf->X.data[i] = value;
 }
 
 static void ekf_pre_update(
@@ -91,7 +92,7 @@ static void ekf_pre_update(
 {
     // 1, 2
     zeros(ekf->fy);
-    f(ekf->X->data, ekf->Xp->data, ekf->fy->data);
+    f(ekf->X.data, ekf->Xp->data, ekf->fy->data);
 
     // 3
     zeros(ekf->H);
@@ -131,7 +132,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     // 6
     ekf->tmp_m->data = Z;
     sub(ekf->tmp_m, ekf->gXp);
-    mulvec(ekf->G, ekf->tmp_m, ekf->X);
+    mulvec(ekf->G, ekf->tmp_m, &ekf->X);
 
     // 7
     mulmat(ekf->G, ekf->H, ekf->tmp_n_n);

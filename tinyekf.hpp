@@ -55,7 +55,7 @@ class TinyEKF {
 
             // 1, 2
             zeros(ekf.fy);
-            this->f(ekf.X->data, ekf.Xp->data, ekf.fy->data);
+            this->f(ekf.X.data, ekf.Xp->data, ekf.fy->data);
 
             // 3
             zeros(ekf.H);
