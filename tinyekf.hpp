@@ -86,7 +86,7 @@ protected:
 
 private:
 
-   void * contents;
+   void * ekf;
 
 public:
 
