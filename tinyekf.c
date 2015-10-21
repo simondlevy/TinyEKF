@@ -1,6 +1,4 @@
 #include<stdlib.h>
-#include <stdio.h>
-
 
 #include "linalg.h"
 #include "tinyekf.h"
@@ -12,7 +10,6 @@ ekf_t * ekf_init(int n, int m)
     ekf->X = newvec(n);
 
     ekf->P = newmat(n, n);
-    printf("%p\n", ekf->Q);
     ekf->Q = newmat(n, n);
     ekf->R = newmat(m, m);
     ekf->G = newmat(n, m);
@@ -80,12 +77,7 @@ void ekf_setP(ekf_t * ekf, int i, int j, double value)
 
 void ekf_setQ(ekf_t * ekf, int i, int j, double value)
 {
-    printf("%p\n", ekf->Q);
-    printf("%d %d\n", i, j);
-
     ekf->Q->data[i][j] = value;
-
-    printf("%d %d\n\n", i, j);
 }
 
 void ekf_setR(ekf_t * ekf, int i, int j, double value)
