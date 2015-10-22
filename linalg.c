@@ -75,18 +75,6 @@ static void cholsl(double ** A, double ** a, double * p, int n)
 
 #include "linalg.h"
 
-void vec_init(vec_t * vec, int n)
-{
-    vec->data = (double *)malloc(n*sizeof(double));
-
-    vec->len = n;
-}
-
-void vec_free(vec_t vec)
-{
-    free(vec.data);
-}
-
 void mat_init(mat_t * mat, int m, int n)
 {
     int i;
@@ -132,13 +120,13 @@ void eye(mat_t mat, double s)
         mat.data[k][k] = s;
 }
 
-void vec_dump(vec_t vec, const char * fmt)
+void vec_dump(double * x, int n, const char * fmt)
 {
     int j;
     char f[100];
     sprintf(f, "%s ", fmt);
-    for(j=0; j<vec.len; ++j)
-        printf(f, vec.data[j]);
+    for(j=0; j<n; ++j)
+        printf(f, x[j]);
     printf("\n");
 }
 
@@ -168,14 +156,14 @@ void mulmat(mat_t a, mat_t b, mat_t c)
         }
 }
 
-void mulvec(mat_t a, vec_t x, double * y)
+void mulvec(mat_t a, double * x, double * y)
 {
     int i,j;
 
     for(i=0; i<a.rows; ++i) {
         y[i] = 0;
         for(j=0; j<a.cols; ++j)
-            y[i] += x.data[j] * a.data[i][j];
+            y[i] += x[j] * a.data[i][j];
     }
 }
 
@@ -198,13 +186,13 @@ void add(mat_t a, mat_t b)
             a.data[i][j] += b.data[i][j];
 }
 
-// A <- A - B
-void sub(vec_t a, vec_t b)
+// C <- A - B
+void sub(double * a, double * b, double * c, int n)
 {
     int j;
 
-    for(j=0; j<a.len; ++j)
-        a.data[j] -= b.data[j];
+    for(j=0; j<n; ++j)
+        c[j] = a[j] - b[j];
 }
 
 void negate(mat_t a)

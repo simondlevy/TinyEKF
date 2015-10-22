@@ -12,9 +12,6 @@ void ekf_init(ekf_t * ekf, int n, int m)
     mat_init(&ekf->H  ,m, n);
     mat_init(&ekf->fy ,n, n);
 
-    vec_init(&ekf->Xp, n);
-    vec_init(&ekf->gXp, n);
-
     mat_init(&ekf->Pp  ,n, n);
 
     mat_init(&ekf->Ht  ,n, m);
@@ -23,7 +20,6 @@ void ekf_init(ekf_t * ekf, int n, int m)
     mat_init(&ekf->eye_n_n,n, n);
     eye(ekf->eye_n_n, 1);
 
-    vec_init(&ekf->tmp_m, m);
     mat_init(&ekf->tmp_m_m, m, m);
     mat_init(&ekf->tmp2_m_m, m, m);
     mat_init(&ekf->tmp_m_n, m, n);
@@ -43,8 +39,6 @@ void ekf_free(ekf_t ekf)
     mat_free(ekf.fy);
     mat_free(ekf.fyt);        
 
-    vec_free(ekf.Xp);
-    vec_free(ekf.gXp);
     mat_free(ekf.Pp);
     mat_free(ekf.Ht);
 
@@ -56,7 +50,6 @@ void ekf_free(ekf_t ekf)
     mat_free(ekf.tmp_n_m);        
     mat_free(ekf.tmp2_n_m);
     mat_free(ekf.tmp_m_m);
-    vec_free(ekf.tmp_m);
 }
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value)
@@ -86,11 +79,11 @@ static void ekf_pre_update(
 {
     // 1, 2
     zeros(ekf->fy);
-    f(ekf->X, ekf->Xp.data, ekf->fy.data);
+    f(ekf->X, ekf->Xp, ekf->fy.data);
 
     // 3
     zeros(ekf->H);
-    g(ekf->Xp.data, ekf->gXp.data, ekf->H.data);     
+    g(ekf->Xp, ekf->gXp, ekf->H.data);     
 }
 
 void ekf_update(
@@ -124,8 +117,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G);
 
     // 6
-    ekf->tmp_m.data = Z;
-    sub(ekf->tmp_m, ekf->gXp);
+    sub(ekf->tmp_m, ekf->gXp, Z, M);
     mulvec(ekf->G, ekf->tmp_m, ekf->X);
 
     // 7

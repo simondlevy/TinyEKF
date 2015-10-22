@@ -1,12 +1,5 @@
 typedef struct {
 
-    double * data;
-    int len;
-
-} vec_t;
-
-typedef struct {
-
     double ** data;
     int rows;
     int cols;
@@ -14,10 +7,6 @@ typedef struct {
     double * tmp;
 
 } mat_t;
-
-void vec_init(vec_t * vec, int n);
-
-void vec_free(vec_t vec);
 
 void mat_init(mat_t * mat, int m, int n);
 
@@ -27,22 +16,22 @@ void zeros(mat_t mat);
 
 void eye(mat_t mat, double s);
 
-void vec_dump(vec_t vec, const char * fmt);
+void vec_dump(double * x, int n, const char * fmt);
 
 void mat_dump(mat_t mat, const char * fmt);
 
 // C <- A * B
 void mulmat(mat_t a, mat_t b, mat_t c);
 
-void mulvec(mat_t a, vec_t x, double * y);
+void mulvec(mat_t a, double * x, double * y);
 
 void transpose(mat_t a, mat_t at);
 
 // A <- A + B
 void add(mat_t a, mat_t b);
 
-// A <- A - B
-void sub(vec_t a, vec_t b);
+// C <- A - B
+void sub(double * a, double * b, double * c, int n);
 
 void negate(mat_t a);
 
