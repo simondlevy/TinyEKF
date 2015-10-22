@@ -141,3 +141,29 @@ void ekf_post_update(ekf_t * ekf, double * Z)
 
     mat_dump(ekf->P, "%+10.4f"); exit(0);
 }
+
+/* for tinyekf.hpp */
+double * ekf_get_X(ekf_t ekf)
+{
+    return ekf.X.data;
+}
+
+double * ekf_get_Xp(ekf_t ekf)
+{
+    return ekf.Xp.data;
+}
+
+double ** ekf_get_fy(ekf_t ekf)
+{
+    return ekf.fy.data;
+}
+
+double * ekf_get_gXp(ekf_t ekf)
+{
+    return ekf.gXp.data;
+}
+
+double ** ekf_get_H(ekf_t ekf)
+{
+    return ekf.H.data;
+}

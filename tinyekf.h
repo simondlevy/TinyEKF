@@ -48,3 +48,10 @@ void ekf_update(
         void (*g)(double *, double *, double **));
 
 void ekf_post_update(ekf_t * ekf, double * Z);
+
+/* for tinyekf.hpp */
+double *  ekf_get_X(ekf_t ekf);
+double *  ekf_get_Xp(ekf_t ekf);
+double ** ekf_get_fy(ekf_t ekf);
+double *  ekf_get_gXp(ekf_t ekf);
+double ** ekf_get_H(ekf_t ekf);
