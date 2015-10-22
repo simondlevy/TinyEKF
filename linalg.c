@@ -102,17 +102,18 @@ void mat_free(mat_t mat)
     free(mat.tmp);
 }
 
-void zeros(mat_t mat)
+void zeros(mat_t mat, int m, int n)
 {
-    int i;
+    int i, j;
 
-    for(i=0; i<mat.rows; ++i)
-        bzero(mat.data[i], mat.cols*sizeof(double));
+    for(i=0; i<m; ++i)
+        for(j=0; j<n; ++j)
+            mat.data[i][j] = 0;
 }
 
 void eye(mat_t mat, double s)
 {
-    zeros(mat);
+    zeros(mat, mat.rows, mat.cols);
 
     int k;
 

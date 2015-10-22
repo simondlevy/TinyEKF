@@ -12,7 +12,7 @@ void mat_init(mat_t * mat, int m, int n);
 
 void mat_free(mat_t mat);
 
-void zeros(mat_t mat);
+void zeros(mat_t mat, int m, int n);
 
 void eye(mat_t mat, double s);
 

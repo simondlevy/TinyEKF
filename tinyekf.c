@@ -78,11 +78,11 @@ static void ekf_pre_update(
         void (*g)(double *, double *, double **))
 {
     // 1, 2
-    zeros(ekf->fy);
+    zeros(ekf->fy, N, N);
     f(ekf->X, ekf->Xp, ekf->fy.data);
 
     // 3
-    zeros(ekf->H);
+    zeros(ekf->H, M, N);
     g(ekf->Xp, ekf->gXp, ekf->H.data);     
 }
 

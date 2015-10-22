@@ -1,7 +1,8 @@
 #define N 8
-#define M 8
+#define M 4
 
 #include "linalg.h"
+
 
 typedef struct {
 
