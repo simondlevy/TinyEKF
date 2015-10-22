@@ -1,8 +1,12 @@
+static const int N = 8;
+static const int M = 4;
+
 #include "linalg.h"
 
 typedef struct {
 
-    vec_t X;      // state
+    double _X[N];
+
     mat_t  P;      // prediction error covariance
     mat_t  Q;      // process noise covariance
     mat_t  R;      // measurement error covariance
