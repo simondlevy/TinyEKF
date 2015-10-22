@@ -26,7 +26,7 @@ class TinyEKF {
 
         ~TinyEKF()
         {
-            ekf_delete(&this->ekf);
+            ekf_free(this->ekf);
         }
 
         void setP(int i, int j, double value)

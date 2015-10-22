@@ -35,33 +35,33 @@ void ekf_init(ekf_t * ekf, int n, int m)
     mat_init(&ekf->tmp_n_n, n, n);
 }
 
-void ekf_delete(ekf_t * ekf)
+void ekf_free(ekf_t ekf)
 {
-    mat_free(ekf->P);
-    mat_free(ekf->Q);
-    mat_free(ekf->R);
-    mat_free(ekf->G);
-    mat_free(ekf->H);
+    mat_free(ekf.P);
+    mat_free(ekf.Q);
+    mat_free(ekf.R);
+    mat_free(ekf.G);
+    mat_free(ekf.H);
 
-    mat_free(ekf->fy);
-    mat_free(ekf->fyt);        
+    mat_free(ekf.fy);
+    mat_free(ekf.fyt);        
 
-    vec_free(ekf->X);
+    vec_free(ekf.X);
 
-    vec_free(ekf->Xp);
-    vec_free(ekf->gXp);
-    mat_free(ekf->Pp);
-    mat_free(ekf->Ht);
+    vec_free(ekf.Xp);
+    vec_free(ekf.gXp);
+    mat_free(ekf.Pp);
+    mat_free(ekf.Ht);
 
-    mat_free(ekf->eye_n_n);
+    mat_free(ekf.eye_n_n);
 
-    mat_free(ekf->tmp_n_n);
-    mat_free(ekf->tmp_m_n);
+    mat_free(ekf.tmp_n_n);
+    mat_free(ekf.tmp_m_n);
 
-    mat_free(ekf->tmp_n_m);        
-    mat_free(ekf->tmp2_n_m);
-    mat_free(ekf->tmp_m_m);
-    vec_free(ekf->tmp_m);
+    mat_free(ekf.tmp_n_m);        
+    mat_free(ekf.tmp2_n_m);
+    mat_free(ekf.tmp_m_m);
+    vec_free(ekf.tmp_m);
 }
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value)
