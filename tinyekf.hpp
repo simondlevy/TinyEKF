@@ -53,10 +53,10 @@ class TinyEKF {
             ekf_t ekf = this->ekf;
 
             // 1, 2
-            this->f(ekf_get_X(ekf), ekf_get_Xp(ekf), ekf_get_fy(ekf));
+            this->f(ekf.X.data, ekf.Xp.data, ekf.fy.data);
 
             // 3
-            this->g(ekf_get_Xp(ekf), ekf_get_gXp(ekf), ekf_get_H(ekf));     
+            this->g(ekf.Xp.data, ekf.gXp.data, ekf.H.data);     
 
             // 4,5,6,7
             ekf_post_update(&ekf, Z);
