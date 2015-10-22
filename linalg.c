@@ -111,13 +111,13 @@ void zeros(mat_t mat, int m, int n)
             mat.data[i][j] = 0;
 }
 
-void eye(mat_t mat, double s)
+void eye(mat_t mat, int n, double s)
 {
     zeros(mat, mat.rows, mat.cols);
 
     int k;
 
-    for(k=0; k<mat.rows; ++k)
+    for(k=0; k<n; ++k)
         mat.data[k][k] = s;
 }
 

@@ -18,7 +18,7 @@ void ekf_init(ekf_t * ekf, int n, int m)
     mat_init(&ekf->fyt ,n, n);
 
     mat_init(&ekf->eye_n_n,n, n);
-    eye(ekf->eye_n_n, 1);
+    eye(ekf->eye_n_n, N, 1);
 
     mat_init(&ekf->tmp_m_m, m, m);
     mat_init(&ekf->tmp2_m_m, m, m);

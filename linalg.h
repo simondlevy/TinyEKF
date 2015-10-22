@@ -14,7 +14,7 @@ void mat_free(mat_t mat);
 
 void zeros(mat_t mat, int m, int n);
 
-void eye(mat_t mat, double s);
+void eye(mat_t mat, int n, double s);
 
 void vec_dump(double * x, int n, const char * fmt);
 
