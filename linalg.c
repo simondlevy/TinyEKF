@@ -145,14 +145,14 @@ void mat_dump(mat_t mat, int m, int n, const char * fmt)
 }
 
 // C <- A * B
-void mulmat(mat_t a, mat_t b, mat_t c)
+void mulmat(mat_t a, mat_t b, mat_t c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
-    for(i=0; i<a.rows; ++i)
-        for(j=0; j<b.cols; ++j) {
+    for(i=0; i<arows; ++i)
+        for(j=0; j<bcols; ++j) {
             c.data[i][j] = 0;
-            for(l=0; l<a.cols; ++l)
+            for(l=0; l<acols; ++l)
                 c.data[i][j] += a.data[i][l] * b.data[l][j];
         }
 }

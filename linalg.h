@@ -21,7 +21,7 @@ void vec_dump(double * x, int n, const char * fmt);
 void mat_dump(mat_t mat, int m, int n, const char * fmt);
 
 // C <- A * B
-void mulmat(mat_t a, mat_t b, mat_t c);
+void mulmat(mat_t a, mat_t b, mat_t c, int arows, int acols, int bcols);
 
 // Y <- A * X
 void mulvec(mat_t a, double * x, double * y, int m, int n);

@@ -102,29 +102,29 @@ void ekf_update(
 void ekf_post_update(ekf_t * ekf, double * Z)
 {    
     // 4
-    mulmat(ekf->fy, ekf->P, ekf->tmp_n_n);
+    mulmat(ekf->fy, ekf->P, ekf->tmp_n_n, N, N, N);
     transpose(ekf->fy, ekf->fyt, N, N);
-    mulmat(ekf->tmp_n_n, ekf->fyt, ekf->Pp);
+    mulmat(ekf->tmp_n_n, ekf->fyt, ekf->Pp, N, N, N);
     add(ekf->Pp, ekf->Q, N, N);
 
     // 5
     transpose(ekf->H, ekf->Ht, M, N);
-    mulmat(ekf->Pp, ekf->Ht, ekf->tmp_n_m);
-    mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n);
-    mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m);
+    mulmat(ekf->Pp, ekf->Ht, ekf->tmp_n_m, N, N, M);
+    mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n, M, N, N);
+    mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m, M, N, M);
     add(ekf->tmp2_m_m, ekf->R, M, M);
     invert(ekf->tmp2_m_m, ekf->tmp_m_m, M);
-    mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G);
+    mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G, N, M, M);
 
     // 6
     sub(ekf->tmp_m, ekf->gXp, Z, M);
     mulvec(ekf->G, ekf->tmp_m, ekf->X, N, M);
 
     // 7
-    mulmat(ekf->G, ekf->H, ekf->tmp_n_n);
+    mulmat(ekf->G, ekf->H, ekf->tmp_n_n, N, M, N);
     negate(ekf->tmp_n_n, N, N);
     add(ekf->tmp_n_n, ekf->eye_n_n, N, N);
-    mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P);
+    mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P, N, N, N);
 
     mat_dump(ekf->P, N, N, "%+10.4f"); exit(0);
 }
