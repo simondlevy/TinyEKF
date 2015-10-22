@@ -4,8 +4,6 @@
 
 void ekf_init(ekf_t * ekf, int n, int m)
 {
-    vec_init(&ekf->X, n);
-
     mat_init(&ekf->P,n, n);
     mat_init(&ekf->Q,n, n);
     mat_init(&ekf->R,m, m);
@@ -45,8 +43,6 @@ void ekf_free(ekf_t ekf)
     mat_free(ekf.fy);
     mat_free(ekf.fyt);        
 
-    vec_free(ekf.X);
-
     vec_free(ekf.Xp);
     vec_free(ekf.gXp);
     mat_free(ekf.Pp);
@@ -80,7 +76,7 @@ void ekf_setR(ekf_t * ekf, int i, int j, double value)
 
 void ekf_setX(ekf_t * ekf, int i, double value)
 {
-    ekf->X.data[i] = value;
+    ekf->X[i] = value;
 }
 
 static void ekf_pre_update(
@@ -90,7 +86,7 @@ static void ekf_pre_update(
 {
     // 1, 2
     zeros(ekf->fy);
-    f(ekf->X.data, ekf->Xp.data, ekf->fy.data);
+    f(ekf->X, ekf->Xp.data, ekf->fy.data);
 
     // 3
     zeros(ekf->H);

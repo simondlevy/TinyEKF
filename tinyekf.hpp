@@ -50,7 +50,7 @@ class TinyEKF {
             ekf_t ekf = this->ekf;
 
             // 1, 2
-            this->f(ekf.X.data, ekf.Xp.data, ekf.fy.data);
+            this->f(ekf.X, ekf.Xp.data, ekf.fy.data);
 
             // 3
             this->g(ekf.Xp.data, ekf.gXp.data, ekf.H.data);     
