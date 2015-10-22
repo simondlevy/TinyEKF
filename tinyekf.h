@@ -5,7 +5,7 @@ static const int M = 4;
 
 typedef struct {
 
-    double _X[N];
+    double X[N];
 
     mat_t  P;      // prediction error covariance
     mat_t  Q;      // process noise covariance

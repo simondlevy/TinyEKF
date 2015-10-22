@@ -80,7 +80,7 @@ void ekf_setR(ekf_t * ekf, int i, int j, double value)
 
 void ekf_setX(ekf_t * ekf, int i, double value)
 {
-    ekf->_X[i] = value;
+    ekf->X[i] = value;
 }
 
 static void ekf_pre_update(
@@ -90,7 +90,7 @@ static void ekf_pre_update(
 {
     // 1, 2
     zeros(ekf->fy);
-    f(ekf->_X, ekf->Xp.data, ekf->fy.data);
+    f(ekf->X, ekf->Xp.data, ekf->fy.data);
 
     // 3
     zeros(ekf->H);
@@ -130,7 +130,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     // 6
     ekf->tmp_m.data = Z;
     sub(ekf->tmp_m, ekf->gXp);
-    mulvec(ekf->G, ekf->tmp_m, ekf->_X);
+    mulvec(ekf->G, ekf->tmp_m, ekf->X);
 
     // 7
     mulmat(ekf->G, ekf->H, ekf->tmp_n_n);
