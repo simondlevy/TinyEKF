@@ -122,7 +122,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
 
     // 7
     mulmat(ekf->G, ekf->H, ekf->tmp_n_n);
-    negate(ekf->tmp_n_n);
+    negate(ekf->tmp_n_n, N, N);
     add(ekf->tmp_n_n, ekf->eye_n_n, N, N);
     mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P);
 

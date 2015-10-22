@@ -196,12 +196,12 @@ void sub(double * a, double * b, double * c, int n)
         c[j] = a[j] - b[j];
 }
 
-void negate(mat_t a)
+void negate(mat_t a, int m, int n)
 {        
     int i, j;
 
-    for(i=0; i<a.rows; ++i)
-        for(j=0; j<a.cols; ++j)
+    for(i=0; i<m; ++i)
+        for(j=0; j<n; ++j)
             a.data[i][j] = -a.data[i][j];
 }
 

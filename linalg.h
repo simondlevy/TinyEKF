@@ -33,7 +33,7 @@ void add(mat_t a, mat_t b, int m, int n);
 // C <- A - B
 void sub(double * a, double * b, double * c, int n);
 
-void negate(mat_t a);
+void negate(mat_t a, int m, int n);
 
 void invert(mat_t a, mat_t at);
 
