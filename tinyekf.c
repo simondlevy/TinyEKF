@@ -103,12 +103,12 @@ void ekf_post_update(ekf_t * ekf, double * Z)
 {    
     // 4
     mulmat(ekf->fy, ekf->P, ekf->tmp_n_n);
-    transpose(ekf->fy, ekf->fyt);
+    transpose(ekf->fy, ekf->fyt, N, N);
     mulmat(ekf->tmp_n_n, ekf->fyt, ekf->Pp);
     add(ekf->Pp, ekf->Q);
 
     // 5
-    transpose(ekf->H, ekf->Ht);
+    transpose(ekf->H, ekf->Ht, M, N);
     mulmat(ekf->Pp, ekf->Ht, ekf->tmp_n_m);
     mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n);
     mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m);

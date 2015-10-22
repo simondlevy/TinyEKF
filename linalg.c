@@ -168,12 +168,12 @@ void mulvec(mat_t a, double * x, double * y)
     }
 }
 
-void transpose(mat_t a, mat_t at)
+void transpose(mat_t a, mat_t at, int m, int n)
 {
     int i,j;
 
-    for(i=0; i<a.rows; ++i)
-        for(j=0; j<a.cols; ++j) 
+    for(i=0; i<m; ++i)
+        for(j=0; j<n; ++j) 
             at.data[j][i] = a.data[i][j];
 }
 

@@ -25,7 +25,7 @@ void mulmat(mat_t a, mat_t b, mat_t c);
 
 void mulvec(mat_t a, double * x, double * y);
 
-void transpose(mat_t a, mat_t at);
+void transpose(mat_t a, mat_t at, int m, int n);
 
 // A <- A + B
 void add(mat_t a, mat_t b);
