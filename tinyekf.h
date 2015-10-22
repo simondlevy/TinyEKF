@@ -5,17 +5,17 @@ static const int M = 4;
 
 typedef struct {
 
-    double X[N];
+    vec_t X;    // state
 
-    mat_t  P;      // prediction error covariance
-    mat_t  Q;      // process noise covariance
-    mat_t  R;      // measurement error covariance
+    mat_t  P;   // prediction error covariance
+    mat_t  Q;   // process noise covariance
+    mat_t  R;   // measurement error covariance
 
-    mat_t  G;    // Kalman gain; a.k.a. K
+    mat_t  G;   // Kalman gain; a.k.a. K
 
-    vec_t  Xp;   // output of state-transition function
-    mat_t  fy;   // Jacobean of process model
-    mat_t  H;    // Jacobean of measurement model
+    vec_t  Xp;  // output of state-transition function
+    mat_t  fy;  // Jacobean of process model
+    mat_t  H;   // Jacobean of measurement model
     vec_t  gXp;
 
     mat_t  Ht;

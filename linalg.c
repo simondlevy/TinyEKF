@@ -169,14 +169,14 @@ void mulmat(mat_t a, mat_t b, mat_t c)
         }
 }
 
-void mulvec(mat_t a, vec_t x, double * y)
+void mulvec(mat_t a, vec_t x, vec_t y)
 {
     int i,j;
 
     for(i=0; i<a.rows; ++i) {
-        y[i] = 0;
+        y.data[i] = 0;
         for(j=0; j<a.cols; ++j)
-            y[i] += x.data[j] * a.data[i][j];
+            y.data[i] += x.data[j] * a.data[i][j];
     }
 }
 
