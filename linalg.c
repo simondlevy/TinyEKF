@@ -178,12 +178,12 @@ void transpose(mat_t a, mat_t at, int m, int n)
 }
 
 // A <- A + B
-void add(mat_t a, mat_t b)
+void add(mat_t a, mat_t b, int m, int n)
 {        
     int i,j;
 
-    for(i=0; i<a.rows; ++i)
-        for(j=0; j<a.cols; ++j)
+    for(i=0; i<m; ++i)
+        for(j=0; j<n; ++j)
             a.data[i][j] += b.data[i][j];
 }
 
