@@ -1,7 +1,6 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-#include "linalg.h"
 #include "tinyekf.h"
 
 class TinyEKF {
@@ -54,12 +53,10 @@ class TinyEKF {
             ekf_t ekf = this->ekf;
 
             // 1, 2
-            zeros(ekf.fy);
-            this->f(ekf.X.data, ekf.Xp.data, ekf.fy.data);
+            this->f(ekf_get_X(ekf), ekf_get_Xp(ekf), ekf_get_fy(ekf));
 
             // 3
-            zeros(ekf.H);
-            this->g(ekf.Xp.data, ekf.gXp.data, ekf.H.data);     
+            this->g(ekf_get_Xp(ekf), ekf_get_gXp(ekf), ekf_get_H(ekf));     
 
             // 4,5,6,7
             ekf_post_update(&ekf, Z);

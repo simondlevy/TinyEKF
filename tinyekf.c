@@ -1,6 +1,5 @@
 #include<stdlib.h>
 
-#include "linalg.h"
 #include "tinyekf.h"
 
 void ekf_init(ekf_t * ekf, int n, int m)

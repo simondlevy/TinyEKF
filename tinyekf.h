@@ -1,3 +1,5 @@
+#include "linalg.h"
+
 typedef struct {
 
     vec_t X;      // state
