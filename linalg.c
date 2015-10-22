@@ -221,3 +221,8 @@ void invert(mat_t a, mat_t at)
 {
     cholsl(a.data, at.data, a.tmp, a.rows);
 }
+
+void mat_set(mat_t a, int i, int j, double value)
+{
+    a.data[i][j] = value;
+}

@@ -66,17 +66,17 @@ void ekf_free(ekf_t ekf)
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value)
 {
-    ekf->P.data[i][j] = value;
+    mat_set(ekf->P, i, j, value);
 }
 
 void ekf_setQ(ekf_t * ekf, int i, int j, double value)
 {
-    ekf->Q.data[i][j] = value;
+    mat_set(ekf->Q, i, j, value);
 }
 
 void ekf_setR(ekf_t * ekf, int i, int j, double value)
 {
-    ekf->R.data[i][j] = value;
+    mat_set(ekf->R, i, j, value);
 }
 
 void ekf_setX(ekf_t * ekf, int i, double value)

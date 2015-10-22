@@ -47,3 +47,5 @@ void sub(vec_t a, vec_t b);
 void negate(mat_t a);
 
 void invert(mat_t a, mat_t at);
+
+void mat_set(mat_t a, int i, int j, double value);
