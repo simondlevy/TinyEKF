@@ -23,7 +23,8 @@ void mat_dump(mat_t mat, int m, int n, const char * fmt);
 // C <- A * B
 void mulmat(mat_t a, mat_t b, mat_t c);
 
-void mulvec(mat_t a, double * x, double * y);
+// Y <- A * X
+void mulvec(mat_t a, double * x, double * y, int m, int n);
 
 void transpose(mat_t a, mat_t at, int m, int n);
 

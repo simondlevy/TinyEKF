@@ -118,7 +118,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
 
     // 6
     sub(ekf->tmp_m, ekf->gXp, Z, M);
-    mulvec(ekf->G, ekf->tmp_m, ekf->X);
+    mulvec(ekf->G, ekf->tmp_m, ekf->X, N, M);
 
     // 7
     mulmat(ekf->G, ekf->H, ekf->tmp_n_n);
