@@ -113,7 +113,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n);
     mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m);
     add(ekf->tmp2_m_m, ekf->R, M, M);
-    invert(ekf->tmp2_m_m, ekf->tmp_m_m);
+    invert(ekf->tmp2_m_m, ekf->tmp_m_m, M);
     mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G);
 
     // 6

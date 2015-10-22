@@ -35,6 +35,6 @@ void sub(double * a, double * b, double * c, int n);
 
 void negate(mat_t a, int m, int n);
 
-void invert(mat_t a, mat_t at);
+void invert(mat_t a, mat_t at, int n);
 
 void mat_set(mat_t a, int i, int j, double value);

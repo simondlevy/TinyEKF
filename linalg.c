@@ -205,9 +205,9 @@ void negate(mat_t a, int m, int n)
             a.data[i][j] = -a.data[i][j];
 }
 
-void invert(mat_t a, mat_t at)
+void invert(mat_t a, mat_t at, int n)
 {
-    cholsl(a.data, at.data, a.tmp, a.rows);
+    cholsl(a.data, at.data, a.tmp, n);
 }
 
 void mat_set(mat_t a, int i, int j, double value)
