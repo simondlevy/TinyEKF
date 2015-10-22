@@ -75,17 +75,6 @@ static void cholsl(double ** A, double ** a, double * p, int n)
 
 #include "linalg.h"
 
-vec_t * newvec(int n)
-{
-    vec_t * vec = (vec_t *)malloc(sizeof(vec_t));
-
-    vec->data = (double *)malloc(n*sizeof(double));
-
-    vec->len = n;
-
-    return vec;
-}
-
 void vec_init(vec_t * vec, int n)
 {
     vec->data = (double *)malloc(n*sizeof(double));
@@ -99,11 +88,9 @@ void vec_free(vec_t vec)
 }
 
 
-mat_t * newmat(int m, int n)
+void mat_init(mat_t * mat, int m, int n)
 {
     int i;
-
-    mat_t * mat = (mat_t *)malloc(sizeof(mat_t));
 
     mat->data = (double **)malloc(m*sizeof(double *));
 
@@ -114,135 +101,123 @@ mat_t * newmat(int m, int n)
     mat->cols = n;
 
     mat->tmp = (double *)malloc(m*sizeof(double));
-
-    return mat;
 }
 
-void deletemat(mat_t * mat)
+void mat_free(mat_t mat)
 {
     int i;
 
-    for (i=0; i<mat->rows; ++i)
-        free(mat->data[i]);
+    for (i=0; i<mat.rows; ++i)
+        free(mat.data[i]);
 
-    free(mat->data);
+    free(mat.data);
 
-    free(mat->tmp);
-
-    free(mat);
+    free(mat.tmp);
 }
 
-void deletevec(vec_t * vec)
-{
-    free(vec->data);
-
-    free(vec);
-}
-
-
-void zeros(mat_t * mat)
+void zeros(mat_t mat)
 {
     int i;
 
-    for(i=0; i<mat->rows; ++i)
-        bzero(mat->data[i], mat->cols*sizeof(double));
+    for(i=0; i<mat.rows; ++i)
+        bzero(mat.data[i], mat.cols*sizeof(double));
 }
 
-void eye(mat_t * mat, double s)
+void eye(mat_t mat, double s)
 {
     zeros(mat);
 
     int k;
 
-    for(k=0; k<mat->rows; ++k)
-        mat->data[k][k] = s;
+    for(k=0; k<mat.rows; ++k)
+        mat.data[k][k] = s;
 }
 
-void dumpvec(vec_t * vec, const char * fmt)
+void dumpvec(vec_t vec, const char * fmt)
 {
     int j;
     char f[100];
     sprintf(f, "%s ", fmt);
-    for(j=0; j<vec->len; ++j)
-        printf(f, vec->data[j]);
+    for(j=0; j<vec.len; ++j)
+        printf(f, vec.data[j]);
     printf("\n");
 }
 
-void dumpmat(mat_t * mat, const char * fmt)
+void dumpmat(mat_t mat, const char * fmt)
 {
     int i,j;
 
     char f[100];
     sprintf(f, "%s ", fmt);
-     for(i=0; i<mat->rows; ++i) {
-        for(j=0; j<mat->cols; ++j)
-            printf(f, mat->data[i][j]);
+     for(i=0; i<mat.rows; ++i) {
+        for(j=0; j<mat.cols; ++j)
+            printf(f, mat.data[i][j]);
         printf("\n");
     }
 }
 
 // C <- A * B
-void mulmat(mat_t * a, mat_t * b, mat_t * c)
+void mulmat(mat_t a, mat_t b, mat_t c)
 {
     int i, j,l;
 
-    for(i=0; i<a->rows; ++i)
-        for(j=0; j<b->cols; ++j) {
-            c->data[i][j] = 0;
-            for(l=0; l<a->cols; ++l)
-                c->data[i][j] += a->data[i][l] * b->data[l][j];
+    for(i=0; i<a.rows; ++i)
+        for(j=0; j<b.cols; ++j) {
+            c.data[i][j] = 0;
+            for(l=0; l<a.cols; ++l)
+                c.data[i][j] += a.data[i][l] * b.data[l][j];
         }
 }
 
-void mulvec(mat_t * a, vec_t * x, vec_t * y)
+void mulvec(mat_t a, vec_t x, vec_t y)
 {
     int i,j;
 
-    for(i=0; i<a->rows; ++i) {
-        y->data[i] = 0;
-        for(j=0; j<a->cols; ++j)
-            y->data[i] += x->data[j] * a->data[i][j];
+    for(i=0; i<a.rows; ++i) {
+        y.data[i] = 0;
+        for(j=0; j<a.cols; ++j)
+            y.data[i] += x.data[j] * a.data[i][j];
     }
 }
 
-void transpose(mat_t * a, mat_t * at)
+void transpose(mat_t a, mat_t at)
 {
     int i,j;
 
-    for(i=0; i<a->rows; ++i)
-        for(j=0; j<a->cols; ++j) 
-            at->data[j][i] = a->data[i][j];
+    for(i=0; i<a.rows; ++i)
+        for(j=0; j<a.cols; ++j) 
+            at.data[j][i] = a.data[i][j];
 }
 
 // A <- A + B
-void add(mat_t * a, mat_t * b)
+void add(mat_t a, mat_t b)
 {        
     int i,j;
 
-    for(i=0; i<a->rows; ++i)
-        for(j=0; j<a->cols; ++j)
-            a->data[i][j] += b->data[i][j];
+    for(i=0; i<a.rows; ++i)
+        for(j=0; j<a.cols; ++j)
+            a.data[i][j] += b.data[i][j];
 }
 
 // A <- A - B
-void sub(vec_t * a, vec_t * b)
+void sub(vec_t a, vec_t b)
 {
     int j;
 
-    for(j=0; j<a->len; ++j)
-        a->data[j] -= b->data[j];
+    for(j=0; j<a.len; ++j)
+        a.data[j] -= b.data[j];
 }
 
-void negate(mat_t * a)
+void negate(mat_t a)
 {        
     int i, j;
 
-    for(i=0; i<a->rows; ++i)
-        for(j=0; j<a->cols; ++j)
-            a->data[i][j] = -a->data[i][j];
+    for(i=0; i<a.rows; ++i)
+        for(j=0; j<a.cols; ++j)
+            a.data[i][j] = -a.data[i][j];
 }
 
-void invert(mat_t * a, mat_t * at)
+void invert(mat_t a, mat_t at)
 {
-    cholsl(a->data, at->data, a->tmp, a->rows);
+    cholsl(a.data, at.data, a.tmp, a.rows);
 }
