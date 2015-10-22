@@ -133,7 +133,7 @@ void eye(mat_t mat, double s)
         mat.data[k][k] = s;
 }
 
-void dumpvec(vec_t vec, const char * fmt)
+void vec_dump(vec_t vec, const char * fmt)
 {
     int j;
     char f[100];
@@ -143,7 +143,7 @@ void dumpvec(vec_t vec, const char * fmt)
     printf("\n");
 }
 
-void dumpmat(mat_t mat, const char * fmt)
+void mat_dump(mat_t mat, const char * fmt)
 {
     int i,j;
 

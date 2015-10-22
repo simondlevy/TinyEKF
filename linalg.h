@@ -27,9 +27,9 @@ void zeros(mat_t mat);
 
 void eye(mat_t mat, double s);
 
-void dumpvec(vec_t vec, const char * fmt);
+void vec_dump(vec_t vec, const char * fmt);
 
-void dumpmat(mat_t mat, const char * fmt);
+void mat_dump(mat_t mat, const char * fmt);
 
 // C <- A * B
 void mulmat(mat_t a, mat_t b, mat_t c);

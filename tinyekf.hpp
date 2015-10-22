@@ -63,8 +63,6 @@ class TinyEKF {
 
             // 4,5,6,7
             ekf_post_update(&ekf, Z);
-
-            dumpmat(ekf.P, "%+10.4f"); exit(0);
         }
 
 };
