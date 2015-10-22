@@ -131,14 +131,14 @@ void vec_dump(double * x, int n, const char * fmt)
     printf("\n");
 }
 
-void mat_dump(mat_t mat, const char * fmt)
+void mat_dump(mat_t mat, int m, int n, const char * fmt)
 {
     int i,j;
 
     char f[100];
     sprintf(f, "%s ", fmt);
-     for(i=0; i<mat.rows; ++i) {
-        for(j=0; j<mat.cols; ++j)
+     for(i=0; i<m; ++i) {
+        for(j=0; j<n; ++j)
             printf(f, mat.data[i][j]);
         printf("\n");
     }

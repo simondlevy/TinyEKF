@@ -126,5 +126,5 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     add(ekf->tmp_n_n, ekf->eye_n_n);
     mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P);
 
-    mat_dump(ekf->P, "%+10.4f"); exit(0);
+    mat_dump(ekf->P, N, N, "%+10.4f"); exit(0);
 }
