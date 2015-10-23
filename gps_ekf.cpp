@@ -12,9 +12,6 @@
 #include <strings.h>
 #include <math.h>
 
-static const int N = 8;
-static const int M = 4;
-
 #include "tinyekf.hpp"
 
 class GPS_EKF : public TinyEKF {
