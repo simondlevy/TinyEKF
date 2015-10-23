@@ -1,5 +1,4 @@
 #include "params.h"
-#include "linalg.h"
 
 typedef struct {
 
