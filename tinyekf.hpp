@@ -8,9 +8,9 @@ class TinyEKF {
 
     protected:
 
-        virtual void f(double * X, double * Xp, double * fy) = 0;
+        virtual void f(double X[N], double Xp[N], double fy[N*N]) = 0;
 
-        virtual void g(double * Xp, double * gXp, double * H) = 0;    
+        virtual void g(double Xp[N], double gXp[N], double H[M*N]) = 0;    
 
     public:
 
