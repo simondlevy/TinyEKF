@@ -210,8 +210,8 @@ void ekf_setX(ekf_t * ekf, int i, number_t value)
 
 static void ekf_pre_update(
         ekf_t * ekf, 
-        void (*f)(number_t X[N], number_t *, number_t *), 
-        void (*g)(number_t *, number_t *, number_t *))
+        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N*N]), 
+        void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M*N]))
 {
     // 1, 2
     zeros(ekf->fy, N, N);
@@ -225,8 +225,8 @@ static void ekf_pre_update(
 void ekf_update(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t *, number_t *, number_t *), 
-        void (*g)(number_t *, number_t *, number_t *))
+        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N*N]), 
+        void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M*N]))
 {        
     // 1,2,3
     ekf_pre_update(ekf, f, g);
