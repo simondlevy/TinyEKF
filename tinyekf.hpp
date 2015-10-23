@@ -1,14 +1,18 @@
 #include "tinyekf.h"
 
+#include <stdlib.h>
+
 class TinyEKF {
 
     private:
 
         ekf_t ekf;
 
+        double fy[N][N];
+
     protected:
 
-        virtual void f(double X[N], double Xp[N], double fy[N*N]) = 0;
+        virtual void f(double X[N], double Xp[N], double fy[N][N]) = 0;
 
         virtual void g(double Xp[N], double gXp[N], double H[M*N]) = 0;    
 
@@ -39,7 +43,8 @@ class TinyEKF {
             ekf_t ekf = this->ekf;
 
             // 1, 2
-            this->f(ekf.X, ekf.Xp, ekf.fy);
+            this->f(ekf.X, ekf.Xp, this->fy); 
+            memcpy(ekf.fy, this->fy, N*N*sizeof(double));
 
             // 3
             this->g(ekf.Xp, ekf.gXp, ekf.H);     
