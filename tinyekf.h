@@ -1,48 +1,52 @@
+/* ------------------------- */
 #define N 8
 #define M 4
 
+typedef double number_t;
+/* ------------------------- */
+
 typedef struct {
 
-    double X[N];     // state
+    number_t X[N];     // state
 
-    double P[N*N];   // prediction error covariance
-    double Q[N*N];   // process noise covariance
-    double R[M*M];   // measurement error covariance
+    number_t P[N*N];   // prediction error covariance
+    number_t Q[N*N];   // process noise covariance
+    number_t R[M*M];   // measurement error covariance
 
-    double  G[N*M];  // Kalman gain; a.k.a. K
+    number_t  G[N*M];  // Kalman gain; a.k.a. K
 
-    double  Xp[N];   // output of state-transition function
-    double  fy[N*N]; // Jacobean of process model
-    double  H[M*N];  // Jacobean of measurement model
-    double  gXp[N];
+    number_t  Xp[N];   // output of state-transition function
+    number_t  fy[N*N]; // Jacobean of process model
+    number_t  H[M*N];  // Jacobean of measurement model
+    number_t  gXp[N];
 
-    double  Ht[N*M];
-    double  fyt[N*N];
-    double  Pp[N*N];
+    number_t  Ht[N*M];
+    number_t  fyt[N*N];
+    number_t  Pp[N*N];
 
     // temporary storage
-    double  tmp_n_m[N*M];
-    double  tmp_n_n[N*N];
-    double  tmp_m_n[M*N];
-    double  tmp_m[M];
-    double  tmp2_n_m[N*M];
-    double  tmp_m_m[M*M];
-    double  tmp2_m_m[M*M];
+    number_t  tmp_n_m[N*M];
+    number_t  tmp_n_n[N*N];
+    number_t  tmp_m_n[M*N];
+    number_t  tmp_m[M];
+    number_t  tmp2_n_m[N*M];
+    number_t  tmp_m_m[M*M];
+    number_t  tmp2_m_m[M*M];
 
 } ekf_t; 
 
-void ekf_setP(ekf_t * ekf, int i, int j, double value);
+void ekf_setP(ekf_t * ekf, int i, int j, number_t value);
 
-void ekf_setQ(ekf_t * ekf, int i, int j, double value);
+void ekf_setQ(ekf_t * ekf, int i, int j, number_t value);
 
-void ekf_setR(ekf_t * ekf, int i, int j, double value);
+void ekf_setR(ekf_t * ekf, int i, int j, number_t value);
 
-void ekf_setX(ekf_t * ekf, int i, double value);
+void ekf_setX(ekf_t * ekf, int i, number_t value);
 
 void ekf_update(
         ekf_t * ekf, 
-        double * Z, 
-        void (*f)(double *, double *, double *), 
-        void (*g)(double *, double *, double *));
+        number_t * Z, 
+        void (*f)(number_t *, number_t *, number_t *), 
+        void (*g)(number_t *, number_t *, number_t *));
 
-void ekf_post_update(ekf_t * ekf, double * Z);
+void ekf_post_update(ekf_t * ekf, number_t * Z);

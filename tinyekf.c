@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <math.h>
 
-static void choldc1(double * a, double * p, int n) {
+#include "tinyekf.h"
+
+static void choldc1(number_t * a, number_t * p, int n) {
     int i,j,k;
-    double sum;
+    number_t sum;
 
     for (i = 0; i < n; i++) {
         for (j = i; j < n; j++) {
@@ -25,9 +27,9 @@ static void choldc1(double * a, double * p, int n) {
     }
 }
 
-static void choldcsl(double * A, double * a, double * p, int n) 
+static void choldcsl(number_t * A, number_t * a, number_t * p, int n) 
 {
-    int i,j,k; double sum;
+    int i,j,k; number_t sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
             a[i*n+j] = A[i*n+j];
@@ -45,7 +47,7 @@ static void choldcsl(double * A, double * a, double * p, int n)
 }
 
 
-static void cholsl(double * A, double * a, double * p, int n) 
+static void cholsl(number_t * A, number_t * a, number_t * p, int n) 
 {
     int i,j,k;
     choldcsl(A,a,p,n);
@@ -72,7 +74,7 @@ static void cholsl(double * A, double * a, double * p, int n)
     }
 }
 
-static void zeros(double * a, int m, int n)
+static void zeros(number_t * a, int m, int n)
 {
     int i, j;
 
@@ -82,7 +84,7 @@ static void zeros(double * a, int m, int n)
 }
 
 /*
-static void vec_dump(double * x, int n, const char * fmt)
+static void vec_dump(number_t * x, int n, const char * fmt)
 {
     int j;
     char f[100];
@@ -93,7 +95,7 @@ static void vec_dump(double * x, int n, const char * fmt)
 }
 */
 
-static void mat_dump(double * a, int m, int n, const char * fmt)
+static void mat_dump(number_t * a, int m, int n, const char * fmt)
 {
     int i,j;
 
@@ -107,7 +109,7 @@ static void mat_dump(double * a, int m, int n, const char * fmt)
 }
 
 // C <- A * B
-static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
+static void mulmat(number_t * a, number_t * b, number_t * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
@@ -119,7 +121,7 @@ static void mulmat(double * a, double * b, double * c, int arows, int acols, int
         }
 }
 
-static void mulvec(double * a, double * x, double * y, int m, int n)
+static void mulvec(number_t * a, number_t * x, number_t * y, int m, int n)
 {
     int i, j;
 
@@ -130,7 +132,7 @@ static void mulvec(double * a, double * x, double * y, int m, int n)
     }
 }
 
-static void transpose(double * a, double * at, int m, int n)
+static void transpose(number_t * a, number_t * at, int m, int n)
 {
     int i,j;
 
@@ -140,7 +142,7 @@ static void transpose(double * a, double * at, int m, int n)
 }
 
 // A <- A + B
-static void add(double * a, double * b, int m, int n)
+static void add(number_t * a, number_t * b, int m, int n)
 {        
     int i,j;
 
@@ -150,7 +152,7 @@ static void add(double * a, double * b, int m, int n)
 }
 
 // C <- A - B
-static void sub(double * a, double * b, double * c, int n)
+static void sub(number_t * a, number_t * b, number_t * c, int n)
 {
     int j;
 
@@ -158,7 +160,7 @@ static void sub(double * a, double * b, double * c, int n)
         c[j] = a[j] - b[j];
 }
 
-static void negate(double * a, int m, int n)
+static void negate(number_t * a, int m, int n)
 {        
     int i, j;
 
@@ -167,17 +169,17 @@ static void negate(double * a, int m, int n)
             a[i*n+j] = -a[i*n+j];
 }
 
-static void invert(double * a, double * at, double * p, int n)
+static void invert(number_t * a, number_t * at, number_t * p, int n)
 {
     cholsl(a, at, p, n);
 }
 
-static void mat_set(double * a, int i, int j, int n, double value)
+static void mat_set(number_t * a, int i, int j, int n, number_t value)
 {
     a[i*n+j] = value;
 }
 
-static void mat_addeye(double * a, int n)
+static void mat_addeye(number_t * a, int n)
 {
     for (int i=0; i<n; ++i)
         a[i*n+i] += 1;
@@ -186,32 +188,30 @@ static void mat_addeye(double * a, int n)
 
 // ----------------------------------------------------------
 
-#include "tinyekf.h"
-
-void ekf_setP(ekf_t * ekf, int i, int j, double value)
+void ekf_setP(ekf_t * ekf, int i, int j, number_t value)
 {
     mat_set(ekf->P, i, j, N, value);
 }
 
-void ekf_setQ(ekf_t * ekf, int i, int j, double value)
+void ekf_setQ(ekf_t * ekf, int i, int j, number_t value)
 {
     mat_set(ekf->Q, i, j, N, value);
 }
 
-void ekf_setR(ekf_t * ekf, int i, int j, double value)
+void ekf_setR(ekf_t * ekf, int i, int j, number_t value)
 {
     mat_set(ekf->R, i, j, M, value);
 }
 
-void ekf_setX(ekf_t * ekf, int i, double value)
+void ekf_setX(ekf_t * ekf, int i, number_t value)
 {
     ekf->X[i] = value;
 }
 
 static void ekf_pre_update(
         ekf_t * ekf, 
-        void (*f)(double *, double *, double *), 
-        void (*g)(double *, double *, double *))
+        void (*f)(number_t *, number_t *, number_t *), 
+        void (*g)(number_t *, number_t *, number_t *))
 {
     // 1, 2
     zeros(ekf->fy, N, N);
@@ -224,9 +224,9 @@ static void ekf_pre_update(
 
 void ekf_update(
         ekf_t * ekf, 
-        double * Z, 
-        void (*f)(double *, double *, double *), 
-        void (*g)(double *, double *, double *))
+        number_t * Z, 
+        void (*f)(number_t *, number_t *, number_t *), 
+        void (*g)(number_t *, number_t *, number_t *))
 {        
     // 1,2,3
     ekf_pre_update(ekf, f, g);
@@ -235,7 +235,7 @@ void ekf_update(
     ekf_post_update(ekf, Z);
 }
 
-void ekf_post_update(ekf_t * ekf, double * Z)
+void ekf_post_update(ekf_t * ekf, number_t * Z)
 {    
     // 4
     mulmat(ekf->fy, ekf->P, ekf->tmp_n_n, N, N, N);
