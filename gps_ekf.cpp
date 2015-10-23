@@ -110,7 +110,7 @@ class GPS_EKF : public TinyEKF {
                 for (int j=0; j<3; ++j) {
                     H[i*8+j*2] = dx[i*3+j] / gXp[i];
                 }
-                mat_set(H, i, 6, 8, 1);
+                H[i*8+6] = 1;
             }   
         }
         
