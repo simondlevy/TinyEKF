@@ -85,7 +85,7 @@ class GPS_EKF : public TinyEKF {
             }
 
             for (int j=0; j<8; ++j)
-                mat_set(fy, j, j, 8, 1);
+                fy[j*8+j] = 1;
                 
             for (int j=0; j<4; ++j)
                 mat_set(fy, 2*j, 2*j+1, 8, this->T);
