@@ -1,4 +1,5 @@
-#include "params.h"
+#define N 8
+#define M 4
 
 typedef struct {
 

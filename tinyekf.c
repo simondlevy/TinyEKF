@@ -81,6 +81,7 @@ static void zeros(double * a, int m, int n)
             a[i*n+j] = 0;
 }
 
+/*
 static void vec_dump(double * x, int n, const char * fmt)
 {
     int j;
@@ -90,6 +91,7 @@ static void vec_dump(double * x, int n, const char * fmt)
         printf(f, x[j]);
     printf("\n");
 }
+*/
 
 static void mat_dump(double * a, int m, int n, const char * fmt)
 {

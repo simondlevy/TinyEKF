@@ -73,7 +73,17 @@ class GPS_EKF : public TinyEKF {
         }
                 
     protected:
-    
+
+        double get_Xp(double * X, int j)
+        {
+            return j%2 ? X[j] : X[j] + this->T * X[j+1];
+        }
+
+        double get_fy(int i, int j)
+        {
+            return i==j ? 1 : (j==i+1 ? this->T : 0);
+        }
+
         void f(double * X, double * Xp, double * fy)
         {
             for (int j=0; j<8; j+=2) {
