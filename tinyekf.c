@@ -2,69 +2,19 @@
 
 #include "tinyekf.h"
 
-void ekf_init(ekf_t * ekf, int n, int m)
-{
-    mat_init(&ekf->P,n, n);
-    mat_init(&ekf->Q,n, n);
-    mat_init(&ekf->R,m, m);
-    mat_init(&ekf->G,n, m);
-
-    mat_init(&ekf->H  ,m, n);
-    mat_init(&ekf->fy ,n, n);
-
-    mat_init(&ekf->Pp  ,n, n);
-
-    mat_init(&ekf->Ht  ,n, m);
-    mat_init(&ekf->fyt ,n, n);
-
-    mat_init(&ekf->eye_n_n,n, n);
-    eye(ekf->eye_n_n, N, 1);
-
-    mat_init(&ekf->tmp_m_m, m, m);
-    mat_init(&ekf->tmp2_m_m, m, m);
-    mat_init(&ekf->tmp_m_n, m, n);
-    mat_init(&ekf->tmp_n_m, n, m);
-    mat_init(&ekf->tmp2_n_m, n, m);
-    mat_init(&ekf->tmp_n_n, n, n);
-}
-
-void ekf_free(ekf_t ekf)
-{
-    mat_free(ekf.P);
-    mat_free(ekf.Q);
-    mat_free(ekf.R);
-    mat_free(ekf.G);
-    mat_free(ekf.H);
-
-    mat_free(ekf.fy);
-    mat_free(ekf.fyt);        
-
-    mat_free(ekf.Pp);
-    mat_free(ekf.Ht);
-
-    mat_free(ekf.eye_n_n);
-
-    mat_free(ekf.tmp_n_n);
-    mat_free(ekf.tmp_m_n);
-
-    mat_free(ekf.tmp_n_m);        
-    mat_free(ekf.tmp2_n_m);
-    mat_free(ekf.tmp_m_m);
-}
-
 void ekf_setP(ekf_t * ekf, int i, int j, double value)
 {
-    mat_set(ekf->P, i, j, value);
+    mat_set(ekf->P, i, j, N, value);
 }
 
 void ekf_setQ(ekf_t * ekf, int i, int j, double value)
 {
-    mat_set(ekf->Q, i, j, value);
+    mat_set(ekf->Q, i, j, N, value);
 }
 
 void ekf_setR(ekf_t * ekf, int i, int j, double value)
 {
-    mat_set(ekf->R, i, j, value);
+    mat_set(ekf->R, i, j, M, value);
 }
 
 void ekf_setX(ekf_t * ekf, int i, double value)
@@ -74,23 +24,23 @@ void ekf_setX(ekf_t * ekf, int i, double value)
 
 static void ekf_pre_update(
         ekf_t * ekf, 
-        void (*f)(double *, double *, double **), 
-        void (*g)(double *, double *, double **))
+        void (*f)(double *, double *, double *), 
+        void (*g)(double *, double *, double *))
 {
     // 1, 2
     zeros(ekf->fy, N, N);
-    f(ekf->X, ekf->Xp, ekf->fy.data);
+    f(ekf->X, ekf->Xp, ekf->fy);
 
     // 3
     zeros(ekf->H, M, N);
-    g(ekf->Xp, ekf->gXp, ekf->H.data);     
+    g(ekf->Xp, ekf->gXp, ekf->H);     
 }
 
 void ekf_update(
         ekf_t * ekf, 
         double * Z, 
-        void (*f)(double *, double *, double **), 
-        void (*g)(double *, double *, double **))
+        void (*f)(double *, double *, double *), 
+        void (*g)(double *, double *, double *))
 {        
     // 1,2,3
     ekf_pre_update(ekf, f, g);
@@ -113,7 +63,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n, M, N, N);
     mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m, M, N, M);
     add(ekf->tmp2_m_m, ekf->R, M, M);
-    invert(ekf->tmp2_m_m, ekf->tmp_m_m, M);
+    invert(ekf->tmp2_m_m, ekf->tmp_m_m, ekf->tmp_m, M);
     mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G, N, M, M);
 
     // 6
@@ -123,7 +73,7 @@ void ekf_post_update(ekf_t * ekf, double * Z)
     // 7
     mulmat(ekf->G, ekf->H, ekf->tmp_n_n, N, M, N);
     negate(ekf->tmp_n_n, N, N);
-    add(ekf->tmp_n_n, ekf->eye_n_n, N, N);
+    mat_addeye(ekf->tmp_n_n, N);
     mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P, N, N, N);
 
     mat_dump(ekf->P, N, N, "%+10.4f"); exit(0);

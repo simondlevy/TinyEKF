@@ -1,44 +1,35 @@
-#define N 8
-#define M 4
-
+#include "params.h"
 #include "linalg.h"
-
 
 typedef struct {
 
-    double X[N];    // state
+    double X[N];     // state
 
-    mat_t  P;   // prediction error covariance
-    mat_t  Q;   // process noise covariance
-    mat_t  R;   // measurement error covariance
+    double P[N*N];   // prediction error covariance
+    double Q[N*N];   // process noise covariance
+    double R[M*M];   // measurement error covariance
 
-    mat_t  G;   // Kalman gain; a.k.a. K
+    double  G[N*M];  // Kalman gain; a.k.a. K
 
-    double   Xp[N];  // output of state-transition function
-    mat_t  fy;  // Jacobean of process model
-    mat_t  H;   // Jacobean of measurement model
-    double   gXp[N];
+    double  Xp[N];   // output of state-transition function
+    double  fy[N*N]; // Jacobean of process model
+    double  H[M*N];  // Jacobean of measurement model
+    double  gXp[N];
 
-    mat_t  Ht;
-    mat_t  fyt;
-    mat_t  Pp;
-
-    mat_t  eye_n_n;
+    double  Ht[N*M];
+    double  fyt[N*N];
+    double  Pp[N*N];
 
     // temporary storage
-    mat_t  tmp_n_m;
-    mat_t  tmp_n_n;
-    mat_t  tmp_m_n;
-    double   tmp_m[M];
-    mat_t  tmp2_n_m;
-    mat_t  tmp_m_m;
-    mat_t  tmp2_m_m;
+    double  tmp_n_m[N*M];
+    double  tmp_n_n[N*N];
+    double  tmp_m_n[M*N];
+    double  tmp_m[M];
+    double  tmp2_n_m[N*M];
+    double  tmp_m_m[M*M];
+    double  tmp2_m_m[M*M];
 
 } ekf_t; 
-
-void ekf_init(ekf_t * ekf, int n, int m);
-
-void ekf_free(ekf_t ekf);
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value);
 
@@ -51,7 +42,7 @@ void ekf_setX(ekf_t * ekf, int i, double value);
 void ekf_update(
         ekf_t * ekf, 
         double * Z, 
-        void (*f)(double *, double *, double **), 
-        void (*g)(double *, double *, double **));
+        void (*f)(double *, double *, double *), 
+        void (*g)(double *, double *, double *));
 
 void ekf_post_update(ekf_t * ekf, double * Z);

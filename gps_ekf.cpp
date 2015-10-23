@@ -12,6 +12,9 @@
 #include <strings.h>
 #include <math.h>
 
+static const int N = 8;
+static const int M = 4;
+
 #include "tinyekf.hpp"
 
 class GPS_EKF : public TinyEKF {
@@ -19,9 +22,8 @@ class GPS_EKF : public TinyEKF {
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF() : TinyEKF(8, 4) 
+        GPS_EKF() 
         {            
-
             // initial covariances of state, measurement noise 
             double P0 = 10;
             double R0 = 36;
@@ -75,7 +77,7 @@ class GPS_EKF : public TinyEKF {
                 
     protected:
     
-        void f(double * X, double * Xp, double ** fy)
+        void f(double * X, double * Xp, double * fy)
         {
             for (int j=0; j<8; j+=2) {
                 Xp[j] = X[j] + this->T * X[j+1];
@@ -83,14 +85,14 @@ class GPS_EKF : public TinyEKF {
             }
 
             for (int j=0; j<8; ++j)
-                fy[j][j] = 1;
+                mat_set(fy, j, j, 8, 1);
                 
             for (int j=0; j<4; ++j)
-                fy[2*j][2*j+1] = this->T;
+                mat_set(fy, 2*j, 2*j+1, 8, this->T);
         }
 
 
-        void g(double * Xp, double * gXp, double ** H)
+        void g(double * Xp, double * gXp, double * H)
         {
             double dx[12];
             
@@ -106,9 +108,9 @@ class GPS_EKF : public TinyEKF {
             
             for (int i=0; i<4; ++i) {
                 for (int j=0; j<3; ++j) {
-                    H[i][j*2] = dx[i*3+j] / gXp[i];
+                    mat_set(H, i, j*2, 8, dx[i*3+j] / gXp[i]);
                 }
-                H[i][6] = 1;
+                mat_set(H, i, 6, 8, 1);
             }   
         }
         

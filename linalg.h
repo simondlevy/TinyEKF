@@ -1,41 +1,33 @@
-typedef struct {
+void mat_init(double * * mat, int m, int n);
 
-    double ** data;
-    int rows;
-    int cols;
+void mat_free(double * mat);
 
-    double * tmp;
+void zeros(double * mat, int m, int n);
 
-} mat_t;
-
-void mat_init(mat_t * mat, int m, int n);
-
-void mat_free(mat_t mat);
-
-void zeros(mat_t mat, int m, int n);
-
-void eye(mat_t mat, int n, double s);
+void eye(double * a, int n, double s);
 
 void vec_dump(double * x, int n, const char * fmt);
 
-void mat_dump(mat_t mat, int m, int n, const char * fmt);
+void mat_dump(double * mat, int m, int n, const char * fmt);
 
 // C <- A * B
-void mulmat(mat_t a, mat_t b, mat_t c, int arows, int acols, int bcols);
+void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols);
 
 // Y <- A * X
-void mulvec(mat_t a, double * x, double * y, int m, int n);
+void mulvec(double * a, double * x, double * y, int m, int n);
 
-void transpose(mat_t a, mat_t at, int m, int n);
+void transpose(double * a, double * at, int m, int n);
 
 // A <- A + B
-void add(mat_t a, mat_t b, int m, int n);
+void add(double * a, double * b, int m, int n);
 
 // C <- A - B
 void sub(double * a, double * b, double * c, int n);
 
-void negate(mat_t a, int m, int n);
+void negate(double * a, int m, int n);
 
-void invert(mat_t a, mat_t at, int n);
+void invert(double * a, double * at, double * p, int n);
 
-void mat_set(mat_t a, int i, int j, double value);
+void mat_set(double * a, int i, int j, int n, double value);
+
+void mat_addeye(double * a, int n);

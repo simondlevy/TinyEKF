@@ -3,15 +3,15 @@
 #include <strings.h>
 #include <math.h>
 
-static void choldc1(double ** a, double * p, int n) {
+static void choldc1(double * a, double * p, int n) {
     int i,j,k;
     double sum;
 
     for (i = 0; i < n; i++) {
         for (j = i; j < n; j++) {
-            sum = a[i][j];
+            sum = a[i*n+j];
             for (k = i - 1; k >= 0; k--) {
-                sum -= a[i][k] * a[j][k];
+                sum -= a[i*n+k] * a[j*n+k];
             }
             if (i == j) {
                 if (sum <= 0) {
@@ -20,105 +20,78 @@ static void choldc1(double ** a, double * p, int n) {
                 p[i] = sqrt(sum);
             }
             else {
-                a[j][i] = sum / p[i];
+                a[j*n+i] = sum / p[i];
             }
         }
     }
 }
 
-static void choldcsl(double ** A, double ** a, double * p, int n) 
+static void choldcsl(double * A, double * a, double * p, int n) 
 {
     int i,j,k; double sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
-            a[i][j] = A[i][j];
+            a[i*n+j] = A[i*n+j];
     choldc1(a, p, n);
     for (i = 0; i < n; i++) {
-        a[i][i] = 1 / p[i];
+        a[i*n+i] = 1 / p[i];
         for (j = i + 1; j < n; j++) {
             sum = 0;
             for (k = i; k < j; k++) {
-                sum -= a[j][k] * a[k][i];
+                sum -= a[j*n+k] * a[k*n+i];
             }
-            a[j][i] = sum / p[j];
+            a[j*n+i] = sum / p[j];
         }
     }
 }
 
 
-static void cholsl(double ** A, double ** a, double * p, int n) 
+static void cholsl(double * A, double * a, double * p, int n) 
 {
     int i,j,k;
     choldcsl(A,a,p,n);
     for (i = 0; i < n; i++) {
         for (j = i + 1; j < n; j++) {
-            a[i][j] = 0.0;
+            a[i*n+j] = 0.0;
         }
     }
     for (i = 0; i < n; i++) {
-        a[i][i] *= a[i][i];
+        a[i*n+i] *= a[i*n+i];
         for (k = i + 1; k < n; k++) {
-            a[i][i] += a[k][i] * a[k][i];
+            a[i*n+i] += a[k*n+i] * a[k*n+i];
         }
         for (j = i + 1; j < n; j++) {
             for (k = j; k < n; k++) {
-                a[i][j] += a[k][i] * a[k][j];
+                a[i*n+j] += a[k*n+i] * a[k*n+j];
             }
         }
     }
     for (i = 0; i < n; i++) {
         for (j = 0; j < i; j++) {
-            a[i][j] = a[j][i];
+            a[i*n+j] = a[j*n+i];
         }
     }
 }
 
 #include "linalg.h"
 
-void mat_init(mat_t * mat, int m, int n)
-{
-    int i;
-
-    mat->data = (double **)malloc(m*sizeof(double *));
-
-    for (i=0; i<m; ++i)
-        mat->data[i] = (double *)malloc(n*sizeof(double));
-
-    mat->rows = m;
-    mat->cols = n;
-
-    mat->tmp = (double *)malloc(m*sizeof(double));
-}
-
-void mat_free(mat_t mat)
-{
-    int i;
-
-    for (i=0; i<mat.rows; ++i)
-        free(mat.data[i]);
-
-    free(mat.data);
-
-    free(mat.tmp);
-}
-
-void zeros(mat_t mat, int m, int n)
+void zeros(double * a, int m, int n)
 {
     int i, j;
 
     for(i=0; i<m; ++i)
         for(j=0; j<n; ++j)
-            mat.data[i][j] = 0;
+            a[i*n+j] = 0;
 }
 
-void eye(mat_t mat, int n, double s)
+void eye(double * a, int n, double s)
 {
-    zeros(mat, mat.rows, mat.cols);
+    zeros(a, n, n);
 
     int k;
 
     for(k=0; k<n; ++k)
-        mat.data[k][k] = s;
+        a[k*n+k] = s;
 }
 
 void vec_dump(double * x, int n, const char * fmt)
@@ -131,7 +104,7 @@ void vec_dump(double * x, int n, const char * fmt)
     printf("\n");
 }
 
-void mat_dump(mat_t mat, int m, int n, const char * fmt)
+void mat_dump(double * a, int m, int n, const char * fmt)
 {
     int i,j;
 
@@ -139,52 +112,52 @@ void mat_dump(mat_t mat, int m, int n, const char * fmt)
     sprintf(f, "%s ", fmt);
      for(i=0; i<m; ++i) {
         for(j=0; j<n; ++j)
-            printf(f, mat.data[i][j]);
+            printf(f, a[i*n+j]);
         printf("\n");
     }
 }
 
 // C <- A * B
-void mulmat(mat_t a, mat_t b, mat_t c, int arows, int acols, int bcols)
+void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
     for(i=0; i<arows; ++i)
         for(j=0; j<bcols; ++j) {
-            c.data[i][j] = 0;
+            c[i*bcols+j] = 0;
             for(l=0; l<acols; ++l)
-                c.data[i][j] += a.data[i][l] * b.data[l][j];
+                c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
         }
 }
 
-void mulvec(mat_t a, double * x, double * y, int m, int n)
+void mulvec(double * a, double * x, double * y, int m, int n)
 {
     int i, j;
 
     for(i=0; i<m; ++i) {
         y[i] = 0;
         for(j=0; j<n; ++j)
-            y[i] += x[j] * a.data[i][j];
+            y[i] += x[j] * a[i*n+j];
     }
 }
 
-void transpose(mat_t a, mat_t at, int m, int n)
+void transpose(double * a, double * at, int m, int n)
 {
     int i,j;
 
     for(i=0; i<m; ++i)
         for(j=0; j<n; ++j) 
-            at.data[j][i] = a.data[i][j];
+            at[j*m+i] = a[i*n+j];
 }
 
 // A <- A + B
-void add(mat_t a, mat_t b, int m, int n)
+void add(double * a, double * b, int m, int n)
 {        
     int i,j;
 
     for(i=0; i<m; ++i)
         for(j=0; j<n; ++j)
-            a.data[i][j] += b.data[i][j];
+            a[i*n+j] += b[i*n+j];
 }
 
 // C <- A - B
@@ -196,21 +169,27 @@ void sub(double * a, double * b, double * c, int n)
         c[j] = a[j] - b[j];
 }
 
-void negate(mat_t a, int m, int n)
+void negate(double * a, int m, int n)
 {        
     int i, j;
 
     for(i=0; i<m; ++i)
         for(j=0; j<n; ++j)
-            a.data[i][j] = -a.data[i][j];
+            a[i*n+j] = -a[i*n+j];
 }
 
-void invert(mat_t a, mat_t at, int n)
+void invert(double * a, double * at, double * p, int n)
 {
-    cholsl(a.data, at.data, a.tmp, n);
+    cholsl(a, at, p, n);
 }
 
-void mat_set(mat_t a, int i, int j, double value)
+void mat_set(double * a, int i, int j, int n, double value)
 {
-    a.data[i][j] = value;
+    a[i*n+j] = value;
+}
+
+void mat_addeye(double * a, int n)
+{
+    for (int i=0; i<n; ++i)
+        a[i*n+i] += 1;
 }

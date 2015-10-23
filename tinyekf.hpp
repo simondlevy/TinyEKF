@@ -8,22 +8,11 @@ class TinyEKF {
 
     protected:
 
-        virtual void f(double * X, double * Xp, double ** fy) = 0;
+        virtual void f(double * X, double * Xp, double * fy) = 0;
 
-        virtual void g(double * Xp, double * gXp, double ** H) = 0;    
-
+        virtual void g(double * Xp, double * gXp, double * H) = 0;    
 
     public:
-
-        TinyEKF(int n, int m)
-        {
-            ekf_init(&this->ekf, n, m);
-        }
-
-        ~TinyEKF()
-        {
-            ekf_free(this->ekf);
-        }
 
         void setP(int i, int j, double value)
         {
@@ -50,10 +39,10 @@ class TinyEKF {
             ekf_t ekf = this->ekf;
 
             // 1, 2
-            this->f(ekf.X, ekf.Xp, ekf.fy.data);
+            this->f(ekf.X, ekf.Xp, ekf.fy);
 
             // 3
-            this->g(ekf.Xp, ekf.gXp, ekf.H.data);     
+            this->g(ekf.Xp, ekf.gXp, ekf.H);     
 
             // 4,5,6,7
             ekf_post_update(&ekf, Z);
