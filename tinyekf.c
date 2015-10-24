@@ -181,52 +181,33 @@ static void mat_set(number_t * a, int i, int j, int n, number_t value)
 
 static void mat_addeye(number_t * a, int n)
 {
-    for (int i=0; i<n; ++i)
+    int i;
+    for (i=0; i<n; ++i)
         a[i*n+i] += 1;
 }
 
 
 // ----------------------------------------------------------
 
-void ekf_setP(ekf_t * ekf, int i, int j, number_t value)
-{
-    mat_set(ekf->P, i, j, N, value);
-}
-
-void ekf_setQ(ekf_t * ekf, int i, int j, number_t value)
-{
-    mat_set(ekf->Q, i, j, N, value);
-}
-
-void ekf_setR(ekf_t * ekf, int i, int j, number_t value)
-{
-    mat_set(ekf->R, i, j, M, value);
-}
-
-void ekf_setX(ekf_t * ekf, int i, number_t value)
-{
-    ekf->X[i] = value;
-}
-
 static void ekf_pre_update(
         ekf_t * ekf, 
-        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N*N]), 
-        void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M*N]))
+        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N][N]), 
+        void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M][N]))
 {
     // 1, 2
-    zeros(ekf->fy, N, N);
+    zeros(&ekf->fy[0][0], N, N);
     f(ekf->X, ekf->Xp, ekf->fy);
 
     // 3
-    zeros(ekf->H, M, N);
+    zeros(&ekf->H[0][0], M, N);
     g(ekf->Xp, ekf->gXp, ekf->H);     
 }
 
 void ekf_update(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N*N]), 
-        void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M*N]))
+        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N][N]), 
+        void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M][N]))
 {        
     // 1,2,3
     ekf_pre_update(ekf, f, g);
@@ -238,29 +219,29 @@ void ekf_update(
 void ekf_post_update(ekf_t * ekf, number_t * Z)
 {    
     // 4
-    mulmat(ekf->fy, ekf->P, ekf->tmp_n_n, N, N, N);
-    transpose(ekf->fy, ekf->fyt, N, N);
-    mulmat(ekf->tmp_n_n, ekf->fyt, ekf->Pp, N, N, N);
-    add(ekf->Pp, ekf->Q, N, N);
+    mulmat(&ekf->fy[0][0], &ekf->P[0][0], &ekf->tmp_n_n[0][0], N, N, N);
+    transpose(&ekf->fy[0][0], &ekf->fyt[0][0], N, N);
+    mulmat(&ekf->tmp_n_n[0][0], &ekf->fyt[0][0], &ekf->Pp[0][0], N, N, N);
+    add(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
 
     // 5
-    transpose(ekf->H, ekf->Ht, M, N);
-    mulmat(ekf->Pp, ekf->Ht, ekf->tmp_n_m, N, N, M);
-    mulmat(ekf->H, ekf->Pp, ekf->tmp_m_n, M, N, N);
-    mulmat(ekf->tmp_m_n, ekf->Ht, ekf->tmp2_m_m, M, N, M);
-    add(ekf->tmp2_m_m, ekf->R, M, M);
-    invert(ekf->tmp2_m_m, ekf->tmp_m_m, ekf->tmp_m, M);
-    mulmat(ekf->tmp_n_m, ekf->tmp_m_m, ekf->G, N, M, M);
+    transpose(&ekf->H[0][0], &ekf->Ht[0][0], M, N);
+    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], &ekf->tmp_n_m[0][0], N, N, M);
+    mulmat(&ekf->H[0][0], &ekf->Pp[0][0], &ekf->tmp_m_n[0][0], M, N, N);
+    mulmat(&ekf->tmp_m_n[0][0], &ekf->Ht[0][0], &ekf->tmp2_m_m[0][0], M, N, M);
+    add(&ekf->tmp2_m_m[0][0], &ekf->R[0][0], M, M);
+    invert(&ekf->tmp2_m_m[0][0], &ekf->tmp_m_m[0][0], ekf->tmp_m, M);
+    mulmat(&ekf->tmp_n_m[0][0], &ekf->tmp_m_m[0][0], &ekf->G[0][0], N, M, M);
 
     // 6
     sub(ekf->tmp_m, ekf->gXp, Z, M);
-    mulvec(ekf->G, ekf->tmp_m, ekf->X, N, M);
+    mulvec(&ekf->G[0][0], &ekf->tmp_m[0], &ekf->X[0], N, M);
 
     // 7
-    mulmat(ekf->G, ekf->H, ekf->tmp_n_n, N, M, N);
-    negate(ekf->tmp_n_n, N, N);
-    mat_addeye(ekf->tmp_n_n, N);
-    mulmat(ekf->tmp_n_n, ekf->Pp, ekf->P, N, N, N);
+    mulmat(&ekf->G[0][0], &ekf->H[0][0], &ekf->tmp_n_n[0][0], N, M, N);
+    negate(&ekf->tmp_n_n[0][0], N, N);
+    mat_addeye(&ekf->tmp_n_n[0][0], N);
+    mulmat(&ekf->tmp_n_n[0][0], &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
 
-    mat_dump(ekf->P, N, N, "%+10.4f"); exit(0);
+    mat_dump(&ekf->P[0][0], N, N, "%+10.4f"); exit(0);
 }

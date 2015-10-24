@@ -9,9 +9,6 @@ class TinyEKF {
 
         ekf_t ekf;
 
-        double fy[N][N];
-        double H[M][N];
-
     protected:
 
         virtual void f(double X[N], double Xp[N], double fy[N][N]) = 0;
@@ -22,39 +19,33 @@ class TinyEKF {
 
         void setP(int i, int j, double value)
         {
-            ekf_setP(&this->ekf, i, j, value);
+            this->ekf.P[i][j] = value;
         }
 
         void setQ(int i, int j, double value)
         {
-            ekf_setQ(&this->ekf, i, j, value);
+            this->ekf.Q[i][j] = value;
         }
 
         void setR(int i, int j, double value)
         {
-            ekf_setR(&this->ekf, i, j, value);
+            this->ekf.R[i][j] = value;
         }
 
         void setX(int i, double value)
         {
-            ekf_setX(&this->ekf, i, value);
+            this->ekf.X[i] = value;
         }
 
         void update(double * Z)
         {        
-            ekf_t ekf = this->ekf;
-
             // 1, 2
-            bzero(this->fy, N*N*sizeof(double));
-            this->f(ekf.X, ekf.Xp, this->fy); 
-            memcpy(ekf.fy, this->fy, N*N*sizeof(double));
+            this->f(this->ekf.X, this->ekf.Xp, this->ekf.fy); 
 
             // 3
-            bzero(this->H, M*N*sizeof(double));
-            this->g(ekf.Xp, ekf.gXp, this->H);     
-            memcpy(ekf.H, this->H, M*N*sizeof(double));
+            this->g(this->ekf.Xp, this->ekf.gXp, this->ekf.H);     
  
             // 4,5,6,7
-            ekf_post_update(&ekf, Z);
+            ekf_post_update(&this->ekf, Z);
         }
 };
