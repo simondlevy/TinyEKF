@@ -24,7 +24,7 @@ typedef struct {
     number_t  hx[N];    // h(x)
 
     // temporary storage
-    number_t tmp1[1000];
+    number_t tmp1[N*N];
     number_t tmp2[1000];
     number_t tmp3[1000];
     number_t tmp4[M];
