@@ -23,6 +23,8 @@ typedef struct {
 
     number_t  hx[N];    // h(x)
 
+    number_t tmp[1000];
+
     // temporary storage
     number_t  tmp_n_m[N][M];
     number_t  tmp_n_n[N][N];

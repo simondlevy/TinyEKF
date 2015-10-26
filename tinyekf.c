@@ -194,9 +194,9 @@ void ekf_step(
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 {    
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(&ekf->F[0][0], &ekf->P[0][0], &ekf->tmp_n_n[0][0], N, N, N);
+    mulmat(&ekf->F[0][0], &ekf->P[0][0], ekf->tmp, N, N, N);
     transpose(&ekf->F[0][0], &ekf->Ft[0][0], N, N);
-    mulmat(&ekf->tmp_n_n[0][0], &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
+    mulmat(ekf->tmp, &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
     add(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
