@@ -11,9 +11,9 @@ class TinyEKF {
 
     protected:
 
-        virtual void f(double X[N], double F[N][N]) = 0;
+        virtual void f(double x[N], double F[N][N]) = 0;
 
-        virtual void h(double X[N], double hX[N], double H[M][N]) = 0;    
+        virtual void h(double x[N], double hx[N], double H[M][N]) = 0;    
 
     public:
 
@@ -34,16 +34,16 @@ class TinyEKF {
 
         void setX(int i, double value)
         {
-            this->ekf.X[i] = value;
+            this->ekf.x[i] = value;
         }
 
         void update(double * Z)
         {        
             // 1, 2
-            this->f(this->ekf.X, this->ekf.F); 
+            this->f(this->ekf.x, this->ekf.F); 
 
             // 3
-            this->h(this->ekf.X, this->ekf.hX, this->ekf.H);     
+            this->h(this->ekf.x, this->ekf.hx, this->ekf.H);     
  
             // 4,5,6,7
             ekf_post_update(&this->ekf, Z);

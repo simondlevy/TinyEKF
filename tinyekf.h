@@ -7,7 +7,7 @@ typedef double number_t;
 
 typedef struct {
 
-    number_t X[N];      // state
+    number_t x[N];      // state
 
     number_t P[N][N];   // prediction error covariance
     number_t Q[N][N];   // process noise covariance
@@ -21,7 +21,7 @@ typedef struct {
     number_t  Ft[N][N]; // transpose of process Jacobian
     number_t  Pp[N][N]; // P, post-prediction, pre-update
 
-    number_t  hX[N];    // h(X)
+    number_t  hx[N];    // h(x)
 
     // temporary storage
     number_t  tmp_n_m[N][M];
@@ -37,7 +37,7 @@ typedef struct {
 void ekf_update(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t X[N], number_t F[N][N]), 
-        void (*h)(number_t X[N], number_t hX[N], number_t H[M][N]));
+        void (*f)(number_t x[N], number_t F[N][N]), 
+        void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]));
 
 void ekf_post_update(ekf_t * ekf, number_t * Z);
