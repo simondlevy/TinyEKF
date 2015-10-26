@@ -201,12 +201,12 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(&ekf->H[0][0], &ekf->Ht[0][0], M, N);
-    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], &ekf->tmp_n_m[0][0], N, N, M);
+    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], ekf->tmp, N, N, M);
     mulmat(&ekf->H[0][0], &ekf->Pp[0][0], &ekf->tmp_m_n[0][0], M, N, N);
     mulmat(&ekf->tmp_m_n[0][0], &ekf->Ht[0][0], &ekf->tmp2_m_m[0][0], M, N, M);
     add(&ekf->tmp2_m_m[0][0], &ekf->R[0][0], M, M);
     invert(&ekf->tmp2_m_m[0][0], &ekf->tmp_m_m[0][0], ekf->tmp_m, M);
-    mulmat(&ekf->tmp_n_m[0][0], &ekf->tmp_m_m[0][0], &ekf->G[0][0], N, M, M);
+    mulmat(ekf->tmp, &ekf->tmp_m_m[0][0], &ekf->G[0][0], N, M, M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
     sub(ekf->tmp, ekf->hx, Z, M);
