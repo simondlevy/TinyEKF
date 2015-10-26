@@ -190,7 +190,7 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     number_t tmp1[N*N];
     number_t tmp2[M*N];
     number_t tmp3[M*M];
-    number_t tmp4[1000];
+    number_t tmp4[M];
     number_t tmp5[1000];
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
