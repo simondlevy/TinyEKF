@@ -191,12 +191,12 @@ static void mat_addeye(number_t * a, int n)
 
 static void ekf_pre_update(
         ekf_t * ekf, 
-        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N][N]), 
+        void (*f)(number_t X[N], number_t Xp[N], number_t F[N][N]), 
         void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M][N]))
 {
     // 1, 2
-    zeros(&ekf->fy[0][0], N, N);
-    f(ekf->X, ekf->Xp, ekf->fy);
+    zeros(&ekf->F[0][0], N, N);
+    f(ekf->X, ekf->Xp, ekf->F);
 
     // 3
     zeros(&ekf->H[0][0], M, N);
@@ -206,7 +206,7 @@ static void ekf_pre_update(
 void ekf_update(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N][N]), 
+        void (*f)(number_t X[N], number_t Xp[N], number_t F[N][N]), 
         void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M][N]))
 {        
     // 1,2,3
@@ -219,9 +219,9 @@ void ekf_update(
 void ekf_post_update(ekf_t * ekf, number_t * Z)
 {    
     // 4
-    mulmat(&ekf->fy[0][0], &ekf->P[0][0], &ekf->tmp_n_n[0][0], N, N, N);
-    transpose(&ekf->fy[0][0], &ekf->fyt[0][0], N, N);
-    mulmat(&ekf->tmp_n_n[0][0], &ekf->fyt[0][0], &ekf->Pp[0][0], N, N, N);
+    mulmat(&ekf->F[0][0], &ekf->P[0][0], &ekf->tmp_n_n[0][0], N, N, N);
+    transpose(&ekf->F[0][0], &ekf->Ft[0][0], N, N);
+    mulmat(&ekf->tmp_n_n[0][0], &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
     add(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
 
     // 5

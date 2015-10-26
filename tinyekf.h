@@ -16,12 +16,12 @@ typedef struct {
     number_t  G[N][M];  // Kalman gain; a.k.a. K
 
     number_t  Xp[N];   // output of state-transition function
-    number_t  fy[N][N]; // Jacobean of process model
+    number_t  F[N][N]; // Jacobean of process model
     number_t  H[M][N];  // Jacobean of measurement model
     number_t  gXp[N];
 
     number_t  Ht[N][M];
-    number_t  fyt[N][N];
+    number_t  Ft[N][N];
     number_t  Pp[N][N];
 
     // temporary storage
@@ -38,7 +38,7 @@ typedef struct {
 void ekf_update(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t X[N], number_t Xp[N], number_t fy[N][N]), 
+        void (*f)(number_t X[N], number_t Xp[N], number_t F[N][N]), 
         void (*g)(number_t Xp[N], number_t gXp[N], number_t H[M][N]));
 
 void ekf_post_update(ekf_t * ekf, number_t * Z);
