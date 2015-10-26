@@ -178,7 +178,7 @@ void ekf_step(
     f(ekf->x, ekf->F);
 
 
-    // h(\hat{x}_k
+    // h(\hat{x}_k)
     h(ekf->x, ekf->hx, ekf->H);     
 
     // Predict and update
