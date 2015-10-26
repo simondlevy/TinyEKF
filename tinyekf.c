@@ -175,15 +175,15 @@ static void mat_addeye(number_t * a, int n)
 
 // ----------------------------------------------------------
 
-static void ekf_pre_update(
+static void ekf_model(
         ekf_t * ekf, 
         void (*f)(number_t x[N], number_t F[N][N]), 
         void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]))
 {
-    // 1, 2
+    // x_k = f(x_{k-1})
     f(ekf->x, ekf->F);
 
-    // 3
+    // z_k = h(x_k) + v_k
     h(ekf->x, ekf->hx, ekf->H);     
 }
 
@@ -194,7 +194,7 @@ void ekf_update(
         void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]))
 {        
     // 1,2,3
-    ekf_pre_update(ekf, f, h);
+    ekf_model(ekf, f, h);
 
     // 4,5,6,7
     ekf_post_update(ekf, Z);
