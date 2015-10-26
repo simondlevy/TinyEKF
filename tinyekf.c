@@ -175,32 +175,23 @@ static void mat_addeye(number_t * a, int n)
 
 // ----------------------------------------------------------
 
-static void ekf_model(
-        ekf_t * ekf, 
-        void (*f)(number_t x[N], number_t F[N][N]), 
-        void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]))
-{
-    // x_k = f(x_{k-1})
-    f(ekf->x, ekf->F);
-
-    // z_k = h(x_k) + v_k
-    h(ekf->x, ekf->hx, ekf->H);     
-}
-
-void ekf_update(
+void ekf_step(
         ekf_t * ekf, 
         number_t * Z, 
         void (*f)(number_t x[N], number_t F[N][N]), 
         void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]))
 {        
-    // 1,2,3
-    ekf_model(ekf, f, h);
+    // x_k = f(x_{k-1})
+    f(ekf->x, ekf->F);
 
-    // 4,5,6,7
-    ekf_post_update(ekf, Z);
+    // z_k = h(x_k) + v_k
+    h(ekf->x, ekf->hx, ekf->H);     
+
+    // Predict and update
+    ekf_predict_and_update(ekf, Z);
 }
 
-void ekf_post_update(ekf_t * ekf, number_t * Z)
+void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 {    
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(&ekf->F[0][0], &ekf->P[0][0], &ekf->tmp_n_n[0][0], N, N, N);

@@ -37,15 +37,13 @@ class TinyEKF {
             this->ekf.x[i] = value;
         }
 
-        void update(double * Z)
+        void step(double * Z)
         {        
-            // 1, 2
+            // Model
             this->f(this->ekf.x, this->ekf.F); 
-
-            // 3
             this->h(this->ekf.x, this->ekf.hx, this->ekf.H);     
  
-            // 4,5,6,7
-            ekf_post_update(&this->ekf, Z);
+            // Predict, update
+            ekf_predict_and_update(&this->ekf, Z);
         }
 };

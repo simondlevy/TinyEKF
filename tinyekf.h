@@ -34,10 +34,10 @@ typedef struct {
 
 } ekf_t; 
 
-void ekf_update(
+void ekf_step(
         ekf_t * ekf, 
         number_t * Z, 
         void (*f)(number_t x[N], number_t F[N][N]), 
         void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]));
 
-void ekf_post_update(ekf_t * ekf, number_t * Z);
+void ekf_predict_and_update(ekf_t * ekf, number_t * Z);

@@ -183,7 +183,7 @@ int main(int argc, char ** argv)
                 
         ekf.setPseudorange(SV_Pos);
 
-        ekf.update(SV_Rho);
+        ekf.step(SV_Rho);
    }
 
     fclose(fp);
