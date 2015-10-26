@@ -181,10 +181,10 @@ void ekf_step(
         void (*f)(number_t x[N], number_t F[N][N]), 
         void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]))
 {        
-    // x_k = f(x_{k-1})
+    // \hat{x}_k = f(\hat{x}_{k-1})
     f(ekf->x, ekf->F);
 
-    // z_k = h(x_k) + v_k
+    // h(\hat{x}_k
     h(ekf->x, ekf->hx, ekf->H);     
 
     // Predict and update
