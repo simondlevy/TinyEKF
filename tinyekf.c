@@ -174,11 +174,6 @@ static void invert(number_t * a, number_t * at, number_t * p, int n)
     cholsl(a, at, p, n);
 }
 
-static void mat_set(number_t * a, int i, int j, int n, number_t value)
-{
-    a[i*n+j] = value;
-}
-
 static void mat_addeye(number_t * a, int n)
 {
     int i;
