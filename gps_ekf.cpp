@@ -74,11 +74,11 @@ class GPS_EKF : public TinyEKF {
                 
     protected:
 
-        void f(double X[N], double Xp[N], double F[N][N])
+        void f(double X[N], double F[N][N])
         {
             for (int j=0; j<8; j+=2) {
-                Xp[j] = X[j] + this->T * X[j+1];
-                Xp[j+1] = X[j+1];
+                X[j] = X[j] + this->T * X[j+1];
+                X[j+1] = X[j+1];
             }
 
             for (int j=0; j<8; ++j)
@@ -88,18 +88,18 @@ class GPS_EKF : public TinyEKF {
                 F[2*j][2*j+1] = this->T;
         }
 
-        void g(double Xp[N], double gXp[N], double H[M][N])
+        void g(double X[N], double gXp[N], double H[M][N])
         {
             double dx[4][3];
             
             for (int i=0; i<4; ++i) {
                 gXp[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    double d = Xp[j*2] - this->SV[i][j];
+                    double d = X[j*2] - this->SV[i][j];
                     dx[i][j] = d;
                     gXp[i] += d*d;
                 }
-                gXp[i] = pow(gXp[i], 0.5) + Xp[6];
+                gXp[i] = pow(gXp[i], 0.5) + X[6];
             }
             
             for (int i=0; i<4; ++i) {
