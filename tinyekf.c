@@ -213,10 +213,10 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     mulvec(&ekf->G[0][0], ekf->tmp, &ekf->x[0], N, M);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(&ekf->G[0][0], &ekf->H[0][0], &ekf->tmp_n_n[0][0], N, M, N);
-    negate(&ekf->tmp_n_n[0][0], N, N);
-    mat_addeye(&ekf->tmp_n_n[0][0], N);
-    mulmat(&ekf->tmp_n_n[0][0], &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
+    mulmat(&ekf->G[0][0], &ekf->H[0][0], ekf->tmp, N, M, N);
+    negate(ekf->tmp, N, N);
+    mat_addeye(ekf->tmp, N);
+    mulmat(ekf->tmp, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
 
     mat_dump(&ekf->P[0][0], N, N, "%+10.4f"); exit(0);
 }
