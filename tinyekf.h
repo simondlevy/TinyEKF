@@ -27,9 +27,9 @@ typedef struct {
     number_t  tmp_n_m[N][M];
     number_t  tmp_n_n[N][N];
     number_t  tmp_m_n[M][N];
+    number_t  tmp2_n_m[N][M];
     number_t  tmp_m[M];
     number_t  tmp_m_m[M][M];
-    number_t  tmp2_n_m[N][M];
     number_t  tmp2_m_m[M][M];
 
 } ekf_t; 
