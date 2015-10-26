@@ -205,7 +205,7 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     mulmat(&ekf->H[0][0], &ekf->Pp[0][0], ekf->tmp2, M, N, N);
     mulmat(ekf->tmp2, &ekf->Ht[0][0], ekf->tmp3, M, N, M);
     add(ekf->tmp3, &ekf->R[0][0], M, M);
-    invert(ekf->tmp3, ekf->tmp2, ekf->tmp_m, M);
+    invert(ekf->tmp3, ekf->tmp2, ekf->tmp4, M);
     mulmat(ekf->tmp1, ekf->tmp2, &ekf->G[0][0], N, M, M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
