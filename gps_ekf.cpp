@@ -81,7 +81,7 @@ class GPS_EKF : public TinyEKF {
                 X[j+1] = X[j+1];
             }
 
-            bzero(&F[0][0], N*N*sizeof(double));
+            //bzero(&F[0][0], N*N*sizeof(double));
 
             for (int j=0; j<8; ++j)
                 F[j][j] = 1;
@@ -104,7 +104,7 @@ class GPS_EKF : public TinyEKF {
                 hX[i] = pow(hX[i], 0.5) + X[6];
             }
             
-            bzero(&H[0][0], M*N*sizeof(double));
+            //bzero(&H[0][0], M*N*sizeof(double));
 
             for (int i=0; i<4; ++i) {
                 for (int j=0; j<3; ++j) 
