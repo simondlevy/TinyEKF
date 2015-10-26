@@ -187,7 +187,7 @@ void ekf_step(
 
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 {    
-    number_t tmp1[1000];
+    number_t tmp1[N*N];
     number_t tmp2[1000];
     number_t tmp3[1000];
     number_t tmp4[1000];
