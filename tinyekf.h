@@ -12,15 +12,16 @@ typedef struct {
     number_t P[N][N];   // prediction error covariance
     number_t Q[N][N];   // process noise covariance
     number_t R[M][M];   // measurement error covariance
+
     number_t G[N][M];   // Kalman gain; a.k.a. K
     number_t F[N][N];   // Jacobian of process model
     number_t H[M][N];   // Jacobian of measurement model
 
-    number_t  gXp[N];
-
     number_t  Ht[N][M]; // transpose of measurement Jacobian
     number_t  Ft[N][N]; // transpose of process Jacobian
     number_t  Pp[N][N]; // P, post-prediction, pre-update
+
+    number_t  hX[N];    // h(X)
 
     // temporary storage
     number_t  tmp_n_m[N][M];
@@ -37,6 +38,6 @@ void ekf_update(
         ekf_t * ekf, 
         number_t * Z, 
         void (*f)(number_t X[N], number_t F[N][N]), 
-        void (*g)(number_t X[N], number_t gXp[N], number_t H[M][N]));
+        void (*h)(number_t X[N], number_t hX[N], number_t H[M][N]));
 
 void ekf_post_update(ekf_t * ekf, number_t * Z);

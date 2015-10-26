@@ -88,23 +88,23 @@ class GPS_EKF : public TinyEKF {
                 F[2*j][2*j+1] = this->T;
         }
 
-        void g(double X[N], double gXp[N], double H[M][N])
+        void h(double X[N], double hX[N], double H[M][N])
         {
             double dx[4][3];
             
             for (int i=0; i<4; ++i) {
-                gXp[i] = 0;
+                hX[i] = 0;
                 for (int j=0; j<3; ++j) {
                     double d = X[j*2] - this->SV[i][j];
                     dx[i][j] = d;
-                    gXp[i] += d*d;
+                    hX[i] += d*d;
                 }
-                gXp[i] = pow(gXp[i], 0.5) + X[6];
+                hX[i] = pow(hX[i], 0.5) + X[6];
             }
             
             for (int i=0; i<4; ++i) {
                 for (int j=0; j<3; ++j) 
-                    H[i][j*2] = dx[i][j] / gXp[i];
+                    H[i][j*2] = dx[i][j] / hX[i];
                 H[i][6] = 1;
             }   
         }

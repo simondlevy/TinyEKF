@@ -13,7 +13,7 @@ class TinyEKF {
 
         virtual void f(double X[N], double F[N][N]) = 0;
 
-        virtual void g(double X[N], double gXp[N], double H[M][N]) = 0;    
+        virtual void h(double X[N], double hX[N], double H[M][N]) = 0;    
 
     public:
 
@@ -43,7 +43,7 @@ class TinyEKF {
             this->f(this->ekf.X, this->ekf.F); 
 
             // 3
-            this->g(this->ekf.X, this->ekf.gXp, this->ekf.H);     
+            this->h(this->ekf.X, this->ekf.hX, this->ekf.H);     
  
             // 4,5,6,7
             ekf_post_update(&this->ekf, Z);
