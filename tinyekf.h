@@ -23,18 +23,11 @@ typedef struct {
 
     number_t  hx[N];    // h(x)
 
+    // temporary storage
     number_t tmp1[1000];
     number_t tmp2[1000];
     number_t tmp3[1000];
     number_t tmp4[1000];
-
-    // temporary storage
-    number_t  tmp_n_m[N][M];
-    number_t  tmp_n_n[N][N];
-    number_t  tmp_m_n[M][N];
-    number_t  tmp_m[M];
-    number_t  tmp_m_m[M][M];
-    number_t  tmp2_m_m[M][M];
 
 } ekf_t; 
 
