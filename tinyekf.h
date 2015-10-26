@@ -7,7 +7,7 @@ typedef double number_t;
 
 typedef struct {
 
-    number_t X[N];     // state
+    number_t X[N];      // state
 
     number_t P[N][N];   // prediction error covariance
     number_t Q[N][N];   // process noise covariance
@@ -15,13 +15,13 @@ typedef struct {
 
     number_t  G[N][M];  // Kalman gain; a.k.a. K
 
-    number_t  Xp[N];   // output of state-transition function
-    number_t  F[N][N]; // Jacobean of process model
-    number_t  H[M][N];  // Jacobean of measurement model
+    number_t  Xp[N];    // output of state-transition function
+    number_t  F[N][N];  // Jacobian of process model
+    number_t  H[M][N];  // Jacobian of measurement model
     number_t  gXp[N];
 
-    number_t  Ht[N][M];
-    number_t  Ft[N][N];
+    number_t  Ht[N][M]; // transpose of measurement Jacobian
+    number_t  Ft[N][N]; // transpose of process Jacobian
     number_t  Pp[N][N];
 
     // temporary storage
