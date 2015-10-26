@@ -25,6 +25,7 @@ typedef struct {
 
     number_t tmp1[1000];
     number_t tmp2[1000];
+    number_t tmp3[1000];
 
     // temporary storage
     number_t  tmp_n_m[N][M];
