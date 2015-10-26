@@ -11,6 +11,11 @@ class TinyEKF {
 
     protected:
 
+        TinyEKF() 
+        {
+            ekf_init(&this->ekf);
+        }
+
         virtual void f(double x[N], double F[N][N]) = 0;
 
         virtual void h(double x[N], double hx[N], double H[M][N]) = 0;    

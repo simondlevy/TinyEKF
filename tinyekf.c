@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <strings.h>
 
 #include "tinyekf.h"
 
@@ -74,19 +75,7 @@ static void cholsl(number_t * A, number_t * a, number_t * p, int n)
     }
 }
 
-/*
-   static void vec_dump(number_t * x, int n, const char * fmt)
-   {
-   int j;
-   char f[100];
-   sprintf(f, "%s ", fmt);
-   for(j=0; j<n; ++j)
-   printf(f, x[j]);
-   printf("\n");
-   }
- */
-
-static void mat_dump(number_t * a, int m, int n, const char * fmt)
+static void dump(number_t * a, int m, int n, const char * fmt)
 {
     int i,j;
 
@@ -174,6 +163,10 @@ static void mat_addeye(number_t * a, int n)
 
 
 // ----------------------------------------------------------
+void ekf_init(ekf_t * ekf)
+{
+    bzero(ekf, sizeof(ekf_t));
+}
 
 void ekf_step(
         ekf_t * ekf, 
@@ -184,6 +177,7 @@ void ekf_step(
     // \hat{x}_k = f(\hat{x}_{k-1})
     f(ekf->x, ekf->F);
 
+
     // h(\hat{x}_k
     h(ekf->x, ekf->hx, ekf->H);     
 
@@ -191,46 +185,38 @@ void ekf_step(
     ekf_predict_and_update(ekf, Z);
 }
 
-typedef struct {
-    
-    number_t  tmp_n_m[N][M];
-    number_t  tmp_n_n[N][N];
-    number_t  tmp_m_n[M][N];
-    number_t  tmp_m[M];
-    number_t  tmp_m_m[M][M];
-    number_t  tmp2_n_m[N][M];
-    number_t  tmp2_m_m[M][M];
-
-} tmp_t; 
-
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 {    
-    tmp_t tmp;
+    number_t tmp1[1000];
+    number_t tmp2[1000];
+    number_t tmp3[1000];
+    number_t tmp4[1000];
+    number_t tmp5[1000];
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(&ekf->F[0][0], &ekf->P[0][0], &tmp.tmp_n_n[0][0], N, N, N);
+    mulmat(&ekf->F[0][0], &ekf->P[0][0], tmp1, N, N, N);
     transpose(&ekf->F[0][0], &ekf->Ft[0][0], N, N);
-    mulmat(&tmp.tmp_n_n[0][0], &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
+    mulmat(tmp1, &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
     add(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(&ekf->H[0][0], &ekf->Ht[0][0], M, N);
-    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], &tmp.tmp_n_m[0][0], N, N, M);
-    mulmat(&ekf->H[0][0], &ekf->Pp[0][0], &tmp.tmp_m_n[0][0], M, N, N);
-    mulmat(&tmp.tmp_m_n[0][0], &ekf->Ht[0][0], &tmp.tmp2_m_m[0][0], M, N, M);
-    add(&tmp.tmp2_m_m[0][0], &ekf->R[0][0], M, M);
-    invert(&tmp.tmp2_m_m[0][0], &tmp.tmp_m_m[0][0], tmp.tmp_m, M);
-    mulmat(&tmp.tmp_n_m[0][0], &tmp.tmp_m_m[0][0], &ekf->G[0][0], N, M, M);
+    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], tmp1, N, N, M);
+    mulmat(&ekf->H[0][0], &ekf->Pp[0][0], tmp2, M, N, N);
+    mulmat(tmp2, &ekf->Ht[0][0], tmp3, M, N, M);
+    add(tmp3, &ekf->R[0][0], M, M);
+    invert(tmp3, tmp4, tmp5, M);
+    mulmat(tmp1, tmp4, &ekf->G[0][0], N, M, M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-    sub(tmp.tmp_m, ekf->hx, Z, M);
-    mulvec(&ekf->G[0][0], &tmp.tmp_m[0], &ekf->x[0], N, M);
+    sub(tmp1, ekf->hx, Z, M);
+    mulvec(&ekf->G[0][0], tmp1, &ekf->x[0], N, M);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(&ekf->G[0][0], &ekf->H[0][0], &tmp.tmp_n_n[0][0], N, M, N);
-    negate(&tmp.tmp_n_n[0][0], N, N);
-    mat_addeye(&tmp.tmp_n_n[0][0], N);
-    mulmat(&tmp.tmp_n_n[0][0], &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
+    mulmat(&ekf->G[0][0], &ekf->H[0][0], tmp1, N, M, N);
+    negate(tmp1, N, N);
+    mat_addeye(tmp1, N);
+    mulmat(tmp1, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
 
-    mat_dump(&ekf->P[0][0], N, N, "%+10.4f"); exit(0);
+    dump(&ekf->P[0][0], N, N, "%+10.4f"); exit(0);
 }
