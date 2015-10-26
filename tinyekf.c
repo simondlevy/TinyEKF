@@ -194,29 +194,29 @@ void ekf_step(
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 {    
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(&ekf->F[0][0], &ekf->P[0][0], ekf->tmp, N, N, N);
+    mulmat(&ekf->F[0][0], &ekf->P[0][0], ekf->tmp1, N, N, N);
     transpose(&ekf->F[0][0], &ekf->Ft[0][0], N, N);
-    mulmat(ekf->tmp, &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
+    mulmat(ekf->tmp1, &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
     add(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(&ekf->H[0][0], &ekf->Ht[0][0], M, N);
-    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], ekf->tmp, N, N, M);
-    mulmat(&ekf->H[0][0], &ekf->Pp[0][0], &ekf->tmp_m_n[0][0], M, N, N);
-    mulmat(&ekf->tmp_m_n[0][0], &ekf->Ht[0][0], &ekf->tmp2_m_m[0][0], M, N, M);
+    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], ekf->tmp1, N, N, M);
+    mulmat(&ekf->H[0][0], &ekf->Pp[0][0], ekf->tmp2, M, N, N);
+    mulmat(ekf->tmp2, &ekf->Ht[0][0], &ekf->tmp2_m_m[0][0], M, N, M);
     add(&ekf->tmp2_m_m[0][0], &ekf->R[0][0], M, M);
     invert(&ekf->tmp2_m_m[0][0], &ekf->tmp_m_m[0][0], ekf->tmp_m, M);
-    mulmat(ekf->tmp, &ekf->tmp_m_m[0][0], &ekf->G[0][0], N, M, M);
+    mulmat(ekf->tmp1, &ekf->tmp_m_m[0][0], &ekf->G[0][0], N, M, M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-    sub(ekf->tmp, ekf->hx, Z, M);
-    mulvec(&ekf->G[0][0], ekf->tmp, &ekf->x[0], N, M);
+    sub(ekf->tmp1, ekf->hx, Z, M);
+    mulvec(&ekf->G[0][0], ekf->tmp1, &ekf->x[0], N, M);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(&ekf->G[0][0], &ekf->H[0][0], ekf->tmp, N, M, N);
-    negate(ekf->tmp, N, N);
-    mat_addeye(ekf->tmp, N);
-    mulmat(ekf->tmp, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
+    mulmat(&ekf->G[0][0], &ekf->H[0][0], ekf->tmp1, N, M, N);
+    negate(ekf->tmp1, N, N);
+    mat_addeye(ekf->tmp1, N);
+    mulmat(ekf->tmp1, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
 
     mat_dump(&ekf->P[0][0], N, N, "%+10.4f"); exit(0);
 }
