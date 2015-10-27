@@ -27,8 +27,8 @@ typedef struct {
     number_t tmp1[N*N];
     number_t tmp2[M*N];
     number_t tmp3[M*M];
-    number_t tmp4[M];
-    number_t tmp5[M*M];
+    number_t tmp4[M*M];
+    number_t tmp5[M];
 
 } ekf_t; 
 
