@@ -23,6 +23,13 @@ typedef struct {
 
     number_t  hx[N];    // h(x)
 
+    // temporary storage
+    number_t tmp1[N*N];
+    number_t tmp2[M*N];
+    number_t tmp3[M*M];
+    number_t tmp4[M];
+    number_t tmp5[M*M];
+
 } ekf_t; 
 
 void ekf_init(ekf_t * ekf);
