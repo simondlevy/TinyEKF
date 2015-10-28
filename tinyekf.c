@@ -171,15 +171,15 @@ void ekf_init(ekf_t * ekf)
 void ekf_step(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t x[N], number_t F[N][N]), 
-        void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]))
+        void (*f)(number_t x[N], number_t xp[N], number_t F[N][N]), 
+        void (*h)(number_t xp[N], number_t hx[N], number_t H[M][N]))
 {        
     // \hat{x}_k = f(\hat{x}_{k-1})
-    f(ekf->x, ekf->F);
+    f(ekf->x, ekf->xp, ekf->F);
 
 
     // h(\hat{x}_k)
-    h(ekf->x, ekf->hx, ekf->H);     
+    h(ekf->xp, ekf->hx, ekf->H);     
 
     // Predict and update
     ekf_predict_and_update(ekf, Z);
@@ -204,7 +204,7 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
     sub(ekf->tmp1, ekf->hx, Z, M);
-    mulvec(&ekf->G[0][0], ekf->tmp1, &ekf->x[0], N, M);
+    mulvec(&ekf->G[0][0], ekf->tmp1, &ekf->hx[0], N, M);
 
     // P_k = (I - G_k H_k) P_k
     mulmat(&ekf->G[0][0], &ekf->H[0][0], ekf->tmp1, N, M, N);
@@ -212,5 +212,5 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     mat_addeye(ekf->tmp1, N);
     mulmat(ekf->tmp1, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
 
-    dump(&ekf->P[0][0], N, N, "%+10.4f"); exit(0);
+    dump(&ekf->P[0][0], N, N, "%+10.4f"); printf("\n");
 }

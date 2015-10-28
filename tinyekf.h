@@ -23,6 +23,8 @@ typedef struct {
 
     number_t  hx[N];    // h(x)
 
+    number_t xp[N];
+
     // temporary storage
     number_t tmp1[N*N];
     number_t tmp2[M*N];
@@ -37,7 +39,7 @@ void ekf_init(ekf_t * ekf);
 void ekf_step(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t x[N], number_t F[N][N]), 
-        void (*h)(number_t x[N], number_t hx[N], number_t H[M][N]));
+        void (*f)(number_t x[N], number_t xp[N], number_t F[N][N]), 
+        void (*h)(number_t xp[N], number_t hx[N], number_t H[M][N]));
 
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z);

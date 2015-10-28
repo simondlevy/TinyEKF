@@ -74,11 +74,11 @@ class GPS_EKF : public TinyEKF {
                 
     protected:
 
-        void f(double X[N], double F[N][N])
+        void f(double X[N], double xp[N], double F[N][N])
         {
             for (int j=0; j<8; j+=2) {
-                X[j] = X[j] + this->T * X[j+1];
-                X[j+1] = X[j+1];
+                xp[j] = X[j] + this->T * X[j+1];
+                xp[j+1] = X[j+1];
             }
 
             for (int j=0; j<8; ++j)
@@ -88,23 +88,23 @@ class GPS_EKF : public TinyEKF {
                 F[2*j][2*j+1] = this->T;
         }
 
-        void h(double X[N], double hX[N], double H[M][N])
+        void h(double xp[N], double hx[N], double H[M][N])
         {
             double dx[4][3];
             
             for (int i=0; i<4; ++i) {
-                hX[i] = 0;
+                hx[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    double d = X[j*2] - this->SV[i][j];
+                    double d = xp[j*2] - this->SV[i][j];
                     dx[i][j] = d;
-                    hX[i] += d*d;
+                    hx[i] += d*d;
                 }
-                hX[i] = pow(hX[i], 0.5) + X[6];
+                hx[i] = pow(hx[i], 0.5) + xp[6];
             }
             
             for (int i=0; i<4; ++i) {
                 for (int j=0; j<3; ++j) 
-                    H[i][j*2] = dx[i][j] / hX[i];
+                    H[i][j*2] = dx[i][j] / hx[i];
                 H[i][6] = 1;
             }   
         }
@@ -176,6 +176,7 @@ int main(int argc, char ** argv)
     double SV_Rho[4];
 
     // Loop till no more data
+    int count = 0;
     while (true) {
         
         if (!readdata(fp, SV_Pos, SV_Rho))
@@ -184,6 +185,8 @@ int main(int argc, char ** argv)
         ekf.setPseudorange(SV_Pos);
 
         ekf.step(SV_Rho);
+
+        if (++count == 2) exit(0);
    }
 
     fclose(fp);
