@@ -17,13 +17,12 @@ typedef struct {
     number_t F[N][N];   // Jacobian of process model
     number_t H[M][N];   // Jacobian of measurement model
 
-    number_t  Ht[N][M]; // transpose of measurement Jacobian
-    number_t  Ft[N][N]; // transpose of process Jacobian
-    number_t  Pp[N][N]; // P, post-prediction, pre-update
+    number_t Ht[N][M];  // transpose of measurement Jacobian
+    number_t Ft[N][N];  // transpose of process Jacobian
+    number_t Pp[N][N];  // P, post-prediction, pre-update
 
-    number_t  hx[N];    // h(x)
-
-    number_t xp[N];
+    number_t fx[N];     // f(x)
+    number_t hx[N];     // h(x)
 
     // temporary storage
     number_t tmp1[N*N];
@@ -39,7 +38,7 @@ void ekf_init(ekf_t * ekf);
 void ekf_step(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t x[N], number_t xp[N], number_t F[N][N]), 
-        void (*h)(number_t xp[N], number_t hx[N], number_t H[M][N]));
+        void (*f)(number_t x[N],  number_t fx[N], number_t F[N][N]), 
+        void (*h)(number_t fx[N], number_t hx[N], number_t H[M][N]));
 
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z);

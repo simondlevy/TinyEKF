@@ -171,15 +171,14 @@ void ekf_init(ekf_t * ekf)
 void ekf_step(
         ekf_t * ekf, 
         number_t * Z, 
-        void (*f)(number_t x[N], number_t xp[N], number_t F[N][N]), 
-        void (*h)(number_t xp[N], number_t hx[N], number_t H[M][N]))
+        void (*f)(number_t x[N], number_t fx[N], number_t F[N][N]), 
+        void (*h)(number_t fx[N], number_t hx[N], number_t H[M][N]))
 {        
     // \hat{x}_k = f(\hat{x}_{k-1})
-    f(ekf->x, ekf->xp, ekf->F);
-
+    f(ekf->x, ekf->fx, ekf->F);
 
     // h(\hat{x}_k)
-    h(ekf->xp, ekf->hx, ekf->H);     
+    h(ekf->fx, ekf->hx, ekf->H);     
 
     // Predict and update
     ekf_predict_and_update(ekf, Z);
