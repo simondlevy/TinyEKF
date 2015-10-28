@@ -186,7 +186,7 @@ int main(int argc, char ** argv)
 
         ekf.step(SV_Rho);
 
-        if (++count == 2) exit(0);
+        //if (++count == 2) exit(0);
    }
 
     fclose(fp);
