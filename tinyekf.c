@@ -212,7 +212,7 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     invert(ekf->tmp3, ekf->tmp4, ekf->tmp5, M);
     mulmat(ekf->tmp1, ekf->tmp4, &ekf->G[0][0], N, M, M);
 
-    dump(&ekf->G[0][0], N, M, "%+17.15f"); exit(0);
+    dump(Z, M, 1, "%+17.15f"); exit(0);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
     sub(Z, ekf->hx, ekf->tmp1, M);
