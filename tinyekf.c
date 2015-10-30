@@ -216,7 +216,7 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     sub(Z, ekf->hx, ekf->tmp1, M);
     mulvec(&ekf->G[0][0], ekf->tmp1, ekf->tmp2, N, M);
     dump(ekf->tmp2, N, 1, "%+17.15f"); exit(0);
-    add(ekf->fx, ekf->tmp1, ekf->x, N);
+    add(ekf->fx, ekf->tmp2, ekf->x, N);
     printf("%f %f %f\n", ekf->x[0], ekf->x[2], ekf->x[4]); 
 
     // P_k = (I - G_k H_k) P_k
