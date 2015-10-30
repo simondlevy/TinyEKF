@@ -88,6 +88,7 @@ static void dump(number_t * a, int m, int n, const char * fmt)
     }
 }
 
+
 // C <- A * B
 static void mulmat(number_t * a, number_t * b, number_t * c, int arows, int acols, int bcols)
 {
@@ -202,14 +203,16 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     mulmat(ekf->tmp1, ekf->tmp4, &ekf->G[0][0], N, M, M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-    sub(ekf->tmp1, ekf->hx, Z, M);
-    mulvec(&ekf->G[0][0], ekf->tmp1, &ekf->hx[0], N, M);
+    sub(Z, ekf->hx, ekf->tmp1, M);
+    mulvec(&ekf->G[0][0], ekf->tmp1, &ekf->x[0], N, M);
+    int j;
+    for (j=0; j<N; ++j)
+        ekf->x[j] = ekf->fx[j] + ekf->tmp1[j];
+    printf("%f %f %f\n", ekf->x[0], ekf->x[2], ekf->x[4]); exit(0);
 
     // P_k = (I - G_k H_k) P_k
     mulmat(&ekf->G[0][0], &ekf->H[0][0], ekf->tmp1, N, M, N);
     negate(ekf->tmp1, N, N);
     mat_addeye(ekf->tmp1, N);
     mulmat(ekf->tmp1, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
-
-    dump(&ekf->P[0][0], N, N, "%+10.4f"); printf("\n");
 }

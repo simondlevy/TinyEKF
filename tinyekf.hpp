@@ -42,6 +42,11 @@ class TinyEKF {
             this->ekf.x[i] = value;
         }
 
+        double getX(int i)
+        {
+            return this->ekf.x[i];
+        }
+
         void step(double * Z)
         {        
             // Model

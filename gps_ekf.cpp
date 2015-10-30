@@ -176,7 +176,6 @@ int main(int argc, char ** argv)
     double SV_Rho[4];
 
     // Loop till no more data
-    int count = 0;
     while (true) {
         
         if (!readdata(fp, SV_Pos, SV_Rho))
@@ -186,7 +185,7 @@ int main(int argc, char ** argv)
 
         ekf.step(SV_Rho);
 
-        //if (++count == 2) exit(0);
+        printf("%f %f %f\n", ekf.getX(0), ekf.getX(2), ekf.getX(4));
    }
 
     fclose(fp);
