@@ -132,6 +132,16 @@ static void accum(number_t * a, number_t * b, int m, int n)
             a[i*n+j] += b[i*n+j];
 }
 
+// C <- A + B
+static void add(number_t * a, number_t * b, number_t * c, int n)
+{
+    int j;
+
+    for(j=0; j<n; ++j)
+        c[j] = a[j] + b[j];
+}
+
+
 // C <- A - B
 static void sub(number_t * a, number_t * b, number_t * c, int n)
 {
@@ -205,9 +215,7 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
     sub(Z, ekf->hx, ekf->tmp1, M);
     mulvec(&ekf->G[0][0], ekf->tmp1, &ekf->x[0], N, M);
-    int j;
-    for (j=0; j<N; ++j)
-        ekf->x[j] = ekf->fx[j] + ekf->tmp1[j];
+    add(ekf->fx, ekf->tmp1, ekf->x, N);
     printf("%f %f %f\n", ekf->x[0], ekf->x[2], ekf->x[4]); exit(0);
 
     // P_k = (I - G_k H_k) P_k
