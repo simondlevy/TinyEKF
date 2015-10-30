@@ -123,7 +123,7 @@ static void transpose(number_t * a, number_t * at, int m, int n)
 }
 
 // A <- A + B
-static void add(number_t * a, number_t * b, int m, int n)
+static void accum(number_t * a, number_t * b, int m, int n)
 {        
     int i,j;
 
@@ -191,14 +191,14 @@ void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
     mulmat(&ekf->F[0][0], &ekf->P[0][0], ekf->tmp1, N, N, N);
     transpose(&ekf->F[0][0], &ekf->Ft[0][0], N, N);
     mulmat(ekf->tmp1, &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
-    add(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
+    accum(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(&ekf->H[0][0], &ekf->Ht[0][0], M, N);
     mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], ekf->tmp1, N, N, M);
     mulmat(&ekf->H[0][0], &ekf->Pp[0][0], ekf->tmp2, M, N, N);
     mulmat(ekf->tmp2, &ekf->Ht[0][0], ekf->tmp3, M, N, M);
-    add(ekf->tmp3, &ekf->R[0][0], M, M);
+    accum(ekf->tmp3, &ekf->R[0][0], M, M);
     invert(ekf->tmp3, ekf->tmp4, ekf->tmp5, M);
     mulmat(ekf->tmp1, ekf->tmp4, &ekf->G[0][0], N, M, M);
 
