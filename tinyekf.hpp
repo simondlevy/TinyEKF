@@ -1,20 +1,42 @@
-#include "tinyekf.h"
-
 #include <stdlib.h>
 #include <strings.h>
+
+#define N 8
+#define M 4
+
+typedef double number_t;
 
 class TinyEKF {
 
     private:
 
-        ekf_t ekf;
+        number_t x[N];      // state
+
+        number_t P[N][N];   // prediction error covariance
+        number_t Q[N][N];   // process noise covariance
+        number_t R[M][M];   // measurement error covariance
+
+        number_t G[N][M];   // Kalman gain; a.k.a. K
+        number_t F[N][N];   // Jacobian of process model
+        number_t H[M][N];   // Jacobian of measurement model
+
+        number_t Ht[N][M];  // transpose of measurement Jacobian
+        number_t Ft[N][N];  // transpose of process Jacobian
+        number_t Pp[N][N];  // P, post-prediction, pre-update
+
+        number_t fx[N];     // f(x)
+        number_t hx[N];     // h(x)
+
+        // temporary storage
+        number_t tmp1[N*N];
+        number_t tmp2[M*N];
+        number_t tmp3[M*M];
+        number_t tmp4[M*M];
+        number_t tmp5[M];
 
     protected:
 
-        TinyEKF() 
-        {
-            ekf_init(&this->ekf, NULL, NULL);
-        }
+        TinyEKF();
 
         virtual void f(double x[N], double fx[N], double F[N][N]) = 0;
 
@@ -22,38 +44,15 @@ class TinyEKF {
 
     public:
 
-        void setP(int i, int j, double value)
-        {
-            this->ekf.P[i][j] = value;
-        }
+        void setP(int i, int j, double value);
 
-        void setQ(int i, int j, double value)
-        {
-            this->ekf.Q[i][j] = value;
-        }
+        void setQ(int i, int j, double value);
 
-        void setR(int i, int j, double value)
-        {
-            this->ekf.R[i][j] = value;
-        }
+        void setR(int i, int j, double value);
 
-        void setX(int i, double value)
-        {
-            this->ekf.x[i] = value;
-        }
+        void setX(int i, double value);
 
-        double getX(int i)
-        {
-            return this->ekf.x[i];
-        }
+        double getX(int i);
 
-        void step(double * Z)
-        {        
-            // Model
-            this->f(this->ekf.x, this->ekf.fx, this->ekf.F); 
-            this->h(this->ekf.fx, this->ekf.hx, this->ekf.H);     
- 
-            // Predict, update
-            ekf_predict_and_update(&this->ekf, Z);
-        }
+        void step(double * Z);
 };

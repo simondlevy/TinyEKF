@@ -1,9 +1,8 @@
-#include <stdlib.h>
+#include "tinyekf.hpp"
+
 #include <stdio.h>
 #include <math.h>
 #include <strings.h>
-
-#include "tinyekf.h"
 
 static void choldc1(number_t * a, number_t * p, int n) {
     int i,j,k;
@@ -173,55 +172,79 @@ static void mat_addeye(number_t * a, int n)
 }
 
 
-// ----------------------------------------------------------
-void ekf_init(
-        ekf_t * ekf,
-        void (*f)(number_t x[N], number_t fx[N], number_t F[N][N]), 
-        void (*h)(number_t fx[N], number_t hx[N], number_t H[M][N]))
+// -------------------------------------------------------------------
+
+TinyEKF::TinyEKF() 
 {
-    bzero(ekf, sizeof(ekf_t));
-
-    ekf->f = f;
-    ekf->h = h;
+    bzero(this->P, N*N*sizeof(number_t)); 
+    bzero(this->Q, N*N*sizeof(number_t)); 
+    bzero(this->R, M*M*sizeof(number_t)); 
+    bzero(this->G, N*M*sizeof(number_t)); 
+    bzero(this->F, N*N*sizeof(number_t)); 
+    bzero(this->H, M*N*sizeof(number_t)); 
+    bzero(this->Ht, N*M*sizeof(number_t));
+    bzero(this->Ft, N*N*sizeof(number_t));
+    bzero(this->Pp, N*N*sizeof(number_t));
+    bzero(this->fx, N*sizeof(number_t));   
+    bzero(this->hx, N*sizeof(number_t));   
 }
 
-void ekf_step( ekf_t * ekf, number_t * Z)
+void TinyEKF::setP(int i, int j, double value)
+{
+    this->P[i][j] = value;
+}
+
+void TinyEKF::setQ(int i, int j, double value)
+{
+    this->Q[i][j] = value;
+}
+
+void TinyEKF::setR(int i, int j, double value)
+{
+    this->R[i][j] = value;
+}
+
+void TinyEKF::setX(int i, double value)
+{
+    this->x[i] = value;
+}
+
+double TinyEKF::getX(int i)
+{
+    return this->x[i];
+}
+
+void TinyEKF::step(double * Z)
 {        
-    // \hat{x}_k = f(\hat{x}_{k-1})
-    ekf->f(ekf->x, ekf->fx, ekf->F);
+    // Model
+    this->f(this->x, this->fx, this->F); 
+    this->h(this->fx, this->hx, this->H);     
 
-    // h(\hat{x}_k)
-    ekf->h(ekf->fx, ekf->hx, ekf->H);     
-
-    // Predict and update
-    ekf_predict_and_update(ekf, Z);
-}
-
-void ekf_predict_and_update(ekf_t * ekf, number_t * Z)
-{    
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(&ekf->F[0][0], &ekf->P[0][0], ekf->tmp1, N, N, N);
-    transpose(&ekf->F[0][0], &ekf->Ft[0][0], N, N);
-    mulmat(ekf->tmp1, &ekf->Ft[0][0], &ekf->Pp[0][0], N, N, N);
-    accum(&ekf->Pp[0][0], &ekf->Q[0][0], N, N);
+    mulmat(&this->F[0][0], &this->P[0][0], this->tmp1, N, N, N);
+    transpose(&this->F[0][0], &this->Ft[0][0], N, N);
+    mulmat(this->tmp1, &this->Ft[0][0], &this->Pp[0][0], N, N, N);
+    accum(&this->Pp[0][0], &this->Q[0][0], N, N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    transpose(&ekf->H[0][0], &ekf->Ht[0][0], M, N);
-    mulmat(&ekf->Pp[0][0], &ekf->Ht[0][0], ekf->tmp1, N, N, M);
-    mulmat(&ekf->H[0][0], &ekf->Pp[0][0], ekf->tmp2, M, N, N);
-    mulmat(ekf->tmp2, &ekf->Ht[0][0], ekf->tmp3, M, N, M);
-    accum(ekf->tmp3, &ekf->R[0][0], M, M);
-    invert(ekf->tmp3, ekf->tmp4, ekf->tmp5, M);
-    mulmat(ekf->tmp1, ekf->tmp4, &ekf->G[0][0], N, M, M);
+    transpose(&this->H[0][0], &this->Ht[0][0], M, N);
+    mulmat(&this->Pp[0][0], &this->Ht[0][0], this->tmp1, N, N, M);
+    mulmat(&this->H[0][0], &this->Pp[0][0], this->tmp2, M, N, N);
+    mulmat(this->tmp2, &this->Ht[0][0], this->tmp3, M, N, M);
+    accum(this->tmp3, &this->R[0][0], M, M);
+    invert(this->tmp3, this->tmp4, this->tmp5, M);
+    mulmat(this->tmp1, this->tmp4, &this->G[0][0], N, M, M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-    sub(Z, ekf->hx, ekf->tmp1, M);
-    mulvec(&ekf->G[0][0], ekf->tmp1, ekf->tmp2, N, M);
-    add(ekf->fx, ekf->tmp2, ekf->x, N);
+    sub(Z, this->hx, this->tmp1, M);
+    mulvec(&this->G[0][0], this->tmp1, this->tmp2, N, M);
+    add(this->fx, this->tmp2, this->x, N);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(&ekf->G[0][0], &ekf->H[0][0], ekf->tmp1, N, M, N);
-    negate(ekf->tmp1, N, N);
-    mat_addeye(ekf->tmp1, N);
-    mulmat(ekf->tmp1, &ekf->Pp[0][0], &ekf->P[0][0], N, N, N);
+    mulmat(&this->G[0][0], &this->H[0][0], this->tmp1, N, M, N);
+    negate(this->tmp1, N, N);
+    mat_addeye(this->tmp1, N);
+    mulmat(this->tmp1, &this->Pp[0][0], &this->P[0][0], N, N, N);
 }
+
+
