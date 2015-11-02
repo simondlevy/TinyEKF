@@ -21,6 +21,9 @@ typedef struct {
     number_t Ft[N][N];  // transpose of process Jacobian
     number_t Pp[N][N];  // P, post-prediction, pre-update
 
+    void (*f)(number_t x[N],  number_t fx[N], number_t F[N][N]); 
+    void (*h)(number_t fx[N], number_t hx[N], number_t H[M][N]);
+
     number_t fx[N];     // f(x)
     number_t hx[N];     // h(x)
 
@@ -33,12 +36,11 @@ typedef struct {
 
 } ekf_t; 
 
-void ekf_init(ekf_t * ekf);
-
-void ekf_step(
-        ekf_t * ekf, 
-        number_t * Z, 
-        void (*f)(number_t x[N],  number_t fx[N], number_t F[N][N]), 
+void ekf_init(
+        ekf_t * ekf,
+        void (*f)(number_t x[N], number_t fx[N], number_t F[N][N]), 
         void (*h)(number_t fx[N], number_t hx[N], number_t H[M][N]));
+
+void ekf_observe( ekf_t * ekf, number_t * Z);
 
 void ekf_predict_and_update(ekf_t * ekf, number_t * Z);

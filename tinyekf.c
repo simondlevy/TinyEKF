@@ -174,22 +174,24 @@ static void mat_addeye(number_t * a, int n)
 
 
 // ----------------------------------------------------------
-void ekf_init(ekf_t * ekf)
-{
-    bzero(ekf, sizeof(ekf_t));
-}
-
-void ekf_step(
-        ekf_t * ekf, 
-        number_t * Z, 
+void ekf_init(
+        ekf_t * ekf,
         void (*f)(number_t x[N], number_t fx[N], number_t F[N][N]), 
         void (*h)(number_t fx[N], number_t hx[N], number_t H[M][N]))
+{
+    bzero(ekf, sizeof(ekf_t));
+
+    ekf->f = f;
+    ekf->h = h;
+}
+
+void ekf_observe( ekf_t * ekf, number_t * Z)
 {        
     // \hat{x}_k = f(\hat{x}_{k-1})
-    f(ekf->x, ekf->fx, ekf->F);
+    ekf->f(ekf->x, ekf->fx, ekf->F);
 
     // h(\hat{x}_k)
-    h(ekf->fx, ekf->hx, ekf->H);     
+    ekf->h(ekf->fx, ekf->hx, ekf->H);     
 
     // Predict and update
     ekf_predict_and_update(ekf, Z);

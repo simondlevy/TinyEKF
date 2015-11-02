@@ -13,7 +13,7 @@ class TinyEKF {
 
         TinyEKF() 
         {
-            ekf_init(&this->ekf);
+            ekf_init(&this->ekf, NULL, NULL);
         }
 
         virtual void f(double x[N], double fx[N], double F[N][N]) = 0;
