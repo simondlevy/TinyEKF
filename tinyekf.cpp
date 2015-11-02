@@ -182,9 +182,9 @@ TinyEKF::TinyEKF()
     bzero(this->G, N*M*sizeof(number_t)); 
     bzero(this->F, N*N*sizeof(number_t)); 
     bzero(this->H, M*N*sizeof(number_t)); 
-    bzero(this->Ht, N*M*sizeof(number_t));
-    bzero(this->Ft, N*N*sizeof(number_t));
-    bzero(this->Pp, N*N*sizeof(number_t));
+    //bzero(this->Ht, N*M*sizeof(number_t));
+    //bzero(this->Ft, N*N*sizeof(number_t));
+    //bzero(this->Pp, N*N*sizeof(number_t));
     //bzero(this->fx, N*sizeof(number_t));   
     //bzero(this->hx, N*sizeof(number_t));   
 }
