@@ -185,8 +185,8 @@ TinyEKF::TinyEKF()
     bzero(this->Ht, N*M*sizeof(number_t));
     bzero(this->Ft, N*N*sizeof(number_t));
     bzero(this->Pp, N*N*sizeof(number_t));
-    bzero(this->fx, N*sizeof(number_t));   
-    bzero(this->hx, N*sizeof(number_t));   
+    //bzero(this->fx, N*sizeof(number_t));   
+    //bzero(this->hx, N*sizeof(number_t));   
 }
 
 void TinyEKF::setP(int i, int j, double value)
