@@ -185,7 +185,7 @@ void ekf_init(
     ekf->h = h;
 }
 
-void ekf_observe( ekf_t * ekf, number_t * Z)
+void ekf_step( ekf_t * ekf, number_t * Z)
 {        
     // \hat{x}_k = f(\hat{x}_{k-1})
     ekf->f(ekf->x, ekf->fx, ekf->F);
