@@ -193,11 +193,11 @@ TinyEKF::TinyEKF(int n, int m)
     this->tmp5 = new double[m];
 
     bzero(this->P, n*n*sizeof(double)); 
-    bzero(this->Q, N*N*sizeof(double)); 
-    bzero(this->R, M*M*sizeof(double)); 
-    bzero(this->G, N*M*sizeof(double)); 
-    bzero(this->F, N*N*sizeof(double)); 
-    bzero(this->H, M*N*sizeof(double)); 
+    bzero(this->Q, n*n*sizeof(double)); 
+    bzero(this->R, m*m*sizeof(double)); 
+    bzero(this->G, n*m*sizeof(double)); 
+    bzero(this->F, n*n*sizeof(double)); 
+    bzero(this->H, m*n*sizeof(double)); 
 }
 
 TinyEKF::~TinyEKF()
