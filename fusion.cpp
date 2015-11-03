@@ -39,15 +39,19 @@ int main(int argc, char ** argv)
     // Create the EKF
     Fuser ekf;
 
-    static const int steps = 1000;
+    static const int STEPS = 1000;
 
     // Loop till no more data
-    for (int i=0; i<steps; ++i) {
+    for (int i=0; i<STEPS; ++i) {
 
-        double z[1] = {0};
+        double z[1];
+
+        z[0] = sin(2*M_PI*i/STEPS);
+
+        printf("%f\n", z[0]);
 
         ekf.step(z);
 
-        printf("%f\n", ekf.getX(0));
+        //printf("%f\n", ekf.getX(0));
     }
 }
