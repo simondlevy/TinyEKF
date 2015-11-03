@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <strings.h>
 
-#define N 8
-#define M 4
-
 class TinyEKF {
 
     private:
@@ -40,6 +37,8 @@ class TinyEKF {
         TinyEKF(int n, int m);
 
         ~TinyEKF();
+
+        virtual void init(double * x, double * P, double * Q, double * R) = 0;
 
         virtual void f(double * x, double * fx, double * F) = 0;
 
