@@ -246,30 +246,30 @@ void TinyEKF::step(double * Z)
     this->h(this->fx, this->hx, this->H);     
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(&this->F[0][0], this->P, this->tmp1, N, N, N);
-    transpose(&this->F[0][0], &this->Ft[0][0], N, N);
-    mulmat(this->tmp1, &this->Ft[0][0], &this->Pp[0][0], N, N, N);
-    accum(&this->Pp[0][0], &this->Q[0][0], N, N);
+    mulmat(&this->F[0][0], this->P, this->tmp1, this->n, this->n, this->n);
+    transpose(&this->F[0][0], &this->Ft[0][0], this->n, this->n);
+    mulmat(this->tmp1, &this->Ft[0][0], &this->Pp[0][0], this->n, this->n, this->n);
+    accum(&this->Pp[0][0], &this->Q[0][0], this->n, this->n);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    transpose(&this->H[0][0], &this->Ht[0][0], M, N);
-    mulmat(&this->Pp[0][0], &this->Ht[0][0], this->tmp1, N, N, M);
-    mulmat(&this->H[0][0], &this->Pp[0][0], this->tmp2, M, N, N);
-    mulmat(this->tmp2, &this->Ht[0][0], this->tmp3, M, N, M);
-    accum(this->tmp3, &this->R[0][0], M, M);
-    invert(this->tmp3, this->tmp4, this->tmp5, M);
-    mulmat(this->tmp1, this->tmp4, &this->G[0][0], N, M, M);
+    transpose(&this->H[0][0], &this->Ht[0][0], this->m, this->n);
+    mulmat(&this->Pp[0][0], &this->Ht[0][0], this->tmp1, this->n, this->n, this->m);
+    mulmat(&this->H[0][0], &this->Pp[0][0], this->tmp2, this->m, this->n, this->n);
+    mulmat(this->tmp2, &this->Ht[0][0], this->tmp3, this->m, this->n, this->m);
+    accum(this->tmp3, &this->R[0][0], this->m, this->m);
+    invert(this->tmp3, this->tmp4, this->tmp5, this->m);
+    mulmat(this->tmp1, this->tmp4, &this->G[0][0], this->n, this->m, this->m);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-    sub(Z, this->hx, this->tmp1, M);
-    mulvec(&this->G[0][0], this->tmp1, this->tmp2, N, M);
-    add(this->fx, this->tmp2, this->x, N);
+    sub(Z, this->hx, this->tmp1, this->m);
+    mulvec(&this->G[0][0], this->tmp1, this->tmp2, this->n, this->m);
+    add(this->fx, this->tmp2, this->x, this->n);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(&this->G[0][0], &this->H[0][0], this->tmp1, N, M, N);
-    negate(this->tmp1, N, N);
-    mat_addeye(this->tmp1, N);
-    mulmat(this->tmp1, &this->Pp[0][0], this->P, N, N, N);
+    mulmat(&this->G[0][0], &this->H[0][0], this->tmp1, this->n, this->m, this->n);
+    negate(this->tmp1, this->n, this->n);
+    mat_addeye(this->tmp1, this->n);
+    mulmat(this->tmp1, &this->Pp[0][0], this->P, this->n, this->n, this->n);
 }
 
 
