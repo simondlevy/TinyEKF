@@ -252,7 +252,7 @@ double TinyEKF::getX(int i)
     return this->x[i];
 }
 
-void TinyEKF::step(double * Z)
+void TinyEKF::step(double * z)
 {        
     // Model
     this->model(this->fx, this->F, this->hx, this->H);
@@ -273,7 +273,7 @@ void TinyEKF::step(double * Z)
     mulmat(this->tmp1, this->tmp4, this->G, this->n, this->m, this->m);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-    sub(Z, this->hx, this->tmp1, this->m);
+    sub(z, this->hx, this->tmp1, this->m);
     mulvec(this->G, this->tmp1, this->tmp2, this->n, this->m);
     add(this->fx, this->tmp2, this->x, this->n);
 

@@ -49,5 +49,5 @@ class TinyEKF {
 
         double getX(int i);
 
-        void step(double * Z);
+        void step(double * z);
 };
