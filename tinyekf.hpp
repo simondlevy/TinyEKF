@@ -13,7 +13,7 @@ class TinyEKF {
 
         double * x;      // state
 
-        double P[N][N];   // prediction error covariance
+        double * P;   // prediction error covariance
         double Q[N][N];   // process noise covariance
         double R[M][M];   // measurement error covariance
 
