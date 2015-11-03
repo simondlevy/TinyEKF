@@ -10,6 +10,9 @@ class TinyEKF {
 
     private:
 
+        int n;
+        int m;
+
         number_t x[N];      // state
 
         number_t P[N][N];   // prediction error covariance
@@ -36,7 +39,9 @@ class TinyEKF {
 
     protected:
 
-        TinyEKF();
+        TinyEKF(int n, int m);
+
+        ~TinyEKF();
 
         virtual void f(double x[N], double fx[N], double F[N][N]) = 0;
 

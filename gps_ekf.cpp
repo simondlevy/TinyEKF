@@ -19,7 +19,7 @@ class GPS_EKF : public TinyEKF {
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF() 
+        GPS_EKF() : TinyEKF(8, 4)
         {            
             // initial covariances of state, measurement noise 
             double P0 = 10;

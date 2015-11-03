@@ -74,6 +74,7 @@ static void cholsl(number_t * A, number_t * a, number_t * p, int n)
     }
 }
 
+/*
 static void dump(number_t * a, int m, int n, const char * fmt)
 {
     int i,j;
@@ -86,7 +87,7 @@ static void dump(number_t * a, int m, int n, const char * fmt)
         printf("\n");
     }
 }
-
+*/
 
 // C <- A * B
 static void mulmat(number_t * a, number_t * b, number_t * c, int arows, int acols, int bcols)
@@ -174,14 +175,21 @@ static void mat_addeye(number_t * a, int n)
 
 // -------------------------------------------------------------------
 
-TinyEKF::TinyEKF() 
+TinyEKF::TinyEKF(int n, int m) 
 {
+    this->n = n;
+    this->m = m;
+
     bzero(this->P, N*N*sizeof(number_t)); 
     bzero(this->Q, N*N*sizeof(number_t)); 
     bzero(this->R, M*M*sizeof(number_t)); 
     bzero(this->G, N*M*sizeof(number_t)); 
     bzero(this->F, N*N*sizeof(number_t)); 
     bzero(this->H, M*N*sizeof(number_t)); 
+}
+
+TinyEKF::~TinyEKF()
+{
 }
 
 void TinyEKF::setP(int i, int j, double value)
