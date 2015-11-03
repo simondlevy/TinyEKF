@@ -5,8 +5,6 @@ class TinyEKF {
         int n;          // number of states
         int m;          // number of measurements
 
-        double * x;     // state
-
         double * P;     // prediction error covariance
         double * Q;     // process noise covariance
         double * R;     // measurement error covariance
@@ -29,15 +27,13 @@ class TinyEKF {
         double * tmp4;
         double * tmp5;
 
-        bool    ready;
-
     protected:
+
+        double * x;     // state
 
         TinyEKF(int n, int m);
 
         ~TinyEKF();
-
-        virtual void init(double * x, double * P, double * Q, double * R) = 0;
 
         virtual void f(double * x, double * fx, double * F) = 0;
 
@@ -45,15 +41,13 @@ class TinyEKF {
 
         void set(double * A, int i, int j, double value);
 
-    public:
-
         void setP(int i, int j, double value);
 
         void setQ(int i, int j, double value);
 
         void setR(int i, int j, double value);
 
-        void setX(int i, double value);
+    public:
 
         double getX(int i);
 

@@ -20,25 +20,49 @@ class GPS_EKF : public TinyEKF {
 
         // Eight state values, four measurement values
         GPS_EKF() : TinyEKF(8, 4)
-    {            
+        {            
+            // positioning interval
+            this->T = 1; 
 
-        // positioning interval
-        this->T = 1; 
+           // Set Q, see [1]
+            const double Sf    = 36;
+            const double Sg    = 0.01;
+            const double sigma = 5;         // state transition variance
+            const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
+            const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2,
+                sigma*sigma*T*T/2, sigma*sigma*T};
 
-       // Set Q, see [1]
-        const double Sf    = 36;
-        const double Sg    = 0.01;
-        const double sigma = 5;         // state transition variance
-        const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-        const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2,
-            sigma*sigma*T*T/2, sigma*sigma*T};
+            this->blkfill(Qxyz, 0);
+            this->blkfill(Qxyz, 1);
+            this->blkfill(Qxyz, 2);
+            this->blkfill(Qb,   3);
 
-        this->blkfill(Qxyz, 0);
-        this->blkfill(Qxyz, 1);
-        this->blkfill(Qxyz, 2);
-        this->blkfill(Qb,   3);
+            // initial covariances of state, measurement noise 
+            double P0 = 10;
+            double R0 = 36;
 
-    }
+            for (int i=0; i<8; ++i)
+                this->setP(i, i, P0);
+
+            for (int i=0; i<4; ++i)
+                this->setR(i, i, R0);
+
+            // position
+            this->x[0] = -2.168816181271560e+006;
+            this->x[2] =  4.386648549091666e+006;
+            this->x[4] =  4.077161596428751e+006;
+
+            // velocity
+            this->x[1] = 0;
+            this->x[3] = 0;
+            this->x[5] = 0;
+
+            // clock bias
+            this->x[6] = 3.575261153706439e+006;
+
+            // clock drift
+            this->x[7] = 4.549246345845814e+001;
+            }
 
         void setPseudorange(double  SV[4][3])
         {
@@ -48,35 +72,6 @@ class GPS_EKF : public TinyEKF {
         }
 
     protected:
-
-        void init(double * x, double * P, double * Q, double * R)
-        {
-            // initial covariances of state, measurement noise 
-            double P0 = 10;
-            double R0 = 36;
-
-            for (int i=0; i<8; ++i)
-                this->set(P, i, i, P0);
-
-            for (int i=0; i<4; ++i)
-                this->setR(i, i, R0);
-
-            // position
-            x[0] = -2.168816181271560e+006;
-            x[2] =  4.386648549091666e+006;
-            x[4] =  4.077161596428751e+006;
-
-            // velocity
-            x[1] = 0;
-            x[3] = 0;
-            x[5] = 0;
-
-            // clock bias
-            x[6] = 3.575261153706439e+006;
-
-            // clock drift
-            x[7] = 4.549246345845814e+001;
-        }
 
         void f(double * x, double * fx, double * F)
         {
