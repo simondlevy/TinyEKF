@@ -28,23 +28,7 @@ class GPS_EKF : public TinyEKF {
         // positioning interval
         this->T = 1; 
 
-        // position
-        this->setX(0, -2.168816181271560e+006);
-        this->setX(2,  4.386648549091666e+006);
-        this->setX(4,  4.077161596428751e+006);
-
-        // velocity
-        this->setX(1, 0);
-        this->setX(3, 0);
-        this->setX(5, 0);
-
-        // clock bias
-        this->setX(6, 3.575261153706439e+006);
-
-        // clock drift
-        this->setX(7, 4.549246345845814e+001);
-
-        // Set Q, see [1]
+       // Set Q, see [1]
         const double Sf    = 36;
         const double Sg    = 0.01;
         const double sigma = 5;         // state transition variance
@@ -76,7 +60,21 @@ class GPS_EKF : public TinyEKF {
 
         void init(double * x, double * P, double * Q, double * R)
         {
+            // position
+            x[0] = -2.168816181271560e+006;
+            x[2] =  4.386648549091666e+006;
+            x[4] =  4.077161596428751e+006;
 
+            // velocity
+            x[1] = 0;
+            x[3] = 0;
+            x[5] = 0;
+
+            // clock bias
+            x[6] = 3.575261153706439e+006;
+
+            // clock drift
+            x[7] = 4.549246345845814e+001;
         }
 
         void f(double * x, double * fx, double * F)
