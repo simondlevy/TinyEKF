@@ -21,9 +21,6 @@ class GPS_EKF : public TinyEKF {
         // Eight state values, four measurement values
         GPS_EKF() : TinyEKF(8, 4)
     {            
-        // initial covariances of state, measurement noise 
-        double P0 = 10;
-        double R0 = 36;
 
         // positioning interval
         this->T = 1; 
@@ -41,12 +38,6 @@ class GPS_EKF : public TinyEKF {
         this->blkfill(Qxyz, 2);
         this->blkfill(Qb,   3);
 
-        for (int i=0; i<8; ++i)
-            this->setP(i, i, P0);
-
-        for (int i=0; i<4; ++i)
-            this->setR(i, i, R0);
-
     }
 
         void setPseudorange(double  SV[4][3])
@@ -60,6 +51,16 @@ class GPS_EKF : public TinyEKF {
 
         void init(double * x, double * P, double * Q, double * R)
         {
+            // initial covariances of state, measurement noise 
+            double P0 = 10;
+            double R0 = 36;
+
+            for (int i=0; i<8; ++i)
+                this->setP(i, i, P0);
+
+            for (int i=0; i<4; ++i)
+                this->setR(i, i, R0);
+
             // position
             x[0] = -2.168816181271560e+006;
             x[2] =  4.386648549091666e+006;
