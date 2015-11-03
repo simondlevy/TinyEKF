@@ -11,7 +11,7 @@ class TinyEKF {
         int n;
         int m;
 
-        double x[N];      // state
+        double * x;      // state
 
         double P[N][N];   // prediction error covariance
         double Q[N][N];   // process noise covariance
