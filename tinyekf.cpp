@@ -4,9 +4,9 @@
 #include <math.h>
 #include <strings.h>
 
-static void choldc1(number_t * a, number_t * p, int n) {
+static void choldc1(double * a, double * p, int n) {
     int i,j,k;
-    number_t sum;
+    double sum;
 
     for (i = 0; i < n; i++) {
         for (j = i; j < n; j++) {
@@ -27,9 +27,9 @@ static void choldc1(number_t * a, number_t * p, int n) {
     }
 }
 
-static void choldcsl(number_t * A, number_t * a, number_t * p, int n) 
+static void choldcsl(double * A, double * a, double * p, int n) 
 {
-    int i,j,k; number_t sum;
+    int i,j,k; double sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
             a[i*n+j] = A[i*n+j];
@@ -47,7 +47,7 @@ static void choldcsl(number_t * A, number_t * a, number_t * p, int n)
 }
 
 
-static void cholsl(number_t * A, number_t * a, number_t * p, int n) 
+static void cholsl(double * A, double * a, double * p, int n) 
 {
     int i,j,k;
     choldcsl(A,a,p,n);
@@ -75,7 +75,7 @@ static void cholsl(number_t * A, number_t * a, number_t * p, int n)
 }
 
 /*
-static void dump(number_t * a, int m, int n, const char * fmt)
+static void dump(double * a, int m, int n, const char * fmt)
 {
     int i,j;
 
@@ -90,7 +90,7 @@ static void dump(number_t * a, int m, int n, const char * fmt)
 */
 
 // C <- A * B
-static void mulmat(number_t * a, number_t * b, number_t * c, int arows, int acols, int bcols)
+static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
@@ -102,7 +102,7 @@ static void mulmat(number_t * a, number_t * b, number_t * c, int arows, int acol
         }
 }
 
-static void mulvec(number_t * a, number_t * x, number_t * y, int m, int n)
+static void mulvec(double * a, double * x, double * y, int m, int n)
 {
     int i, j;
 
@@ -113,7 +113,7 @@ static void mulvec(number_t * a, number_t * x, number_t * y, int m, int n)
     }
 }
 
-static void transpose(number_t * a, number_t * at, int m, int n)
+static void transpose(double * a, double * at, int m, int n)
 {
     int i,j;
 
@@ -123,7 +123,7 @@ static void transpose(number_t * a, number_t * at, int m, int n)
 }
 
 // A <- A + B
-static void accum(number_t * a, number_t * b, int m, int n)
+static void accum(double * a, double * b, int m, int n)
 {        
     int i,j;
 
@@ -133,7 +133,7 @@ static void accum(number_t * a, number_t * b, int m, int n)
 }
 
 // C <- A + B
-static void add(number_t * a, number_t * b, number_t * c, int n)
+static void add(double * a, double * b, double * c, int n)
 {
     int j;
 
@@ -143,7 +143,7 @@ static void add(number_t * a, number_t * b, number_t * c, int n)
 
 
 // C <- A - B
-static void sub(number_t * a, number_t * b, number_t * c, int n)
+static void sub(double * a, double * b, double * c, int n)
 {
     int j;
 
@@ -151,7 +151,7 @@ static void sub(number_t * a, number_t * b, number_t * c, int n)
         c[j] = a[j] - b[j];
 }
 
-static void negate(number_t * a, int m, int n)
+static void negate(double * a, int m, int n)
 {        
     int i, j;
 
@@ -160,12 +160,12 @@ static void negate(number_t * a, int m, int n)
             a[i*n+j] = -a[i*n+j];
 }
 
-static void invert(number_t * a, number_t * at, number_t * p, int n)
+static void invert(double * a, double * at, double * p, int n)
 {
     cholsl(a, at, p, n);
 }
 
-static void mat_addeye(number_t * a, int n)
+static void mat_addeye(double * a, int n)
 {
     int i;
     for (i=0; i<n; ++i)
@@ -180,12 +180,12 @@ TinyEKF::TinyEKF(int n, int m)
     this->n = n;
     this->m = m;
 
-    bzero(this->P, N*N*sizeof(number_t)); 
-    bzero(this->Q, N*N*sizeof(number_t)); 
-    bzero(this->R, M*M*sizeof(number_t)); 
-    bzero(this->G, N*M*sizeof(number_t)); 
-    bzero(this->F, N*N*sizeof(number_t)); 
-    bzero(this->H, M*N*sizeof(number_t)); 
+    bzero(this->P, N*N*sizeof(double)); 
+    bzero(this->Q, N*N*sizeof(double)); 
+    bzero(this->R, M*M*sizeof(double)); 
+    bzero(this->G, N*M*sizeof(double)); 
+    bzero(this->F, N*N*sizeof(double)); 
+    bzero(this->H, M*N*sizeof(double)); 
 }
 
 TinyEKF::~TinyEKF()

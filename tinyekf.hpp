@@ -4,8 +4,6 @@
 #define N 8
 #define M 4
 
-typedef double number_t;
-
 class TinyEKF {
 
     private:
@@ -13,29 +11,29 @@ class TinyEKF {
         int n;
         int m;
 
-        number_t x[N];      // state
+        double x[N];      // state
 
-        number_t P[N][N];   // prediction error covariance
-        number_t Q[N][N];   // process noise covariance
-        number_t R[M][M];   // measurement error covariance
+        double P[N][N];   // prediction error covariance
+        double Q[N][N];   // process noise covariance
+        double R[M][M];   // measurement error covariance
 
-        number_t G[N][M];   // Kalman gain; a.k.a. K
-        number_t F[N][N];   // Jacobian of process model
-        number_t H[M][N];   // Jacobian of measurement model
+        double G[N][M];   // Kalman gain; a.k.a. K
+        double F[N][N];   // Jacobian of process model
+        double H[M][N];   // Jacobian of measurement model
 
-        number_t Ht[N][M];  // transpose of measurement Jacobian
-        number_t Ft[N][N];  // transpose of process Jacobian
-        number_t Pp[N][N];  // P, post-prediction, pre-update
+        double Ht[N][M];  // transpose of measurement Jacobian
+        double Ft[N][N];  // transpose of process Jacobian
+        double Pp[N][N];  // P, post-prediction, pre-update
 
-        number_t fx[N];     // f(x)
-        number_t hx[N];     // h(x)
+        double fx[N];     // f(x)
+        double hx[N];     // h(x)
 
         // temporary storage
-        number_t tmp1[N*N];
-        number_t tmp2[M*N];
-        number_t tmp3[M*M];
-        number_t tmp4[M*M];
-        number_t tmp5[M];
+        double tmp1[N*N];
+        double tmp2[M*N];
+        double tmp3[M*M];
+        double tmp4[M*M];
+        double tmp5[M];
 
     protected:
 
