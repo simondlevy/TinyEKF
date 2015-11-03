@@ -31,6 +31,7 @@ class Fuser : public TinyEKF {
 
         void model(double * fx, double * F, double * hx, double * H)
         {
+            fx[0] = this->x[0];
         }
 };
 
@@ -48,10 +49,8 @@ int main(int argc, char ** argv)
 
         z[0] = sin(2*M_PI*i/STEPS);
 
-        printf("%f\n", z[0]);
-
         ekf.step(z);
 
-        //printf("%f\n", ekf.getX(0));
+        printf("%f\n", ekf.getX(0));
     }
 }
