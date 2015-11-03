@@ -74,38 +74,38 @@ class GPS_EKF : public TinyEKF {
                 
     protected:
 
-        void f(double X[N], double xp[N], double F[N][N])
+        void f(double * x, double fx[N], double * F)
         {
             for (int j=0; j<8; j+=2) {
-                xp[j] = X[j] + this->T * X[j+1];
-                xp[j+1] = X[j+1];
+                fx[j] = x[j] + this->T * x[j+1];
+                fx[j+1] = x[j+1];
             }
 
             for (int j=0; j<8; ++j)
-                F[j][j] = 1;
+                this->set(F, j, j, 1);
                 
             for (int j=0; j<4; ++j)
-                F[2*j][2*j+1] = this->T;
+                this->set(F, 2*j, 2*j+1, this->T);
         }
 
-        void h(double xp[N], double hx[N], double H[M][N])
+        void h(double * fx, double * hx, double * H)
         {
             double dx[4][3];
             
             for (int i=0; i<4; ++i) {
                 hx[i] = 0;
                 for (int j=0; j<3; ++j) {
-                    double d = xp[j*2] - this->SV[i][j];
+                    double d = fx[j*2] - this->SV[i][j];
                     dx[i][j] = d;
                     hx[i] += d*d;
                 }
-                hx[i] = pow(hx[i], 0.5) + xp[6];
+                hx[i] = pow(hx[i], 0.5) + fx[6];
             }
             
             for (int i=0; i<4; ++i) {
                 for (int j=0; j<3; ++j) 
-                    H[i][j*2] = dx[i][j] / hx[i];
-                H[i][6] = 1;
+                    this->set(H, i, j*2, dx[i][j] / hx[i]);
+                this->set(H, i, 6, 1);
             }   
         }
         

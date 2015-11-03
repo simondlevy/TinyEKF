@@ -18,8 +18,8 @@ class TinyEKF {
         double * R;   // measurement error covariance
 
         double * G;   // Kalman gain; a.k.a. K
-        double F[N][N];   // Jacobian of process model
-        double H[M][N];   // Jacobian of measurement model
+        double * F;   // Jacobian of process model
+        double * H;   // Jacobian of measurement model
 
         double * Ht;  // transpose of measurement Jacobian
         double * Ft;  // transpose of process Jacobian
@@ -41,9 +41,9 @@ class TinyEKF {
 
         ~TinyEKF();
 
-        virtual void f(double x[N], double fx[N], double F[N][N]) = 0;
+        virtual void f(double * x, double * fx, double * F) = 0;
 
-        virtual void h(double fx[N], double hx[N], double H[M][N]) = 0;    
+        virtual void h(double * fx, double * hx, double * H) = 0;    
 
         void set(double * A, int i, int j, double value);
 
