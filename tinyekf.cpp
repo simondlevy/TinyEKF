@@ -186,6 +186,7 @@ TinyEKF::TinyEKF(int n, int m)
 
     this->P = new double [n*n];
     this->Q = new double [n*n];
+    this->R = new double [m*m];
 
     this->tmp1 = new double[n*n];
     this->tmp2 = new double[m*n];
@@ -209,6 +210,7 @@ TinyEKF::~TinyEKF()
 
     delete this->P;
     delete this->Q;
+    delete this->R;
 
     delete this->tmp1;
     delete this->tmp2;
@@ -230,7 +232,7 @@ void TinyEKF::setQ(int i, int j, double value)
 
 void TinyEKF::setR(int i, int j, double value)
 {
-    this->R[i][j] = value;
+    this->R[i*this->m+j] = value;
 }
 
 void TinyEKF::setX(int i, double value)
@@ -260,7 +262,7 @@ void TinyEKF::step(double * Z)
     mulmat(&this->Pp[0][0], &this->Ht[0][0], this->tmp1, this->n, this->n, this->m);
     mulmat(&this->H[0][0], &this->Pp[0][0], this->tmp2, this->m, this->n, this->n);
     mulmat(this->tmp2, &this->Ht[0][0], this->tmp3, this->m, this->n, this->m);
-    accum(this->tmp3, &this->R[0][0], this->m, this->m);
+    accum(this->tmp3, this->R, this->m, this->m);
     invert(this->tmp3, this->tmp4, this->tmp5, this->m);
     mulmat(this->tmp1, this->tmp4, &this->G[0][0], this->n, this->m, this->m);
 

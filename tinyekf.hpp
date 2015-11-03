@@ -15,7 +15,7 @@ class TinyEKF {
 
         double * P;   // prediction error covariance
         double * Q;   // process noise covariance
-        double R[M][M];   // measurement error covariance
+        double * R;   // measurement error covariance
 
         double G[N][M];   // Kalman gain; a.k.a. K
         double F[N][N];   // Jacobian of process model
