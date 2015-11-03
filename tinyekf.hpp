@@ -29,6 +29,8 @@ class TinyEKF {
         double * tmp4;
         double * tmp5;
 
+        bool    ready;
+
     protected:
 
         TinyEKF(int n, int m);

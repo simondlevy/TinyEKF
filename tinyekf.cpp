@@ -206,6 +206,8 @@ TinyEKF::TinyEKF(int n, int m)
     bzero(this->G, n*m*sizeof(double)); 
     bzero(this->F, n*n*sizeof(double)); 
     bzero(this->H, m*n*sizeof(double)); 
+
+    this->ready = false;
 }
 
 TinyEKF::~TinyEKF()
@@ -259,6 +261,11 @@ double TinyEKF::getX(int i)
 
 void TinyEKF::step(double * Z)
 {        
+    // Initialize first time around
+    if (!this->ready)
+        this->init(this->x, this->P, this->Q, this->R);
+    this->ready = true;
+
     // Model
     this->f(this->x, this->fx, this->F); 
     this->h(this->fx, this->hx, this->H);     
