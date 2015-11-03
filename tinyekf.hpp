@@ -25,8 +25,8 @@ class TinyEKF {
         double Ft[N][N];  // transpose of process Jacobian
         double Pp[N][N];  // P, post-prediction, pre-update
 
-        double fx[N];     // f(x)
-        double hx[N];     // h(x)
+        double * fx;     // f(x)
+        double * hx;     // h(x)
 
         // temporary storage
         double tmp1[N*N];

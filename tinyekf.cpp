@@ -181,6 +181,8 @@ TinyEKF::TinyEKF(int n, int m)
     this->m = m;
 
     this->x = new double [n];
+    this->fx = new double [n];
+    this->hx = new double [n];
 
     bzero(this->P, N*N*sizeof(double)); 
     bzero(this->Q, N*N*sizeof(double)); 
@@ -193,6 +195,8 @@ TinyEKF::TinyEKF(int n, int m)
 TinyEKF::~TinyEKF()
 {
     delete this->x;
+    delete this->fx;
+    delete this->hx;
 }
 
 void TinyEKF::setP(int i, int j, double value)
