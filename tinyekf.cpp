@@ -286,4 +286,8 @@ void TinyEKF::step(double * Z)
     mulmat(this->tmp1, this->Pp, this->P, this->n, this->n, this->n);
 }
 
+void TinyEKF::set(double * A, int i, int j, double value)
+{
+    A[i*this->n+j] = value;
+}
 

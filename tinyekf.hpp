@@ -45,6 +45,8 @@ class TinyEKF {
 
         virtual void h(double fx[N], double hx[N], double H[M][N]) = 0;    
 
+        void set(double * A, int i, int j, double value);
+
     public:
 
         void setP(int i, int j, double value);
