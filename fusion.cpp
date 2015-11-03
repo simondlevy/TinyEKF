@@ -14,12 +14,12 @@ Measurements, and Performance(Second Edition)",2006
 
 #include "tinyekf.hpp"
 
-class GPS_EKF : public TinyEKF {
+class Fuser : public TinyEKF {
 
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF() : TinyEKF(8, 4)
+        Fuser() : TinyEKF(8, 4)
         {            
             // positioning interval
             this->T = 1; 
@@ -159,7 +159,7 @@ static void skipline(FILE * fp)
 int main(int argc, char ** argv)
 {    
     // Create the EKF
-    GPS_EKF ekf;
+    Fuser ekf;
 
     // Open data file
     FILE * fp = fopen("gps.csv", "r");
