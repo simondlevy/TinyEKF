@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <strings.h>
-
 class TinyEKF {
 
     private:
