@@ -190,6 +190,7 @@ TinyEKF::TinyEKF(int n, int m)
     this->G = new double [n*m];
     this->Ft = new double [n*n];
     this->Ht = new double [n*m];
+    this->Pp = new double [n*n];
 
     this->tmp1 = new double[n*n];
     this->tmp2 = new double[m*n];
@@ -215,8 +216,9 @@ TinyEKF::~TinyEKF()
     delete this->Q;
     delete this->R;
     delete this->G;
-    delete this->Ht;
     delete this->Ft;
+    delete this->Ht;
+    delete this->Pp;
 
     delete this->tmp1;
     delete this->tmp2;
@@ -260,13 +262,13 @@ void TinyEKF::step(double * Z)
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(&this->F[0][0], this->P, this->tmp1, this->n, this->n, this->n);
     transpose(&this->F[0][0], this->Ft, this->n, this->n);
-    mulmat(this->tmp1, this->Ft, &this->Pp[0][0], this->n, this->n, this->n);
-    accum(&this->Pp[0][0], this->Q, this->n, this->n);
+    mulmat(this->tmp1, this->Ft, this->Pp, this->n, this->n, this->n);
+    accum(this->Pp, this->Q, this->n, this->n);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(&this->H[0][0], this->Ht, this->m, this->n);
-    mulmat(&this->Pp[0][0], this->Ht, this->tmp1, this->n, this->n, this->m);
-    mulmat(&this->H[0][0], &this->Pp[0][0], this->tmp2, this->m, this->n, this->n);
+    mulmat(this->Pp, this->Ht, this->tmp1, this->n, this->n, this->m);
+    mulmat(&this->H[0][0], this->Pp, this->tmp2, this->m, this->n, this->n);
     mulmat(this->tmp2, this->Ht, this->tmp3, this->m, this->n, this->m);
     accum(this->tmp3, this->R, this->m, this->m);
     invert(this->tmp3, this->tmp4, this->tmp5, this->m);
@@ -281,7 +283,7 @@ void TinyEKF::step(double * Z)
     mulmat(this->G, &this->H[0][0], this->tmp1, this->n, this->m, this->n);
     negate(this->tmp1, this->n, this->n);
     mat_addeye(this->tmp1, this->n);
-    mulmat(this->tmp1, &this->Pp[0][0], this->P, this->n, this->n, this->n);
+    mulmat(this->tmp1, this->Pp, this->P, this->n, this->n, this->n);
 }
 
 

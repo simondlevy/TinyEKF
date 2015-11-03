@@ -23,7 +23,7 @@ class TinyEKF {
 
         double * Ht;  // transpose of measurement Jacobian
         double * Ft;  // transpose of process Jacobian
-        double Pp[N][N];  // P, post-prediction, pre-update
+        double * Pp;  // P, post-prediction, pre-update
 
         double * fx;     // f(x)
         double * hx;     // h(x)
