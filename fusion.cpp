@@ -39,8 +39,10 @@ int main(int argc, char ** argv)
     // Create the EKF
     Fuser ekf;
 
+    static const int steps = 1000;
+
     // Loop till no more data
-    while (true) {
+    for (int i=0; i<steps; ++i) {
 
         double z[1] = {0};
 
