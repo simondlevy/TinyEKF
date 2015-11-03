@@ -56,7 +56,7 @@ class GPS_EKF : public TinyEKF {
             double R0 = 36;
 
             for (int i=0; i<8; ++i)
-                this->setP(i, i, P0);
+                this->set(P, i, i, P0);
 
             for (int i=0; i<4; ++i)
                 this->setR(i, i, R0);
