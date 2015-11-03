@@ -35,9 +35,7 @@ class TinyEKF {
 
         ~TinyEKF();
 
-        virtual void f(double * x, double * fx, double * F) = 0;
-
-        virtual void h(double * fx, double * hx, double * H) = 0;    
+        virtual void model(double * fx, double * F, double * hx, double * H) = 0;
 
         void set(double * A, int i, int j, double value);
 

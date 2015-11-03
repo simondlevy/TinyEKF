@@ -73,11 +73,11 @@ class GPS_EKF : public TinyEKF {
 
     protected:
 
-        void f(double * x, double * fx, double * F)
+        void model(double * fx, double * F, double * hx, double * H)
         {
             for (int j=0; j<8; j+=2) {
-                fx[j] = x[j] + this->T * x[j+1];
-                fx[j+1] = x[j+1];
+                fx[j] = this->x[j] + this->T * this->x[j+1];
+                fx[j+1] = this->x[j+1];
             }
 
             for (int j=0; j<8; ++j)
@@ -85,10 +85,7 @@ class GPS_EKF : public TinyEKF {
 
             for (int j=0; j<4; ++j)
                 this->set(F, 2*j, 2*j+1, this->T);
-        }
-
-        void h(double * fx, double * hx, double * H)
-        {
+        
             double dx[4][3];
 
             for (int i=0; i<4; ++i) {

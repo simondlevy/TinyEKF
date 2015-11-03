@@ -255,8 +255,7 @@ double TinyEKF::getX(int i)
 void TinyEKF::step(double * Z)
 {        
     // Model
-    this->f(this->x, this->fx, this->F); 
-    this->h(this->fx, this->hx, this->H);     
+    this->model(this->fx, this->F, this->hx, this->H);
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(this->F, this->P, this->tmp1, this->n, this->n, this->n);
