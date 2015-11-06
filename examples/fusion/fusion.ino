@@ -1,4 +1,4 @@
-#include "tinyekf.h"
+#include "TinyEKF.h"
 
 class Fuser : public TinyEKF {
 
@@ -6,12 +6,12 @@ class Fuser : public TinyEKF {
 
         // Eight state values, four measurement values
         Fuser() : TinyEKF(1, 1)
-        {            
-            this->setP(0, 0, .01);
-            this->setQ(0, 0, .01);
-            this->setR(0, 0, .01);
+    {            
+        this->setP(0, 0, .01);
+        this->setQ(0, 0, .01);
+        this->setR(0, 0, .01);
 
-        }
+    }
 
     protected:
 
@@ -25,22 +25,26 @@ class Fuser : public TinyEKF {
         }
 };
 
-int main(int argc, char ** argv)
-{    
-    // Create the EKF
-    Fuser ekf;
+Fuser ekf;
 
-    static const int STEPS = 1000;
+void setup() {
 
-    // Loop till no more data
-    for (int i=0; i<STEPS; ++i) {
+    Serial.begin(9600);
+}
 
-        float z[1];
 
-        z[0] = sin(2*M_PI*i/STEPS);
+void loop() {
 
-        ekf.step(z);
+    static int count;
+    const int LOOPSIZE = 1000;
 
-        printf("%f\n", ekf.getX(0));
-    }
+    float z[1];
+
+    z[0] = sin(2*M_PI*count/LOOPSIZE);
+
+    ekf.step(z);
+
+    Serial.println(ekf.getX(0));
+
+    count = (count + 1) % LOOPSIZE;
 }
