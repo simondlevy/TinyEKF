@@ -4,9 +4,9 @@
 #include <math.h>
 #include <strings.h>
 
-static void choldc1(double * a, double * p, int n) {
+static void choldc1(number_t * a, number_t * p, int n) {
     int i,j,k;
-    double sum;
+    number_t sum;
 
     for (i = 0; i < n; i++) {
         for (j = i; j < n; j++) {
@@ -27,9 +27,9 @@ static void choldc1(double * a, double * p, int n) {
     }
 }
 
-static void choldcsl(double * A, double * a, double * p, int n) 
+static void choldcsl(number_t * A, number_t * a, number_t * p, int n) 
 {
-    int i,j,k; double sum;
+    int i,j,k; number_t sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
             a[i*n+j] = A[i*n+j];
@@ -47,7 +47,7 @@ static void choldcsl(double * A, double * a, double * p, int n)
 }
 
 
-static void cholsl(double * A, double * a, double * p, int n) 
+static void cholsl(number_t * A, number_t * a, number_t * p, int n) 
 {
     int i,j,k;
     choldcsl(A,a,p,n);
@@ -75,7 +75,7 @@ static void cholsl(double * A, double * a, double * p, int n)
 }
 
 /*
-static void dump(double * a, int m, int n, const char * fmt)
+static void dump(number_t * a, int m, int n, const char * fmt)
 {
     int i,j;
 
@@ -90,7 +90,7 @@ static void dump(double * a, int m, int n, const char * fmt)
 */
 
 // C <- A * B
-static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
+static void mulmat(number_t * a, number_t * b, number_t * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
@@ -102,7 +102,7 @@ static void mulmat(double * a, double * b, double * c, int arows, int acols, int
         }
 }
 
-static void mulvec(double * a, double * x, double * y, int m, int n)
+static void mulvec(number_t * a, number_t * x, number_t * y, int m, int n)
 {
     int i, j;
 
@@ -113,7 +113,7 @@ static void mulvec(double * a, double * x, double * y, int m, int n)
     }
 }
 
-static void transpose(double * a, double * at, int m, int n)
+static void transpose(number_t * a, number_t * at, int m, int n)
 {
     int i,j;
 
@@ -123,7 +123,7 @@ static void transpose(double * a, double * at, int m, int n)
 }
 
 // A <- A + B
-static void accum(double * a, double * b, int m, int n)
+static void accum(number_t * a, number_t * b, int m, int n)
 {        
     int i,j;
 
@@ -133,7 +133,7 @@ static void accum(double * a, double * b, int m, int n)
 }
 
 // C <- A + B
-static void add(double * a, double * b, double * c, int n)
+static void add(number_t * a, number_t * b, number_t * c, int n)
 {
     int j;
 
@@ -143,7 +143,7 @@ static void add(double * a, double * b, double * c, int n)
 
 
 // C <- A - B
-static void sub(double * a, double * b, double * c, int n)
+static void sub(number_t * a, number_t * b, number_t * c, int n)
 {
     int j;
 
@@ -151,7 +151,7 @@ static void sub(double * a, double * b, double * c, int n)
         c[j] = a[j] - b[j];
 }
 
-static void negate(double * a, int m, int n)
+static void negate(number_t * a, int m, int n)
 {        
     int i, j;
 
@@ -160,12 +160,12 @@ static void negate(double * a, int m, int n)
             a[i*n+j] = -a[i*n+j];
 }
 
-static void invert(double * a, double * at, double * p, int n)
+static void invert(number_t * a, number_t * at, number_t * p, int n)
 {
     cholsl(a, at, p, n);
 }
 
-static void mat_addeye(double * a, int n)
+static void mat_addeye(number_t * a, int n)
 {
     int i;
     for (i=0; i<n; ++i)
@@ -180,32 +180,32 @@ TinyEKF::TinyEKF(int n, int m)
     this->n = n;
     this->m = m;
 
-    this->x = new double [n];
-    this->fx = new double [n];
-    this->hx = new double [n];
+    this->x = new number_t [n];
+    this->fx = new number_t [n];
+    this->hx = new number_t [n];
 
-    this->F = new double [n*n];
-    this->H = new double [m*n];
-    this->P = new double [n*n];
-    this->Q = new double [n*n];
-    this->R = new double [m*m];
-    this->G = new double [n*m];
-    this->Ft = new double [n*n];
-    this->Ht = new double [n*m];
-    this->Pp = new double [n*n];
+    this->F = new number_t [n*n];
+    this->H = new number_t [m*n];
+    this->P = new number_t [n*n];
+    this->Q = new number_t [n*n];
+    this->R = new number_t [m*m];
+    this->G = new number_t [n*m];
+    this->Ft = new number_t [n*n];
+    this->Ht = new number_t [n*m];
+    this->Pp = new number_t [n*n];
 
-    this->tmp1 = new double[n*n];
-    this->tmp2 = new double[m*n];
-    this->tmp3 = new double[m*m];
-    this->tmp4 = new double[m*m];
-    this->tmp5 = new double[m];
+    this->tmp1 = new number_t[n*n];
+    this->tmp2 = new number_t[m*n];
+    this->tmp3 = new number_t[m*m];
+    this->tmp4 = new number_t[m*m];
+    this->tmp5 = new number_t[m];
 
-    bzero(this->P, n*n*sizeof(double)); 
-    bzero(this->Q, n*n*sizeof(double)); 
-    bzero(this->R, m*m*sizeof(double)); 
-    bzero(this->G, n*m*sizeof(double)); 
-    bzero(this->F, n*n*sizeof(double)); 
-    bzero(this->H, m*n*sizeof(double)); 
+    bzero(this->P, n*n*sizeof(number_t)); 
+    bzero(this->Q, n*n*sizeof(number_t)); 
+    bzero(this->R, m*m*sizeof(number_t)); 
+    bzero(this->G, n*m*sizeof(number_t)); 
+    bzero(this->F, n*n*sizeof(number_t)); 
+    bzero(this->H, m*n*sizeof(number_t)); 
 }
 
 TinyEKF::~TinyEKF()
@@ -232,27 +232,27 @@ TinyEKF::~TinyEKF()
 
 }
 
-void TinyEKF::setP(int i, int j, double value)
+void TinyEKF::setP(int i, int j, number_t value)
 {
     this->P[i*this->n+j] = value;
 }
 
-void TinyEKF::setQ(int i, int j, double value)
+void TinyEKF::setQ(int i, int j, number_t value)
 {
     this->Q[i*this->n+j] = value;
 }
 
-void TinyEKF::setR(int i, int j, double value)
+void TinyEKF::setR(int i, int j, number_t value)
 {
     this->R[i*this->m+j] = value;
 }
 
-double TinyEKF::getX(int i)
+number_t TinyEKF::getX(int i)
 {
     return this->x[i];
 }
 
-void TinyEKF::step(double * z)
+void TinyEKF::step(number_t * z)
 {        
     // Model
     this->model(this->fx, this->F, this->hx, this->H);
@@ -284,7 +284,7 @@ void TinyEKF::step(double * z)
     mulmat(this->tmp1, this->Pp, this->P, this->n, this->n, this->n);
 }
 
-void TinyEKF::set(double * A, int i, int j, double value)
+void TinyEKF::set(number_t * A, int i, int j, number_t value)
 {
     A[i*this->n+j] = value;
 }

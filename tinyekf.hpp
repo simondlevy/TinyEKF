@@ -1,3 +1,5 @@
+typedef double number_t;
+
 class TinyEKF {
 
     private:
@@ -5,49 +7,49 @@ class TinyEKF {
         int n;          // number of states
         int m;          // number of measurements
 
-        double * P;     // prediction error covariance
-        double * Q;     // process noise covariance
-        double * R;     // measurement error covariance
+        number_t * P;     // prediction error covariance
+        number_t * Q;     // process noise covariance
+        number_t * R;     // measurement error covariance
 
-        double * G;     // Kalman gain; a.k.a. K
-        double * F;     // Jacobian of process model
-        double * H;     // Jacobian of measurement model
+        number_t * G;     // Kalman gain; a.k.a. K
+        number_t * F;     // Jacobian of process model
+        number_t * H;     // Jacobian of measurement model
 
-        double * Ht;    // transpose of measurement Jacobian
-        double * Ft;    // transpose of process Jacobian
-        double * Pp;    // P, post-prediction, pre-update
+        number_t * Ht;    // transpose of measurement Jacobian
+        number_t * Ft;    // transpose of process Jacobian
+        number_t * Pp;    // P, post-prediction, pre-update
 
-        double * fx;    // output of user defined f() state-transition function
-        double * hx;    // output of user defined h() measurement function
+        number_t * fx;    // output of user defined f() state-transition function
+        number_t * hx;    // output of user defined h() measurement function
 
         // temporary storage
-        double * tmp1;
-        double * tmp2;
-        double * tmp3;
-        double * tmp4;
-        double * tmp5;
+        number_t * tmp1;
+        number_t * tmp2;
+        number_t * tmp3;
+        number_t * tmp4;
+        number_t * tmp5;
 
     protected:
 
-        double * x;     // state
+        number_t * x;     // state
 
         TinyEKF(int n, int m);
 
         ~TinyEKF();
 
-        virtual void model(double * fx, double * F, double * hx, double * H) = 0;
+        virtual void model(number_t * fx, number_t * F, number_t * hx, number_t * H) = 0;
 
-        void set(double * A, int i, int j, double value);
+        void set(number_t * A, int i, int j, number_t value);
 
-        void setP(int i, int j, double value);
+        void setP(int i, int j, number_t value);
 
-        void setQ(int i, int j, double value);
+        void setQ(int i, int j, number_t value);
 
-        void setR(int i, int j, double value);
+        void setR(int i, int j, number_t value);
 
     public:
 
-        double getX(int i);
+        number_t getX(int i);
 
-        void step(double * z);
+        void step(number_t * z);
 };

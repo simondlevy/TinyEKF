@@ -29,7 +29,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(double * fx, double * F, double * hx, double * H)
+        void model(float * fx, float * F, float * hx, float * H)
         {
             fx[0] = this->x[0];
             hx[0] = fx[0];
@@ -49,7 +49,7 @@ int main(int argc, char ** argv)
     // Loop till no more data
     for (int i=0; i<STEPS; ++i) {
 
-        double z[1];
+        float z[1];
 
         z[0] = sin(2*M_PI*i/STEPS);
 
