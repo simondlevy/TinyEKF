@@ -1,6 +1,5 @@
 #include "TinyEKF.h"
 
-#include <stdio.h>
 #include <math.h>
 
 static void choldc1(double * a, double * p, int n) {
@@ -15,7 +14,7 @@ static void choldc1(double * a, double * p, int n) {
             }
             if (i == j) {
                 if (sum <= 0) {
-                    printf(" a is not positive definite!\n");
+                    error(" a is not positive definite!");
                 }
                 p[i] = sqrt(sum);
             }

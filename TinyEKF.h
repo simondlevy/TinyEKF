@@ -51,3 +51,5 @@ class TinyEKF {
 
         void step(double * z);
 };
+
+void error(const char * msg);

@@ -156,6 +156,11 @@ static void skipline(FILE * fp)
     readline(line, fp);
 }
 
+void error(const char * msg)
+{
+    fprintf(stderr, "%s\n", msg);
+}
+
 int main(int argc, char ** argv)
 {    
     // Create the EKF
