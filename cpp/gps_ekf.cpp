@@ -169,16 +169,17 @@ int main(int argc, char ** argv)
     // Skip CSV header
     skipline(ifp);
 
-    // Make a place to store the data from the file
+    // Make a place to store the data from the file and the output of the EKF
     double SV_Pos[4][3];
     double SV_Rho[4];
+    double Pos_KF[25][3];
 
     // Open output CSV file and write header
     FILE * ofp = fopen("ekf.csv", "w");
     fprintf(ofp, "X,Y,Z\n");
 
     // Loop till no more data
-    for (int k=0; k<25; ++k) {
+    for (int j=0; j<25; ++j) {
 
         readdata(ifp, SV_Pos, SV_Rho);
 
@@ -186,9 +187,14 @@ int main(int argc, char ** argv)
 
         ekf.step(SV_Rho);
 
-        fprintf(ofp, "%f,%f,%f\n", ekf.getX(0), ekf.getX(2), ekf.getX(4));
+        // grab positions, ignoring velocities
+        for (int k=0; k<3; ++k)
+            Pos_KF[j][k] = ekf.getX(2*k);
     }
 
+    for (int j=0; j<25; ++j) 
+        fprintf(ofp, "%f,%f,%f\n", Pos_KF[j][0], Pos_KF[j][1], Pos_KF[j][2]);
+    
     fclose(ifp);
     fclose(ofp);
 }
