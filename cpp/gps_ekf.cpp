@@ -166,28 +166,33 @@ int main(int argc, char ** argv)
     // Create the EKF
     GPS_EKF ekf;
 
-    // Open data file
-    FILE * fp = fopen("gps.csv", "r");
+    // Open input data file
+    FILE * ifp = fopen("gps.csv", "r");
 
     // Skip CSV header
-    skipline(fp);
+    skipline(ifp);
 
     // Make a place to store the data from the file
     double SV_Pos[4][3];
     double SV_Rho[4];
 
+    // Open output CSV file and write header
+    FILE * ofp = fopen("ekf.csv", "w");
+    fprintf(ofp, "X,Y,Z\n");
+
     // Loop till no more data
     while (true) {
 
-        if (!readdata(fp, SV_Pos, SV_Rho))
+        if (!readdata(ifp, SV_Pos, SV_Rho))
             break;
 
         ekf.setPseudorange(SV_Pos);
 
         ekf.step(SV_Rho);
 
-        printf("%f %f %f\n", ekf.getX(0), ekf.getX(2), ekf.getX(4));
+        fprintf(ofp, "%f,%f,%f\n", ekf.getX(0), ekf.getX(2), ekf.getX(4));
     }
 
-    fclose(fp);
+    fclose(ifp);
+    fclose(ofp);
 }
