@@ -1,18 +1,4 @@
-/*
-References:
-1. R G Brown, P Y C Hwang, "Introduction to random signals and applied 
-Kalman filtering : with MATLAB exercises and solutions",1996
-2. Pratap Misra, Per Enge, "Global Positioning System Signals, 
-Measurements, and Performance(Second Edition)",2006
-*/
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <strings.h>
-#include <math.h>
-
-#include "tinyekf.hpp"
+#include "tinyekf.h"
 
 class Fuser : public TinyEKF {
 

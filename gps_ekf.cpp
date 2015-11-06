@@ -12,7 +12,7 @@ Measurements, and Performance(Second Edition)",2006
 #include <strings.h>
 #include <math.h>
 
-#include "tinyekf.h"
+#include "TinyEKF.h"
 
 class GPS_EKF : public TinyEKF {
 

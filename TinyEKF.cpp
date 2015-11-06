@@ -1,4 +1,4 @@
-#include "tinyekf.h"
+#include "TinyEKF.h"
 
 #include <stdio.h>
 #include <math.h>
