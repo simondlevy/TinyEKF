@@ -32,6 +32,10 @@ class Fuser : public TinyEKF {
         void model(double * fx, double * F, double * hx, double * H)
         {
             fx[0] = this->x[0];
+            hx[0] = fx[0];
+
+            set(F, 0, 0, 1);
+            set(H, 0, 0, 1);
         }
 };
 
