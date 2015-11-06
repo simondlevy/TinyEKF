@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-static void choldc1(double * a, double * p, int n) {
+static int choldc1(double * a, double * p, int n) {
     int i,j,k;
     double sum;
 
@@ -14,7 +14,7 @@ static void choldc1(double * a, double * p, int n) {
             }
             if (i == j) {
                 if (sum <= 0) {
-                    error(" a is not positive definite!");
+                    return 1; // error
                 }
                 p[i] = sqrt(sum);
             }
@@ -23,15 +23,17 @@ static void choldc1(double * a, double * p, int n) {
             }
         }
     }
+
+    return 0; // success
 }
 
-static void choldcsl(double * A, double * a, double * p, int n) 
+static int choldcsl(double * A, double * a, double * p, int n) 
 {
     int i,j,k; double sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
             a[i*n+j] = A[i*n+j];
-    choldc1(a, p, n);
+    if (choldc1(a, p, n)) return 1;
     for (i = 0; i < n; i++) {
         a[i*n+i] = 1 / p[i];
         for (j = i + 1; j < n; j++) {
@@ -42,13 +44,15 @@ static void choldcsl(double * A, double * a, double * p, int n)
             a[j*n+i] = sum / p[j];
         }
     }
+
+    return 0; // success
 }
 
 
-static void cholsl(double * A, double * a, double * p, int n) 
+static int cholsl(double * A, double * a, double * p, int n) 
 {
     int i,j,k;
-    choldcsl(A,a,p,n);
+    if (choldcsl(A,a,p,n)) return 1;
     for (i = 0; i < n; i++) {
         for (j = i + 1; j < n; j++) {
             a[i*n+j] = 0.0;
@@ -70,6 +74,8 @@ static void cholsl(double * A, double * a, double * p, int n)
             a[i*n+j] = a[j*n+i];
         }
     }
+
+    return 0; // success
 }
 
 static void zeros(double * a, int m, int n)
@@ -165,11 +171,6 @@ static void negate(double * a, int m, int n)
             a[i*n+j] = -a[i*n+j];
 }
 
-static void invert(double * a, double * at, double * p, int n)
-{
-    cholsl(a, at, p, n);
-}
-
 static void mat_addeye(double * a, int n)
 {
     int i;
@@ -257,7 +258,7 @@ double TinyEKF::getX(int i)
     return this->x[i];
 }
 
-void TinyEKF::step(double * z)
+bool TinyEKF::step(double * z)
 {        
     // Model
     this->model(this->fx, this->F, this->hx, this->H);
@@ -274,7 +275,7 @@ void TinyEKF::step(double * z)
     mulmat(this->H, this->Pp, this->tmp2, this->m, this->n, this->n);
     mulmat(this->tmp2, this->Ht, this->tmp3, this->m, this->n, this->m);
     accum(this->tmp3, this->R, this->m, this->m);
-    invert(this->tmp3, this->tmp4, this->tmp5, this->m);
+    if (cholsl(this->tmp3, this->tmp4, this->tmp5, this->m)) return false;
     mulmat(this->tmp1, this->tmp4, this->G, this->n, this->m, this->m);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
@@ -287,6 +288,9 @@ void TinyEKF::step(double * z)
     negate(this->tmp1, this->n, this->n);
     mat_addeye(this->tmp1, this->n);
     mulmat(this->tmp1, this->Pp, this->P, this->n, this->n, this->n);
+
+    // success
+    return true;
 }
 
 void TinyEKF::set(double * A, int i, int j, double value)

@@ -49,7 +49,7 @@ class TinyEKF {
 
         double getX(int i);
 
-        void step(double * z);
+        bool step(double * z);
 };
 
 void error(const char * msg);
