@@ -49,6 +49,9 @@ class TinyEKF {
 
         double getX(int i);
 
+        /**
+          Returns true on success, false on failure caused by non-positive-definite matrix.
+          */
         bool step(double * z);
 };
 
