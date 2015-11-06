@@ -126,12 +126,12 @@ static char * readline(char * line, FILE * fp)
     return fgets(line, 1000, fp);
 }
 
-static bool readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
+static void readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
 {
     char line[1000];
 
     if (!readline(line, fp))
-        return false;
+        return;
 
     char * p = strtok(line, ",");
 
@@ -145,8 +145,6 @@ static bool readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
         SV_Rho[j] = atof(p);
         p = strtok(NULL, ",");
     }
-
-    return true;
 }
 
 
