@@ -1,4 +1,4 @@
-#include "tinyekf.hpp"
+#include "tinyekf.h"
 
 #include <stdio.h>
 #include <math.h>
