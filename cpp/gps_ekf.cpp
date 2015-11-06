@@ -181,7 +181,7 @@ int main(int argc, char ** argv)
     fprintf(ofp, "X,Y,Z\n");
 
     // Loop till no more data
-    while (true) {
+    for (int k=0; k<25; ++k) {
 
         if (!readdata(ifp, SV_Pos, SV_Rho))
             break;
