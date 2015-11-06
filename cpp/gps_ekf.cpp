@@ -192,9 +192,21 @@ int main(int argc, char ** argv)
             Pos_KF[j][k] = ekf.getX(2*k);
     }
 
+    // Compute means of filtered positions
+    double mean_Pos_KF[3] = {0, 0, 0};
     for (int j=0; j<25; ++j) 
-        fprintf(ofp, "%f,%f,%f\n", Pos_KF[j][0], Pos_KF[j][1], Pos_KF[j][2]);
+        for (int k=0; k<3; ++k)
+            mean_Pos_KF[k] += Pos_KF[j][k];
+    for (int k=0; k<3; ++k)
+        mean_Pos_KF[k] /= 25;
+
+
+    // Dump filtered positions minus their means
+    for (int j=0; j<25; ++j) 
+        fprintf(ofp, "%f,%f,%f\n", 
+                Pos_KF[j][0]-mean_Pos_KF[0], Pos_KF[j][1]-mean_Pos_KF[1], Pos_KF[j][2]-mean_Pos_KF[2]);
     
+    // Done!
     fclose(ifp);
     fclose(ofp);
 }
