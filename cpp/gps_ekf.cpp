@@ -130,8 +130,7 @@ static void readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
 {
     char line[1000];
 
-    if (!readline(line, fp))
-        return;
+    readline(line, fp);
 
     char * p = strtok(line, ",");
 
