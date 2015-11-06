@@ -183,8 +183,7 @@ int main(int argc, char ** argv)
     // Loop till no more data
     for (int k=0; k<25; ++k) {
 
-        if (!readdata(ifp, SV_Pos, SV_Rho))
-            break;
+        readdata(ifp, SV_Pos, SV_Rho);
 
         ekf.setPseudorange(SV_Pos);
 
