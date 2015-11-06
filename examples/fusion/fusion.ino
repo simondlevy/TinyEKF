@@ -15,7 +15,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(float * fx, float * F, float * hx, float * H)
+        void model(double * fx, double * F, double * hx, double * H)
         {
             fx[0] = this->x[0];
             hx[0] = fx[0];
@@ -38,7 +38,7 @@ void loop() {
     static int count;
     const int LOOPSIZE = 1000;
 
-    float z[1];
+    double z[1];
 
     z[0] = sin(2*M_PI*count/LOOPSIZE);
 
