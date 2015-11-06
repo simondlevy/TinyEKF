@@ -121,9 +121,9 @@ class GPS_EKF : public TinyEKF {
         double  SV[4][3];   // pseudorange for g function
 };
 
-static char * readline(char * line, FILE * fp)
+static void readline(char * line, FILE * fp)
 {
-    return fgets(line, 1000, fp);
+    fgets(line, 1000, fp);
 }
 
 static void readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
