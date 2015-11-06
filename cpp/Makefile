@@ -11,3 +11,7 @@ edit:
 
 clean:
 	rm -f gps_ekf *.o *~ ekf.csv
+
+commit:
+	git commit -a --allow-empty-message -m ''
+	git push
