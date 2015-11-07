@@ -17,6 +17,9 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
+/**
+  * A class for the Extended Kalman Filter.
+  */
 class TinyEKF {
 
     private:
@@ -48,30 +51,71 @@ class TinyEKF {
 
     protected:
 
-        double * x;     // state
+        /**
+        * State vector, length <i>n</i>.
+        */
+        double * x;
 
+        /**
+          * Constructs a TinyEKF object.
+          * @param n number of states
+          * @param m number of observable
+          */
         TinyEKF(int n, int m);
 
-        ~TinyEKF();
+        /**
+          * Deallocates memory for a TinyEKF object.
+          */
+         ~TinyEKF();
 
         virtual void model(double * fx, double * F, double * hx, double * H) = 0;
 
+        /**
+          * A convience function for setting values in a matrix: <i>A<sub>i,j</sub> = value</i>
+          @param A the matrix
+          @param i row index (first = 0)
+          @param j row index (first = 0)
+          @param value value to set
+          */
         void set(double * A, int i, int j, double value);
 
-        void setP(int i, int j, double value);
+        /**
+          * Sets a the value in the state noise covariance matrix <i>P</i>.
+          @param i row index (first = 0)
+          @param j row index (first = 0)
+          @param value value to set
+          */
+         void setP(int i, int j, double value);
 
-        void setQ(int i, int j, double value);
+        /**
+          * Sets a the value in the process noise covariance matrix <i>Q</i>.
+          @param i row index (first = 0)
+          @param j row index (first = 0)
+          @param value value to set
+          */
+         void setQ(int i, int j, double value);
 
-        void setR(int i, int j, double value);
+        /**
+          * Sets a the value in the measurement noise covariance matrix <i>R</i>.
+          @param i row index (first = 0)
+          @param j row index (first = 0)
+          @param value value to set
+          */
+         void setR(int i, int j, double value);
 
     public:
 
+        /**
+          * Returns the state element at a given index.
+          * @param i the index (at least 0 and less than <i>n</i>
+          * @return state value at index
+          */
         double getX(int i);
 
         /**
-          Returns true on success, false on failure caused by non-positive-definite matrix.
+          Performs one step of the prediction and update.
+          @param z observation vector, length <i>m</i>
+          @return true on success, false on failure caused by non-positive-definite matrix.
          */
         bool step(double * z);
 };
-
-void error(const char * msg);
