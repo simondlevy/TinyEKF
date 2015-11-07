@@ -7,7 +7,7 @@
 #
 # downloaded 21 March 2014
 #
-# Copyright (C) Simon D. Levy 2014
+# Copyright (C) Simon D. Levy 2015
 #
 # This code is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as 
@@ -29,7 +29,7 @@
 #   <https:#projects.ardrone.org/attachments/278/ParrotCopyrightAndDisclaimer.txt>.
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = BreezySLAM
+PROJECT_NAME           = TinyEKF
 PROJECT_NUMBER         = 
 OUTPUT_DIRECTORY       = Documentation
 CREATE_SUBDIRS         = YES
@@ -101,8 +101,7 @@ WARN_FORMAT            = "$file:$line: $text"
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = breezyslam.hpp Position.hpp Map.hpp Scan.hpp \
-                         Velocities.hpp Laser.hpp WheeledRobot.hpp algorithms.hpp 
+INPUT                  = TinyEKF.h 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c  *.cc  *.cxx  *.cpp  *.c++ \
                         *.h  *.hh  *.hxx  *.hpp  *.h++ *.m  *.mm  *.dox \
