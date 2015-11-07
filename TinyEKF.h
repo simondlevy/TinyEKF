@@ -57,7 +57,7 @@ class TinyEKF {
         double * x;
 
         /**
-          * Constructs a TinyEKF object.
+          * Allocates memory for a TinyEKF object.
           * @param n number of states
           * @param m number of observable
           */
@@ -68,38 +68,49 @@ class TinyEKF {
           */
          ~TinyEKF();
 
+         /**
+           * Implement this function for your EKF model.
+           * @param fx gets output of state-transition function <i>f(x<sub>0 .. n-1</sub>)</i>
+           * @param F gets <i>n &times; n</i> Jacobian of <i>f(x)</i>
+           * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
+           * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
+           */
         virtual void model(double * fx, double * F, double * hx, double * H) = 0;
+
 
         /**
           * A convience function for setting values in a matrix: <i>A<sub>i,j</sub> = value</i>
-          @param A the matrix
-          @param i row index (first = 0)
-          @param j row index (first = 0)
-          @param value value to set
+          * @param A the matrix
+          * @param i row index (first = 0)
+          * @param j row index (first = 0)
+          * @param value value to set
           */
         void set(double * A, int i, int j, double value);
 
         /**
-          * Sets a the value in the state noise covariance matrix <i>P</i>.
-          @param i row index (first = 0)
-          @param j row index (first = 0)
-          @param value value to set
+          * Sets a the value in the state noise covariance matrix <i>P</i>.  
+          * Typically done during initialization.  Unset values are zero by default by default.
+          * @param i row index (first = 0)
+          * @param j row index (first = 0)
+          * @param value value to set
           */
          void setP(int i, int j, double value);
 
         /**
           * Sets a the value in the process noise covariance matrix <i>Q</i>.
-          @param i row index (first = 0)
-          @param j row index (first = 0)
-          @param value value to set
+          * Typically done during initialization.  Unset values are zero by default by default.
+          * @param i row index (first = 0)
+          * @param j row index (first = 0)
+          * @param value value to set
           */
          void setQ(int i, int j, double value);
 
         /**
           * Sets a the value in the measurement noise covariance matrix <i>R</i>.
-          @param i row index (first = 0)
-          @param j row index (first = 0)
-          @param value value to set
+          * Typically done during initialization.  Unset values are zero by default by default.
+          * @param i row index (first = 0)
+          * @param j row index (first = 0)
+          * @param value value to set
           */
          void setR(int i, int j, double value);
 
@@ -114,8 +125,8 @@ class TinyEKF {
 
         /**
           Performs one step of the prediction and update.
-          @param z observation vector, length <i>m</i>
-          @return true on success, false on failure caused by non-positive-definite matrix.
+          * @param z observation vector, length <i>m</i>
+          * @return true on success, false on failure caused by non-positive-definite matrix.
          */
         bool step(double * z);
 };
