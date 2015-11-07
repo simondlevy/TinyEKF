@@ -175,7 +175,8 @@ int main(int argc, char ** argv)
     double Pos_KF[25][3];
 
     // Open output CSV file and write header
-    FILE * ofp = fopen("ekf.csv", "w");
+    const char * OUTFILE = "ekf.csv";
+    FILE * ofp = fopen(OUTFILE, "w");
     fprintf(ofp, "X,Y,Z\n");
 
     // Loop till no more data
@@ -209,4 +210,5 @@ int main(int argc, char ** argv)
     // Done!
     fclose(ifp);
     fclose(ofp);
+    printf("Wrote file %s\n", OUTFILE);
 }
