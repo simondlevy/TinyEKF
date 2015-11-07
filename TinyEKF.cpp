@@ -21,6 +21,9 @@
 
 #include <math.h>
 
+// Cholesky-decomposition matrix-inversion code, adapated from
+// http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
+
 static int choldc1(double * a, double * p, int n) {
     int i,j,k;
     double sum;
@@ -198,7 +201,7 @@ static void mat_addeye(double * a, int n)
 }
 
 
-// -------------------------------------------------------------------
+// TinyEKF code -------------------------------------------------------------------
 
 TinyEKF::TinyEKF(int n, int m) 
 {

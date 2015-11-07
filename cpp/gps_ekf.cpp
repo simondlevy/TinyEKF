@@ -1,10 +1,33 @@
-/*
-References:
-1. R G Brown, P Y C Hwang, "Introduction to random signals and applied 
-Kalman filtering : with MATLAB exercises and solutions",1996
-2. Pratap Misra, Per Enge, "Global Positioning System Signals, 
-Measurements, and Performance(Second Edition)",2006
-*/
+/* gps_ekf: TinyEKF test case using You Chong's GPS example:
+ * 
+ *   http://www.mathworks.com/matlabcentral/fileexchange/31487-extended-kalman-filter-ekf--for-gps
+ * 
+ * Reads file gps.csv of satellite data and writes file ekf.csv of mean-subtracted estimated positions.
+ *
+ *
+ * References:
+ *
+ * 1. R G Brown, P Y C Hwang, "Introduction to random signals and applied 
+ * Kalman filtering : with MATLAB exercises and solutions",1996
+ *
+ * 2. Pratap Misra, Per Enge, "Global Positioning System Signals, 
+ * Measurements, and Performance(Second Edition)",2006
+ * 
+ * Copyright (C) 2015 Simon D. Levy
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This code is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <string.h>
