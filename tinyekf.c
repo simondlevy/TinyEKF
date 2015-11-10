@@ -217,12 +217,6 @@ void ekf_init(ekf_t * ekf, int n, int m)
     ekf->F = newdouble(n*n);
     ekf->H = newdouble(m*n);
 
-    ekf->tmp1 = newdouble(n*n);
-    ekf->tmp2 = newdouble(m*n);
-    ekf->tmp3 = newdouble(m*m);
-    ekf->tmp4 = newdouble(m*m);
-    ekf->tmp5 = newdouble(m);
-
     zeros(ekf->P, n, n);
     zeros(ekf->Q, n, n);
     zeros(ekf->R, m, m);
@@ -235,12 +229,6 @@ void ekf_free(ekf_t * ekf)
 {
     free(ekf->F);
     free(ekf->H);
-
-    free(ekf->tmp1);
-    free(ekf->tmp2);
-    free(ekf->tmp3);
-    free(ekf->tmp4);
-    free(ekf->tmp5);
 }
 
 void ekf_set(ekf_t * ekf, double * A, int i, int j, double value)
