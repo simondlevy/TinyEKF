@@ -27,8 +27,8 @@ typedef struct {
     double x[N];    /* state vector */
 
     double P[N*N];  /* prediction error covariance */
-    double Q[N*N];     /* process noise covariance */
-    double * R;     /* measurement error covariance */
+    double Q[N*N];  /* process noise covariance */
+    double R[M*M];  /* measurement error covariance */
 
     double * G;     /* Kalman gain; a.k.a. K */
     double * F;     /* Jacobian of process model */
