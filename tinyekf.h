@@ -50,7 +50,7 @@ typedef struct {
 
 } ekf_t;
 
-void ekf_init(ekf_t * ekf, int n, int m);
+void ekf_init(ekf_t * ekf);
 
 void ekf_free(ekf_t * ekf);
 

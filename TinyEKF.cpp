@@ -21,7 +21,7 @@
 
 TinyEKF::TinyEKF(int n, int m) 
 {
-    ekf_init(&this->ekf, n, m);
+    ekf_init(&this->ekf);
 
     this->x = this->ekf.x;
 }

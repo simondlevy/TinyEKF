@@ -203,37 +203,34 @@ static void mat_addeye(double * a, int n)
 
 /* TinyEKF code ------------------------------------------------------------------- */
 
-void ekf_init(ekf_t * ekf, int n, int m)
+void ekf_init(ekf_t * ekf)
 {
-    ekf->n = n;
-    ekf->m = m;
-
-    zeros(ekf->P, n, n);
-    zeros(ekf->Q, n, n);
-    zeros(ekf->R, m, m);
-    zeros(ekf->G, n, m);
-    zeros(ekf->F, n, n);
-    zeros(ekf->H, m, n);
+    zeros(ekf->P, N, N);
+    zeros(ekf->Q, N, N);
+    zeros(ekf->R, M, M);
+    zeros(ekf->G, N, M);
+    zeros(ekf->F, N, N);
+    zeros(ekf->H, M, N);
 }
 
 void ekf_set(ekf_t * ekf, double * A, int i, int j, double value)
 {
-    A[i*ekf->n+j] = value;
+    A[i*N+j] = value;
 }
 
 void ekf_setP(ekf_t * ekf, int i, int j, double value)
 {
-    ekf->P[i*ekf->n+j] = value;
+    ekf->P[i*N+j] = value;
 }
 
 void ekf_setQ(ekf_t * ekf, int i, int j, double value)
 {
-    ekf->Q[i*ekf->n+j] = value;
+    ekf->Q[i*N+j] = value;
 }
 
 void ekf_setR(ekf_t * ekf, int i, int j, double value)
 {
-    ekf->R[i*ekf->m+j] = value;
+    ekf->R[i*M+j] = value;
 }
 
 double ekf_getX(ekf_t * ekf, int i)
@@ -244,30 +241,30 @@ double ekf_getX(ekf_t * ekf, int i)
 int ekf_step(ekf_t * ekf, double * z)
 {        
     /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-    mulmat(ekf->F, ekf->P, ekf->tmp1, ekf->n, ekf->n, ekf->n);
-    transpose(ekf->F, ekf->Ft, ekf->n, ekf->n);
-    mulmat(ekf->tmp1, ekf->Ft, ekf->Pp, ekf->n, ekf->n, ekf->n);
-    accum(ekf->Pp, ekf->Q, ekf->n, ekf->n);
+    mulmat(ekf->F, ekf->P, ekf->tmp1, N, N, N);
+    transpose(ekf->F, ekf->Ft, N, N);
+    mulmat(ekf->tmp1, ekf->Ft, ekf->Pp, N, N, N);
+    accum(ekf->Pp, ekf->Q, N, N);
 
     /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-    transpose(ekf->H, ekf->Ht, ekf->m, ekf->n);
-    mulmat(ekf->Pp, ekf->Ht, ekf->tmp1, ekf->n, ekf->n, ekf->m);
-    mulmat(ekf->H, ekf->Pp, ekf->tmp2, ekf->m, ekf->n, ekf->n);
-    mulmat(ekf->tmp2, ekf->Ht, ekf->tmp3, ekf->m, ekf->n, ekf->m);
-    accum(ekf->tmp3, ekf->R, ekf->m, ekf->m);
-    if (cholsl(ekf->tmp3, ekf->tmp4, ekf->tmp5, ekf->m)) return 1;
-    mulmat(ekf->tmp1, ekf->tmp4, ekf->G, ekf->n, ekf->m, ekf->m);
+    transpose(ekf->H, ekf->Ht, M, N);
+    mulmat(ekf->Pp, ekf->Ht, ekf->tmp1, N, N, M);
+    mulmat(ekf->H, ekf->Pp, ekf->tmp2, M, N, N);
+    mulmat(ekf->tmp2, ekf->Ht, ekf->tmp3, M, N, M);
+    accum(ekf->tmp3, ekf->R, M, M);
+    if (cholsl(ekf->tmp3, ekf->tmp4, ekf->tmp5, M)) return 1;
+    mulmat(ekf->tmp1, ekf->tmp4, ekf->G, N, M, M);
 
     /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
-    sub(z, ekf->hx, ekf->tmp1, ekf->m);
-    mulvec(ekf->G, ekf->tmp1, ekf->tmp2, ekf->n, ekf->m);
-    add(ekf->fx, ekf->tmp2, ekf->x, ekf->n);
+    sub(z, ekf->hx, ekf->tmp1, M);
+    mulvec(ekf->G, ekf->tmp1, ekf->tmp2, N, M);
+    add(ekf->fx, ekf->tmp2, ekf->x, N);
 
     /* P_k = (I - G_k H_k) P_k */
-    mulmat(ekf->G, ekf->H, ekf->tmp1, ekf->n, ekf->m, ekf->n);
-    negate(ekf->tmp1, ekf->n, ekf->n);
-    mat_addeye(ekf->tmp1, ekf->n);
-    mulmat(ekf->tmp1, ekf->Pp, ekf->P, ekf->n, ekf->n, ekf->n);
+    mulmat(ekf->G, ekf->H, ekf->tmp1, N, M, N);
+    negate(ekf->tmp1, N, N);
+    mat_addeye(ekf->tmp1, N);
+    mulmat(ekf->tmp1, ekf->Pp, ekf->P, N, N, N);
 
     /* success */
     return 0;
