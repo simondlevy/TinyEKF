@@ -292,9 +292,6 @@ double ekf_getX(ekf_t * ekf, int i)
 
 int ekf_step(ekf_t * ekf, double * z)
 {        
-    // Model
-    model(ekf->x, ekf->fx, ekf->F, ekf->hx, ekf->H);
-
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(ekf->F, ekf->P, ekf->tmp1, ekf->n, ekf->n, ekf->n);
     transpose(ekf->F, ekf->Ft, ekf->n, ekf->n);
