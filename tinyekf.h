@@ -35,8 +35,8 @@ typedef struct {
     double * H;     /* Jacobian of measurement model */
 
     double Ht[N*M]; /* transpose of measurement Jacobian */
-    double Ft[N*N];    /* transpose of process Jacobian */
-    double * Pp;    /* P, post-prediction, pre-update */
+    double Ft[N*N]; /* transpose of process Jacobian */
+    double Pp[N*N]; /* P, post-prediction, pre-update */
 
     double fx[N];    /* output of user defined f() state-transition function */
     double hx[N];    /* output of user defined h() measurement function */
