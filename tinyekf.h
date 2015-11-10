@@ -26,7 +26,7 @@ typedef struct {
 
     double x[N];    /* state vector */
 
-    double * P;     /* prediction error covariance */
+    double P[N*N];  /* prediction error covariance */
     double * Q;     /* process noise covariance */
     double * R;     /* measurement error covariance */
 
