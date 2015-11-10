@@ -34,7 +34,7 @@ typedef struct {
     double * F;     /* Jacobian of process model */
     double * H;     /* Jacobian of measurement model */
 
-    double * Ht;    /* transpose of measurement Jacobian */
+    double Ht[N*M]; /* transpose of measurement Jacobian */
     double * Ft;    /* transpose of process Jacobian */
     double * Pp;    /* P, post-prediction, pre-update */
 
