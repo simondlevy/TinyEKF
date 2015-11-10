@@ -30,7 +30,7 @@ typedef struct {
     double Q[N*N];  /* process noise covariance */
     double R[M*M];  /* measurement error covariance */
 
-    double * G;     /* Kalman gain; a.k.a. K */
+    double G[N*M];  /* Kalman gain; a.k.a. K */
     double * F;     /* Jacobian of process model */
     double * H;     /* Jacobian of measurement model */
 
