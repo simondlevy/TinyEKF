@@ -201,12 +201,6 @@ static void mat_addeye(double * a, int n)
         a[i*n+i] += 1;
 }
 
-static double * newdouble(int n)
-{
-    return (double *)malloc(n*sizeof(double));
-}
-
-
 /* TinyEKF code ------------------------------------------------------------------- */
 
 void ekf_init(ekf_t * ekf, int n, int m)
@@ -220,10 +214,6 @@ void ekf_init(ekf_t * ekf, int n, int m)
     zeros(ekf->G, n, m);
     zeros(ekf->F, n, n);
     zeros(ekf->H, m, n);
-}
-
-void ekf_free(ekf_t * ekf)
-{
 }
 
 void ekf_set(ekf_t * ekf, double * A, int i, int j, double value)

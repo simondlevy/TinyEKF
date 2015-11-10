@@ -28,7 +28,6 @@ TinyEKF::TinyEKF(int n, int m)
 
 TinyEKF::~TinyEKF()
 {
-    ekf_free(&this->ekf);
 }
 
 void TinyEKF::setP(int i, int j, double value)
