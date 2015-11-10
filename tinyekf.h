@@ -32,7 +32,7 @@ typedef struct {
 
     double G[N*M];  /* Kalman gain; a.k.a. K */
     double F[N*N];  /* Jacobian of process model */
-    double * H;     /* Jacobian of measurement model */
+    double H[M*N];  /* Jacobian of measurement model */
 
     double Ht[N*M]; /* transpose of measurement Jacobian */
     double Ft[N*N]; /* transpose of process Jacobian */
