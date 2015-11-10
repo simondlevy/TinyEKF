@@ -226,9 +226,11 @@ int main(int argc, char ** argv)
 
 
     // Dump filtered positions minus their means
-    for (int j=0; j<25; ++j) 
+    for (int j=0; j<25; ++j) {
         fprintf(ofp, "%f,%f,%f\n", 
                 Pos_KF[j][0]-mean_Pos_KF[0], Pos_KF[j][1]-mean_Pos_KF[1], Pos_KF[j][2]-mean_Pos_KF[2]);
+        printf("%f %f %f\n", Pos_KF[j][0], Pos_KF[j][1], Pos_KF[j][2]);
+    }
     
     // Done!
     fclose(ifp);
