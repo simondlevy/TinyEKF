@@ -17,6 +17,8 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
+#include "tinyekf.h"
+
 /**
   * A class for the Extended Kalman Filter.
   */
