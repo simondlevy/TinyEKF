@@ -22,8 +22,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-// Cholesky-decomposition matrix-inversion code, adapated from
-// http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
+/* Cholesky-decomposition matrix-inversion code, adapated from
+   http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
 
 static int choldc1(double * a, double * p, int n) {
     int i,j,k;
@@ -37,7 +37,7 @@ static int choldc1(double * a, double * p, int n) {
             }
             if (i == j) {
                 if (sum <= 0) {
-                    return 1; // error
+                    return 1; /* error */
                 }
                 p[i] = sqrt(sum);
             }
@@ -47,7 +47,7 @@ static int choldc1(double * a, double * p, int n) {
         }
     }
 
-    return 0; // success
+    return 0; /* success */
 }
 
 static int choldcsl(double * A, double * a, double * p, int n) 
@@ -68,7 +68,7 @@ static int choldcsl(double * A, double * a, double * p, int n)
         }
     }
 
-    return 0; // success
+    return 0; /* success */
 }
 
 
@@ -98,7 +98,7 @@ static int cholsl(double * A, double * a, double * p, int n)
         }
     }
 
-    return 0; // success
+    return 0; /* success */
 }
 
 static void zeros(double * a, int m, int n)
@@ -123,7 +123,7 @@ static void dump(double * a, int m, int n, const char * fmt)
 }
 */
 
-// C <- A * B
+/* C <- A * B */
 static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
 {
     int i, j,l;
@@ -156,7 +156,7 @@ static void transpose(double * a, double * at, int m, int n)
             at[j*m+i] = a[i*n+j];
 }
 
-// A <- A + B
+/* A <- A + B */
 static void accum(double * a, double * b, int m, int n)
 {        
     int i,j;
@@ -166,7 +166,7 @@ static void accum(double * a, double * b, int m, int n)
             a[i*n+j] += b[i*n+j];
 }
 
-// C <- A + B
+/* C <- A + B */
 static void add(double * a, double * b, double * c, int n)
 {
     int j;
@@ -176,7 +176,7 @@ static void add(double * a, double * b, double * c, int n)
 }
 
 
-// C <- A - B
+/* C <- A - B */
 static void sub(double * a, double * b, double * c, int n)
 {
     int j;
@@ -207,7 +207,7 @@ static double * newdouble(int n)
 }
 
 
-// TinyEKF code -------------------------------------------------------------------
+/* TinyEKF code ------------------------------------------------------------------- */
 
 void ekf_init(ekf_t * ekf, int n, int m)
 {
@@ -292,13 +292,13 @@ double ekf_getX(ekf_t * ekf, int i)
 
 int ekf_step(ekf_t * ekf, double * z)
 {        
-    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+    /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
     mulmat(ekf->F, ekf->P, ekf->tmp1, ekf->n, ekf->n, ekf->n);
     transpose(ekf->F, ekf->Ft, ekf->n, ekf->n);
     mulmat(ekf->tmp1, ekf->Ft, ekf->Pp, ekf->n, ekf->n, ekf->n);
     accum(ekf->Pp, ekf->Q, ekf->n, ekf->n);
 
-    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+    /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
     transpose(ekf->H, ekf->Ht, ekf->m, ekf->n);
     mulmat(ekf->Pp, ekf->Ht, ekf->tmp1, ekf->n, ekf->n, ekf->m);
     mulmat(ekf->H, ekf->Pp, ekf->tmp2, ekf->m, ekf->n, ekf->n);
@@ -307,17 +307,17 @@ int ekf_step(ekf_t * ekf, double * z)
     if (cholsl(ekf->tmp3, ekf->tmp4, ekf->tmp5, ekf->m)) return 1;
     mulmat(ekf->tmp1, ekf->tmp4, ekf->G, ekf->n, ekf->m, ekf->m);
 
-    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
+    /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
     sub(z, ekf->hx, ekf->tmp1, ekf->m);
     mulvec(ekf->G, ekf->tmp1, ekf->tmp2, ekf->n, ekf->m);
     add(ekf->fx, ekf->tmp2, ekf->x, ekf->n);
 
-    // P_k = (I - G_k H_k) P_k
+    /* P_k = (I - G_k H_k) P_k */
     mulmat(ekf->G, ekf->H, ekf->tmp1, ekf->n, ekf->m, ekf->n);
     negate(ekf->tmp1, ekf->n, ekf->n);
     mat_addeye(ekf->tmp1, ekf->n);
     mulmat(ekf->tmp1, ekf->Pp, ekf->P, ekf->n, ekf->n, ekf->n);
 
-    // success
+    /* success */
     return 0;
 }

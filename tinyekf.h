@@ -17,6 +17,8 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
+#include "tinyekf_config.h"
+
 typedef struct {
 
     int n;          /* number of states */
