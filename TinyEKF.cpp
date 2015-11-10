@@ -19,7 +19,7 @@
 
 #include "TinyEKF.h"
 
-TinyEKF::TinyEKF(int n, int m) 
+TinyEKF::TinyEKF() 
 {
     ekf_init(&this->ekf);
 

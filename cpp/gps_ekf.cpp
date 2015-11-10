@@ -42,7 +42,7 @@ class GPS_EKF : public TinyEKF {
     public:
 
         // Eight state values, four measurement values
-        GPS_EKF() : TinyEKF(8, 4)
+        GPS_EKF()
         {            
             // positioning interval
             this->T = 1; 

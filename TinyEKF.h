@@ -36,11 +36,9 @@ class TinyEKF {
         double * x;
 
         /**
-          * Allocates memory for a TinyEKF object.
-          * @param n number of states
-          * @param m number of observable
+          * Initializes a TinyEKF object.
           */
-        TinyEKF(int n, int m);
+        TinyEKF();
 
         /**
           * Deallocates memory for a TinyEKF object.
