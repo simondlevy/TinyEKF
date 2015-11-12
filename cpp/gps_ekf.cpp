@@ -144,8 +144,7 @@ class GPS_EKF : public TinyEKF {
         double  SV[4][3];   // pseudorange for g function
 };
 
-    /*
-static void model(ekf_t * ekf)
+static void model(ekf_t * ekf, double SV[4][3])
 { 
     double T = 1;
 
@@ -155,30 +154,29 @@ static void model(ekf_t * ekf)
     }
 
     for (int j=0; j<8; ++j)
-        ekf->set(F, j, j, 1);
+        ekf->F[j][j] = 1;
 
     for (int j=0; j<4; ++j)
-        ekf->set(F, 2*j, 2*j+1, ekf->T);
+        ekf->F[2*j][2*j+1] = T;
 
     double dx[4][3];
 
     for (int i=0; i<4; ++i) {
-        hx[i] = 0;
+        ekf->hx[i] = 0;
         for (int j=0; j<3; ++j) {
-            double d = fx[j*2] - ekf->SV[i][j];
+            double d = ekf->fx[j*2] - SV[i][j];
             dx[i][j] = d;
-            hx[i] += d*d;
+            ekf->hx[i] += d*d;
         }
-        hx[i] = pow(hx[i], 0.5) + fx[6];
+        ekf->hx[i] = pow(ekf->hx[i], 0.5) + ekf->fx[6];
     }
 
     for (int i=0; i<4; ++i) {
         for (int j=0; j<3; ++j) 
-            ekf->set(H, i, j*2, dx[i][j] / hx[i]);
-        ekf->set(H, i, 6, 1);
+            ekf->H[i][j*2] = dx[i][j] / ekf->hx[i];
+        ekf->H[i][6] = 1;
     }   
 }
-    */
 
 static void readline(char * line, FILE * fp)
 {
