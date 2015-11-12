@@ -208,7 +208,7 @@ void ekf_init(ekf_t * ekf)
     zeros(&ekf->P[0][0], N, N);
     zeros(&ekf->Q[0][0], N, N);
     zeros(&ekf->R[0][0], M, M);
-    zeros(ekf->G, N, M);
+    zeros(&ekf->G[0][0], N, M);
     zeros(ekf->F, N, N);
     zeros(ekf->H, M, N);
 }
@@ -238,15 +238,15 @@ int ekf_step(ekf_t * ekf, double * z)
     mulmat(ekf->tmp2, ekf->Ht, ekf->tmp3, M, N, M);
     accum(ekf->tmp3, &ekf->R[0][0], M, M);
     if (cholsl(ekf->tmp3, ekf->tmp4, ekf->tmp5, M)) return 1;
-    mulmat(ekf->tmp1, ekf->tmp4, ekf->G, N, M, M);
+    mulmat(ekf->tmp1, ekf->tmp4, &ekf->G[0][0], N, M, M);
 
     /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
     sub(z, ekf->hx, ekf->tmp1, M);
-    mulvec(ekf->G, ekf->tmp1, ekf->tmp2, N, M);
+    mulvec(&ekf->G[0][0], ekf->tmp1, ekf->tmp2, N, M);
     add(ekf->fx, ekf->tmp2, ekf->x, N);
 
     /* P_k = (I - G_k H_k) P_k */
-    mulmat(ekf->G, ekf->H, ekf->tmp1, N, M, N);
+    mulmat(&ekf->G[0][0], ekf->H, ekf->tmp1, N, M, N);
     negate(ekf->tmp1, N, N);
     mat_addeye(ekf->tmp1, N);
     mulmat(ekf->tmp1, ekf->Pp, &ekf->P[0][0], N, N, N);
