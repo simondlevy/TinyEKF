@@ -22,7 +22,7 @@ run: gps_ekf
 	./gps_ekf
 
 gps_ekf: gps_ekf.c tinyekf.c tinyekf.h
-	g++ -Wall -o gps_ekf gps_ekf.c tinyekf.c
+	gcc -Wall -o gps_ekf gps_ekf.c tinyekf.c -lm
 
 edit:
 	vim gps_ekf.c

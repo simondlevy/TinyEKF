@@ -22,24 +22,22 @@ class Fuser : public TinyEKF {
 
     public:
 
-        // Eight state values, four measurement values
-        Fuser() : TinyEKF(1, 1)
+    Fuser()
     {            
         this->setP(0, 0, .01);
         this->setQ(0, 0, .01);
         this->setR(0, 0, .01);
-
     }
 
     protected:
 
-        void model(double * fx, double * F, double * hx, double * H)
+        void model(double fx[N], double F[N][N], double hx[N], double H[M][N])
         {
             fx[0] = this->x[0];
             hx[0] = fx[0];
 
-            set(F, 0, 0, 1);
-            set(H, 0, 0, 1);
+            F[0][0] = 1;
+            H[0][0] = 1;
         }
 };
 
