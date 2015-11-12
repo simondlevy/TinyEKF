@@ -56,9 +56,3 @@ bool TinyEKF::step(double * z)
 
     return ekf_step(&this->ekf, z) == 0 ? true : false;
 }
-
-void TinyEKF::set(double * A, int i, int j, double value)
-{
-    ekf_set(&this->ekf, A, i, j, value);
-}
-

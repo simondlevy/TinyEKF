@@ -52,17 +52,7 @@ class TinyEKF {
            * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
            * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
            */
-        virtual void model(double * fx, double * F, double * hx, double * H) = 0;
-
-
-        /**
-          * A convience function for setting values in a matrix: <i>A<sub>i,j</sub> = value</i>
-          * @param A the matrix
-          * @param i row index (first = 0)
-          * @param j row index (first = 0)
-          * @param value value to set
-          */
-        void set(double * A, int i, int j, double value);
+        virtual void model(double fx[N], double F[N][N], double hx[N], double H[M][N]) = 0;
 
         /**
           * Sets a the value in the state noise covariance matrix <i>P</i>.  
