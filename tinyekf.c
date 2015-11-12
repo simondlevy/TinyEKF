@@ -207,7 +207,7 @@ void ekf_init(ekf_t * ekf)
 {
     zeros(&ekf->P[0][0], N, N);
     zeros(&ekf->Q[0][0], N, N);
-    zeros(ekf->R, M, M);
+    zeros(&ekf->R[0][0], M, M);
     zeros(ekf->G, N, M);
     zeros(ekf->F, N, N);
     zeros(ekf->H, M, N);
@@ -216,11 +216,6 @@ void ekf_init(ekf_t * ekf)
 void ekf_set(ekf_t * ekf, double * A, int i, int j, double value)
 {
     A[i*N+j] = value;
-}
-
-void ekf_setR(ekf_t * ekf, int i, int j, double value)
-{
-    ekf->R[i*M+j] = value;
 }
 
 double ekf_getX(ekf_t * ekf, int i)
@@ -241,7 +236,7 @@ int ekf_step(ekf_t * ekf, double * z)
     mulmat(ekf->Pp, ekf->Ht, ekf->tmp1, N, N, M);
     mulmat(ekf->H, ekf->Pp, ekf->tmp2, M, N, N);
     mulmat(ekf->tmp2, ekf->Ht, ekf->tmp3, M, N, M);
-    accum(ekf->tmp3, ekf->R, M, M);
+    accum(ekf->tmp3, &ekf->R[0][0], M, M);
     if (cholsl(ekf->tmp3, ekf->tmp4, ekf->tmp5, M)) return 1;
     mulmat(ekf->tmp1, ekf->tmp4, ekf->G, N, M, M);
 

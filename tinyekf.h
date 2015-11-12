@@ -26,7 +26,7 @@ typedef struct {
 
     double P[N][N];  /* prediction error covariance */
     double Q[N][N];  /* process noise covariance */
-    double R[M*M];  /* measurement error covariance */
+    double R[M][M];  /* measurement error covariance */
 
     double G[N*M];  /* Kalman gain; a.k.a. K */
     double F[N*N];  /* Jacobian of process model */
@@ -58,8 +58,6 @@ void ekf_free(ekf_t * ekf);
 void ekf_model(double * x, double * fx, double * F, double * hx, double * H);
 
 void ekf_set(ekf_t * ekf, double * A, int i, int j, double value);
-
-void ekf_setR(ekf_t * ekf, int i, int j, double value);
 
 double ekf_getX(ekf_t * ekf, int i);
 

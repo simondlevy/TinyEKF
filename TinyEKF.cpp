@@ -42,7 +42,7 @@ void TinyEKF::setQ(int i, int j, double value)
 
 void TinyEKF::setR(int i, int j, double value)
 {
-    ekf_setR(&this->ekf, i, j, value);
+    this->ekf.R[i][j] = value;
 }
 
 double TinyEKF::getX(int i)
