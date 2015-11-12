@@ -22,7 +22,7 @@ run: gps_ekf
 	./gps_ekf
 
 gps_ekf: gps_ekf.cpp ../TinyEKF.h ../TinyEKF.cpp ../tinyekf.c ../tinyekf.h
-	g++ -Wall -I.. -o gps_ekf gps_ekf.cpp ../TinyEKF.cpp ../tinyekf.c
+	g++ -Wall -I.. -I. -o gps_ekf gps_ekf.cpp ../TinyEKF.cpp ../tinyekf.c
 
 edit:
 	vim gps_ekf.cpp
