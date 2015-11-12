@@ -21,11 +21,11 @@ all: gps_ekf
 run: gps_ekf
 	./gps_ekf
 
-gps_ekf: gps_ekf.cpp ../tinyekf.c ../tinyekf.h
-	g++ -Wall -I.. -I. -o gps_ekf gps_ekf.cpp ../tinyekf.c
+gps_ekf: gps_ekf.c ../tinyekf.c ../tinyekf.h
+	g++ -Wall -I.. -I. -o gps_ekf gps_ekf.c ../tinyekf.c
 
 edit:
-	vim gps_ekf.cpp
+	vim gps_ekf.c
 
 clean:
 	rm -f gps_ekf *.o *~ ekf.csv
