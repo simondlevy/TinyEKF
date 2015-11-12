@@ -50,11 +50,14 @@ typedef struct {
 
 /**
   * Sets contents to zero.
-  @param ekf pointer to EKF to initialize
+  * @param ekf pointer to EKF structure to initialize
   */
 void ekf_init(ekf_t * ekf);
 
 /**
+  * Runs one step of prediction and update.
+  * @param ekf pointer to structure EKF 
+  * @param z array of measurement (observation) values
   * @return 0 on success, 1 on failure caused by non-positive-definite matrix.
   */
 int ekf_step(ekf_t * ekf, double * z);
