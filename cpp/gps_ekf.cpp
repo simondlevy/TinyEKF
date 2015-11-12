@@ -248,6 +248,8 @@ int main(int argc, char ** argv)
 
         model(&ekf2, SV_Pos);
 
+        ekf_step(&ekf2, SV_Rho);
+
         ekf.step(SV_Rho);
 
         // grab positions, ignoring velocities
