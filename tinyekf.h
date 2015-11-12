@@ -48,9 +48,11 @@ typedef struct {
 
 } ekf_t;
 
+/**
+  * Sets contents to zero.
+  @param ekf pointer to EKF to initialize
+  */
 void ekf_init(ekf_t * ekf);
-
-void ekf_free(ekf_t * ekf);
 
 /**
   * @return 0 on success, 1 on failure caused by non-positive-definite matrix.
