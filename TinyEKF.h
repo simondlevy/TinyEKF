@@ -52,7 +52,7 @@ class TinyEKF {
            * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
            * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
            */
-        virtual void model(double fx[N], double F[N][N], double hx[N], double H[M][N]) = 0;
+        virtual void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]) = 0;
 
         /**
           * Sets a the value in the state noise covariance matrix <i>P</i>.  
