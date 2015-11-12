@@ -246,6 +246,8 @@ int main(int argc, char ** argv)
 
         ekf.setPseudorange(SV_Pos);
 
+        model(&ekf2, SV_Pos);
+
         ekf.step(SV_Rho);
 
         // grab positions, ignoring velocities
