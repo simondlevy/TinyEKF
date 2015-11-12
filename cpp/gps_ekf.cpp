@@ -37,114 +37,6 @@
 
 #include "TinyEKF.h"
 
-class GPS_EKF : public TinyEKF {
-
-    public:
-
-        // Eight state values, four measurement values
-        GPS_EKF()
-        {            
-            // positioning interval
-            this->T = 1; 
-
-           // Set Q, see [1]
-            const double Sf    = 36;
-            const double Sg    = 0.01;
-            const double sigma = 5;         // state transition variance
-            const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-            const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2,
-                sigma*sigma*T*T/2, sigma*sigma*T};
-
-            this->blkfill(Qxyz, 0);
-            this->blkfill(Qxyz, 1);
-            this->blkfill(Qxyz, 2);
-            this->blkfill(Qb,   3);
-
-            // initial covariances of state, measurement noise 
-            double P0 = 10;
-            double R0 = 36;
-
-            for (int i=0; i<8; ++i)
-                this->setP(i, i, P0);
-
-            for (int i=0; i<4; ++i)
-                this->setR(i, i, R0);
-
-            // position
-            this->x[0] = -2.168816181271560e+006;
-            this->x[2] =  4.386648549091666e+006;
-            this->x[4] =  4.077161596428751e+006;
-
-            // velocity
-            this->x[1] = 0;
-            this->x[3] = 0;
-            this->x[5] = 0;
-
-            // clock bias
-            this->x[6] = 3.575261153706439e+006;
-
-            // clock drift
-            this->x[7] = 4.549246345845814e+001;
-            }
-
-        void setPseudorange(double  SV[4][3])
-        {
-            for (int i=0; i<4; ++i)
-                for (int j=0; j<3; ++j)
-                    this->SV[i][j] = SV[i][j];
-        }
-
-    protected:
-
-        void model(double fx[N], double F[N][N], double hx[N], double H[M][N])
-        {
-            for (int j=0; j<8; j+=2) {
-                fx[j] = this->x[j] + this->T * this->x[j+1];
-                fx[j+1] = this->x[j+1];
-            }
-
-            for (int j=0; j<8; ++j)
-                F[j][j] = 1;
-
-            for (int j=0; j<4; ++j)
-                F[2*j][2*j+1] = this->T;
-        
-            double dx[4][3];
-
-            for (int i=0; i<4; ++i) {
-                hx[i] = 0;
-                for (int j=0; j<3; ++j) {
-                    double d = fx[j*2] - this->SV[i][j];
-                    dx[i][j] = d;
-                    hx[i] += d*d;
-                }
-                hx[i] = pow(hx[i], 0.5) + fx[6];
-            }
-
-            for (int i=0; i<4; ++i) {
-                for (int j=0; j<3; ++j) 
-                    H[i][j*2] = dx[i][j] / hx[i];
-                H[i][6] = 1;
-            }   
-        }
-
-    private:
-
-        void blkfill(const double * a, int off)
-        {
-            off *= 2;
-
-            this->setQ(off, off,     a[0]); 
-            this->setQ(off, off+1,   a[1]);
-            this->setQ(off+1, off,   a[2]);
-            this->setQ(off+1, off+1, a[3]);
-        }
-
-        double  T;          // positioning interval
-        double  SV[4][3];   // pseudorange for g function
-};
-
-
 // positioning interval
 static const double T = 1;
 
@@ -273,8 +165,6 @@ void error(const char * msg)
 int main(int argc, char ** argv)
 {    
     // Create the EKF
-    GPS_EKF ekf;
-
     ekf_t ekf2;
     ekf_init(&ekf2);
     init(&ekf2);
@@ -300,17 +190,13 @@ int main(int argc, char ** argv)
 
         readdata(ifp, SV_Pos, SV_Rho);
 
-        ekf.setPseudorange(SV_Pos);
-
         model(&ekf2, SV_Pos);
 
         ekf_step(&ekf2, SV_Rho);
 
-        ekf.step(SV_Rho);
-
         // grab positions, ignoring velocities
         for (int k=0; k<3; ++k)
-            Pos_KF[j][k] = ekf2.x[2*k]; //ekf.getX(2*k);
+            Pos_KF[j][k] = ekf2.x[2*k];
     }
 
     // Compute means of filtered positions
