@@ -205,7 +205,7 @@ static void mat_addeye(double * a, int n)
 
 void ekf_init(ekf_t * ekf)
 {
-    zeros(ekf->P, N, N);
+    zeros(&ekf->P[0][0], N, N);
     zeros(ekf->Q, N, N);
     zeros(ekf->R, M, M);
     zeros(ekf->G, N, M);
@@ -216,11 +216,6 @@ void ekf_init(ekf_t * ekf)
 void ekf_set(ekf_t * ekf, double * A, int i, int j, double value)
 {
     A[i*N+j] = value;
-}
-
-void ekf_setP(ekf_t * ekf, int i, int j, double value)
-{
-    ekf->P[i*N+j] = value;
 }
 
 void ekf_setQ(ekf_t * ekf, int i, int j, double value)
@@ -241,7 +236,7 @@ double ekf_getX(ekf_t * ekf, int i)
 int ekf_step(ekf_t * ekf, double * z)
 {        
     /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-    mulmat(ekf->F, ekf->P, ekf->tmp1, N, N, N);
+    mulmat(ekf->F, &ekf->P[0][0], ekf->tmp1, N, N, N);
     transpose(ekf->F, ekf->Ft, N, N);
     mulmat(ekf->tmp1, ekf->Ft, ekf->Pp, N, N, N);
     accum(ekf->Pp, ekf->Q, N, N);
@@ -264,7 +259,7 @@ int ekf_step(ekf_t * ekf, double * z)
     mulmat(ekf->G, ekf->H, ekf->tmp1, N, M, N);
     negate(ekf->tmp1, N, N);
     mat_addeye(ekf->tmp1, N);
-    mulmat(ekf->tmp1, ekf->Pp, ekf->P, N, N, N);
+    mulmat(ekf->tmp1, ekf->Pp, &ekf->P[0][0], N, N, N);
 
     /* success */
     return 0;

@@ -32,7 +32,7 @@ TinyEKF::~TinyEKF()
 
 void TinyEKF::setP(int i, int j, double value)
 {
-    ekf_setP(&this->ekf, i, j, value);
+    this->ekf.P[i][j] = value;
 }
 
 void TinyEKF::setQ(int i, int j, double value)

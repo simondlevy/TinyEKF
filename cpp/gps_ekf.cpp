@@ -144,6 +144,42 @@ class GPS_EKF : public TinyEKF {
         double  SV[4][3];   // pseudorange for g function
 };
 
+    /*
+static void model(ekf_t * ekf)
+{ 
+    double T = 1;
+
+    for (int j=0; j<8; j+=2) {
+        ekf->fx[j] = ekf->x[j] + T * ekf->x[j+1];
+        ekf->fx[j+1] = ekf->x[j+1];
+    }
+
+    for (int j=0; j<8; ++j)
+        ekf->set(F, j, j, 1);
+
+    for (int j=0; j<4; ++j)
+        ekf->set(F, 2*j, 2*j+1, ekf->T);
+
+    double dx[4][3];
+
+    for (int i=0; i<4; ++i) {
+        hx[i] = 0;
+        for (int j=0; j<3; ++j) {
+            double d = fx[j*2] - ekf->SV[i][j];
+            dx[i][j] = d;
+            hx[i] += d*d;
+        }
+        hx[i] = pow(hx[i], 0.5) + fx[6];
+    }
+
+    for (int i=0; i<4; ++i) {
+        for (int j=0; j<3; ++j) 
+            ekf->set(H, i, j*2, dx[i][j] / hx[i]);
+        ekf->set(H, i, 6, 1);
+    }   
+}
+    */
+
 static void readline(char * line, FILE * fp)
 {
     fgets(line, 1000, fp);
@@ -185,7 +221,7 @@ int main(int argc, char ** argv)
 {    
     // Create the EKF
     GPS_EKF ekf;
-   
+
     ekf_t ekf2;
     ekf_init(&ekf2);
 
