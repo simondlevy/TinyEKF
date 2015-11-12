@@ -53,15 +53,6 @@ void ekf_init(ekf_t * ekf);
 void ekf_free(ekf_t * ekf);
 
 /**
-  * Write this function for you application.
-  */
-void ekf_model(double * x, double * fx, double * F, double * hx, double * H);
-
-void ekf_set(ekf_t * ekf, double * A, int i, int j, double value);
-
-double ekf_getX(ekf_t * ekf, int i);
-
-/**
   * @return 0 on success, 1 on failure caused by non-positive-definite matrix.
   */
 int ekf_step(ekf_t * ekf, double * z);
