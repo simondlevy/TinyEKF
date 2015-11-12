@@ -185,6 +185,9 @@ int main(int argc, char ** argv)
 {    
     // Create the EKF
     GPS_EKF ekf;
+   
+    ekf_t ekf2;
+    ekf_init(&ekf2);
 
     // Open input data file
     FILE * ifp = fopen("gps.csv", "r");
