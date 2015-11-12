@@ -144,9 +144,64 @@ class GPS_EKF : public TinyEKF {
         double  SV[4][3];   // pseudorange for g function
 };
 
+
+// positioning interval
+static const double T = 1;
+
+static void blkfill(ekf_t * ekf, const double * a, int off)
+{
+    off *= 2;
+
+    ekf->Q[off][ off]     = a[0]; 
+    ekf->Q[off][ off+1]   = a[1];
+    ekf->Q[off+1][ off]   = a[2];
+    ekf->Q[off+1][ off+1] = a[3];
+}
+
+
+static void init(ekf_t * ekf)
+{
+    // Set Q, see [1]
+    const double Sf    = 36;
+    const double Sg    = 0.01;
+    const double sigma = 5;         // state transition variance
+    const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
+    const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
+
+    blkfill(ekf, Qxyz, 0);
+    blkfill(ekf, Qxyz, 1);
+    blkfill(ekf, Qxyz, 2);
+    blkfill(ekf, Qb,   3);
+
+    // initial covariances of state, measurement noise 
+    double P0 = 10;
+    double R0 = 36;
+
+    for (int i=0; i<8; ++i)
+        ekf->P[i][i] = P0;
+
+    for (int i=0; i<4; ++i)
+        ekf->R[i][i] = R0;
+
+    // position
+    ekf->x[0] = -2.168816181271560e+006;
+    ekf->x[2] =  4.386648549091666e+006;
+    ekf->x[4] =  4.077161596428751e+006;
+
+    // velocity
+    ekf->x[1] = 0;
+    ekf->x[3] = 0;
+    ekf->x[5] = 0;
+
+    // clock bias
+    ekf->x[6] = 3.575261153706439e+006;
+
+    // clock drift
+    ekf->x[7] = 4.549246345845814e+001;
+}
+
 static void model(ekf_t * ekf, double SV[4][3])
 { 
-    double T = 1;
 
     for (int j=0; j<8; j+=2) {
         ekf->fx[j] = ekf->x[j] + T * ekf->x[j+1];
@@ -222,6 +277,7 @@ int main(int argc, char ** argv)
 
     ekf_t ekf2;
     ekf_init(&ekf2);
+    init(&ekf2);
 
     // Open input data file
     FILE * ifp = fopen("gps.csv", "r");
@@ -254,7 +310,7 @@ int main(int argc, char ** argv)
 
         // grab positions, ignoring velocities
         for (int k=0; k<3; ++k)
-            Pos_KF[j][k] = ekf.getX(2*k);
+            Pos_KF[j][k] = ekf2.x[2*k]; //ekf.getX(2*k);
     }
 
     // Compute means of filtered positions
