@@ -1,5 +1,5 @@
 #
-# Makefile for maintaining TinyEKF class
+# Makefile for TinyEKF GPS example
 #
 # Copyright (C) 2015 Simon D. Levy
 #
@@ -16,15 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this code.  If not, see <http:#www.gnu.org/licenses/>.
 
-none:
-	echo huh?
+all: gps_ekf
+
+run: gps_ekf
+	./gps_ekf
+
+gps_ekf: gps_ekf.c tinyekf.c tinyekf.h
+	g++ -Wall -o gps_ekf gps_ekf.c tinyekf.c
+
+edit:
+	vim gps_ekf.c
+
+clean:
+	rm -f gps_ekf *.o *~ ekf.csv
 
 commit:
 	git commit -a --allow-empty-message -m ''
 	git push
-
-doc:
-	doxygen
-
-clean:
-	rm -rf Documentation
