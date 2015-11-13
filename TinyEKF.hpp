@@ -107,5 +107,5 @@ class TinyEKF {
           * @param z observation vector, length <i>m</i>
           * @return true on success, false on failure caused by non-positive-definite matrix.
          */
-        bool step(double * z) { ekf_step(&this->ekf, z); return true;}
+        bool step(double * z) { this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); ekf_step(&this->ekf, z); return true;}
 };
