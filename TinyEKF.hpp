@@ -85,6 +85,12 @@ class TinyEKF {
          */
         virtual void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]) = 0;
 
+        void setP(int i, int j, double value) { this->ekf.P[i][j] = value; }
+
+        void setQ(int i, int j, double value) { this->ekf.Q[i][j] = value; }
+
+        void setR(int i, int j, double value) { this->ekf.R[i][j] = value; }
+
     public:
 
         /**

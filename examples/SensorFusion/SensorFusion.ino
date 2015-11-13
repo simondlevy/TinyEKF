@@ -27,11 +27,9 @@ class Fuser : public TinyEKF {
 
     Fuser()
     {            
-        /*
         this->setP(0, 0, .01);
         this->setQ(0, 0, .01);
         this->setR(0, 0, .01);
-        */
     }
 
     protected:
