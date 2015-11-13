@@ -22,7 +22,7 @@
  */
 class TinyEKF {
 
-    private:
+    protected:
 
         typedef struct {
 
@@ -56,22 +56,16 @@ class TinyEKF {
 
         } ekf_t;        
 
-    protected:
-
-        /**
-         * State vector, length <i>n</i>.
-         */
-        double * x;
 
         /**
          * Initializes a TinyEKF object.
          */
-        TinyEKF();
+        TinyEKF() { }
 
         /**
          * Deallocates memory for a TinyEKF object.
          */
-        ~TinyEKF();
+        ~TinyEKF() { }
 
         /**
          * Implement this function for your EKF model.
@@ -80,34 +74,7 @@ class TinyEKF {
          * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
          * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
          */
-        virtual void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]) = 0;
-
-        /**
-         * Sets a the value in the state noise covariance matrix <i>P</i>.  
-         * Typically done during initialization.  Unset values are zero by default by default.
-         * @param i row index (first = 0)
-         * @param j row index (first = 0)
-         * @param value value to set
-         */
-        void setP(int i, int j, double value);
-
-        /**
-         * Sets a the value in the process noise covariance matrix <i>Q</i>.
-         * Typically done during initialization.  Unset values are zero by default by default.
-         * @param i row index (first = 0)
-         * @param j row index (first = 0)
-         * @param value value to set
-         */
-         void setQ(int i, int j, double value);
-
-        /**
-          * Sets a the value in the measurement noise covariance matrix <i>R</i>.
-          * Typically done during initialization.  Unset values are zero by default by default.
-          * @param i row index (first = 0)
-          * @param j row index (first = 0)
-          * @param value value to set
-          */
-         void setR(int i, int j, double value);
+        virtual void model(/*double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]*/) = 0;
 
     public:
 
@@ -116,12 +83,12 @@ class TinyEKF {
           * @param i the index (at least 0 and less than <i>n</i>
           * @return state value at index
           */
-        double getX(int i);
+        double getX(int i) { }
 
         /**
           Performs one step of the prediction and update.
           * @param z observation vector, length <i>m</i>
           * @return true on success, false on failure caused by non-positive-definite matrix.
          */
-        bool step(double * z);
+        bool step(double * z) { return true;}
 };

@@ -34,3 +34,7 @@ probe:
 
 mini:
 	miniterm.py /dev/tty$(PORT) 9600 --exit-char=27
+
+commit:
+	git commit -a
+	git push

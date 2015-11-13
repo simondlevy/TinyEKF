@@ -16,7 +16,10 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-#include "TinyEKF.h"
+#define _N 1
+#define _M 1
+
+#include "TinyEKF.hpp"
 
 class Fuser : public TinyEKF {
 
@@ -24,20 +27,24 @@ class Fuser : public TinyEKF {
 
     Fuser()
     {            
+        /*
         this->setP(0, 0, .01);
         this->setQ(0, 0, .01);
         this->setR(0, 0, .01);
+        */
     }
 
     protected:
 
-        void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N])
+        void model() //double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N])
         {
+            /*
             fx[0] = this->x[0];
             hx[0] = fx[0];
 
             F[0][0] = 1;
             H[0][0] = 1;
+            */
         }
 };
 
