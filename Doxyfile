@@ -101,7 +101,7 @@ WARN_FORMAT            = "$file:$line: $text"
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = TinyEKF.hpp
+INPUT                  = TinyEKF.hpp tinyekf.h
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c  *.cc  *.cxx  *.cpp  *.c++ \
                         *.h  *.hh  *.hxx  *.hpp  *.h++ *.m  *.mm  *.dox \
