@@ -21,13 +21,11 @@ from serial import Serial
 from realtime_plot import RealtimePlotter
 import numpy as np
 
-# Simple example with threading
-
 class EKF_Plotter(RealtimePlotter):
 
     def __init__(self):
 
-        port = Serial(ARDUINO_PORT, ARDUINO_BAUD)
+        self.port = Serial(ARDUINO_PORT, ARDUINO_BAUD)
 
         RealtimePlotter.__init__(self, [(-1,+1), (-1,+1)], 
                 window_name='EKF demo',
@@ -35,18 +33,23 @@ class EKF_Plotter(RealtimePlotter):
                 styles = ['r--', 'b-'], 
                 ylabels=['Slow', 'Fast'])
 
-        self.xcurr = 0
+        self.xcurr,self.ycurr = 0,0
+        self.msg = ''
 
     def getValues(self):
 
-        return self._getRow(1), self._getRow(2)
+        c = self.port.read(1)
 
-    def _getRow(self, row):
+        if c == '\n':
+            try:
+                self.xcurr = float(self.msg)
+            except:
+                print(self.msg)
+            self.msg = ''
+        else:
+            self.msg += c
 
-        size = len(self.x)
-        
-        return np.sin(row*2*np.pi*(float(self.xcurr)%size)/size)
-
+        return self.xcurr, self.ycurr
 
 def _update(plotter):
 
@@ -54,7 +57,6 @@ def _update(plotter):
 
     while True:
 
-        plotter.xcurr += 1
         sleep(.002)
 
 if __name__ == '__main__':
