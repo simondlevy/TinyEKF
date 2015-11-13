@@ -36,5 +36,5 @@ mini:
 	miniterm.py /dev/tty$(PORT) 9600 --exit-char=27
 
 commit:
-	git commit -a
+	git commit -a --allow-empty-message -m ''
 	git push
