@@ -57,7 +57,7 @@ def _update(plotter):
 
     while True:
 
-        sleep(.002)
+        sleep(0)
 
 if __name__ == '__main__':
 
