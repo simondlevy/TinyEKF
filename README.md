@@ -1,1 +1,3 @@
-# TinyEKF A lightweight C/C++ implementation of the Extended Kalman Filter, with Arduino example.
+# TinyEKF A lightweight 
+
+C/C++ implementation of the Extended Kalman Filter, with Arduino example.
