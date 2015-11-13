@@ -66,10 +66,12 @@ class TinyEKF {
 
     protected:
 
+        double * x;
+
         /**
          * Initializes a TinyEKF object.
          */
-        TinyEKF() { ekf_init(&this->ekf, _N, _M); }
+        TinyEKF() { ekf_init(&this->ekf, _N, _M); this->x = this->ekf.x; }
 
         /**
          * Deallocates memory for a TinyEKF object.
