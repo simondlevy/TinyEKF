@@ -17,15 +17,15 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-/**
- * A class for the Extended Kalman Filter.
- */
-
 extern "C" {
     void ekf_init(void *, int, int);
     void ekf_step(void *, double *);
 }
 
+/**
+ * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant _N and 
+ * _M and then #include <TinyKalman.hpp>
+ */
 class TinyEKF {
 
     private:
@@ -66,12 +66,18 @@ class TinyEKF {
 
     protected:
 
+        /**
+          * The current state.
+          */
         double * x;
 
         /**
          * Initializes a TinyEKF object.
          */
-        TinyEKF() { ekf_init(&this->ekf, _N, _M); this->x = this->ekf.x; }
+        TinyEKF() { 
+            ekf_init(&this->ekf, _N, _M); 
+            this->x = this->ekf.x; 
+        }
 
         /**
          * Deallocates memory for a TinyEKF object.
@@ -98,12 +104,24 @@ class TinyEKF {
             this->ekf.P[i][j] = value; 
         }
 
-        void setQ(int i, int j, double value) 
+        /**
+         * Sets the specified value of the process noise covariance. <i>Q<sub>i,j</sub> = value</i>
+         * @param i row index
+         * @param j column index
+         * @param value value to set
+         */
+         void setQ(int i, int j, double value) 
         { 
             this->ekf.Q[i][j] = value; 
         }
 
-        void setR(int i, int j, double value) 
+        /**
+         * Sets the specified value of the observation noise covariance. <i>R<sub>i,j</sub> = value</i>
+         * @param i row index
+         * @param j column index
+         * @param value value to set
+         */
+         void setR(int i, int j, double value) 
         { 
             this->ekf.R[i][j] = value; 
         }
