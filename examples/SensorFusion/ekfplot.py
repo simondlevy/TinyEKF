@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Real-time plot demo using sine waves.
+Plots output of Arduino EKF sketch.
 
 Copyright (C) 2015 Simon D. Levy
 
@@ -19,7 +19,7 @@ import numpy as np
 
 # Simple example with threading
 
-class _SinePlotter(RealtimePlotter):
+class EKF_Plotter(RealtimePlotter):
 
     def __init__(self):
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     import threading
 
-    plotter = _SinePlotter()
+    plotter = EKF_Plotter()
 
     thread = threading.Thread(target=_update, args = (plotter,))
     thread.daemon = True
