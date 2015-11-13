@@ -21,11 +21,15 @@
  * A class for the Extended Kalman Filter.
  */
 
-#include <tinyekf.h>
+//#include "tinyekf.h"
+
+extern "C" {
+    void ekf_init(void *, int, int);
+}
 
 class TinyEKF {
 
-    protected:
+    private:
 
         typedef struct {
 
@@ -59,11 +63,17 @@ class TinyEKF {
 
         } ekf_t;        
 
+        ekf_t ekf;
+
+    protected:
 
         /**
          * Initializes a TinyEKF object.
          */
-        TinyEKF() { }
+        TinyEKF() 
+        { 
+            ekf_init(&this->ekf, _N, _M);
+        }
 
         /**
          * Deallocates memory for a TinyEKF object.
