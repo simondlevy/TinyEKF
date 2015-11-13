@@ -17,8 +17,6 @@
  * along with ekf-> code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-#include "tinyekf.h"
-
 #include <math.h>
 #include <stdlib.h>
 
@@ -202,6 +200,8 @@ static void mat_addeye(double * a, int n)
 }
 
 /* TinyEKF code ------------------------------------------------------------------- */
+
+#include "tinyekf.h"
 
 void ekf_init(ekf_t * ekf)
 {
