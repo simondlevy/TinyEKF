@@ -17,59 +17,87 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-#include "tinyekf.h"
-
 /**
-  * A class for the Extended Kalman Filter.
-  */
+ * A class for the Extended Kalman Filter.
+ */
 class TinyEKF {
 
     private:
 
-        ekf_t ekf;
+        typedef struct {
+
+            int n;          /* number of state values */
+            int m;          /* number of observables */
+
+            double x[_N];    /* state vector */
+
+            double P[_N][_N];  /* prediction error covariance */
+            double Q[_N][_N];  /* process noise covariance */
+            double R[_M][_M];  /* measurement error covariance */
+
+            double G[_N][_M];  /* Kalman gain; a.k.a. K */
+
+            double F[_N][_N];  /* Jacobian of process model */
+            double H[_M][_N];  /* Jacobian of measurement model */
+
+            double Ht[_N][_M]; /* transpose of measurement Jacobian */
+            double Ft[_N][_N]; /* transpose of process Jacobian */
+            double Pp[_N][_N]; /* P, post-prediction, pre-update */
+
+            double fx[_N];   /* output of user defined f() state-transition function */
+            double hx[_N];   /* output of user defined h() measurement function */
+
+            /* temporary storage */
+            double tmp1[_N][_N];
+            double tmp2[_M][_N];
+            double tmp3[_M][_M];
+            double tmp4[_M][_M];
+            double tmp5[_M]; 
+
+        } ekf_t;        
 
     protected:
 
         /**
-        * State vector, length <i>n</i>.
-        */
+         * State vector, length <i>n</i>.
+         */
         double * x;
 
         /**
-          * Initializes a TinyEKF object.
-          */
+         * Initializes a TinyEKF object.
+         */
         TinyEKF();
 
         /**
-          * Deallocates memory for a TinyEKF object.
-          */
-         ~TinyEKF();
+         * Deallocates memory for a TinyEKF object.
+         */
+        ~TinyEKF();
 
-         /**
-           * Implement this function for your EKF model.
-           * @param fx gets output of state-transition function <i>f(x<sub>0 .. n-1</sub>)</i>
-           * @param F gets <i>n &times; n</i> Jacobian of <i>f(x)</i>
-           * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
-           * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
-           */
+        /**
+         * Implement this function for your EKF model.
+         * @param fx gets output of state-transition function <i>f(x<sub>0 .. n-1</sub>)</i>
+         * @param F gets <i>n &times; n</i> Jacobian of <i>f(x)</i>
+         * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
+         * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
+         */
         virtual void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]) = 0;
 
         /**
-          * Sets a the value in the state noise covariance matrix <i>P</i>.  
-          * Typically done during initialization.  Unset values are zero by default by default.
-          * @param i row index (first = 0)
-          * @param j row index (first = 0)
-          * @param value value to set
-          */
-         void setP(int i, int j, double value);
+         * Sets a the value in the state noise covariance matrix <i>P</i>.  
+         * Typically done during initialization.  Unset values are zero by default by default.
+         * @param i row index (first = 0)
+         * @param j row index (first = 0)
+         * @param value value to set
+         */
+        void setP(int i, int j, double value);
 
         /**
-          * Sets a the value in the process noise covariance matrix <i>Q</i>.
-          * Typically done during initialization.  Unset values are zero by default by default.
-          * @param i row index (first = 0)
-          * @param j row index (first = 0)
-          * @param value value to set
-          */
+         * Sets a the value in the process noise covariance matrix <i>Q</i>.
+         * Typically done during initialization.  Unset values are zero by default by default.
+         * @param i row index (first = 0)
+         * @param j row index (first = 0)
+         * @param value value to set
+         */
          void setQ(int i, int j, double value);
 
         /**

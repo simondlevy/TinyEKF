@@ -221,8 +221,8 @@ typedef struct {
     double * Ft; /* transpose of process Jacobian */
     double * Pp; /* P, post-prediction, pre-update */
 
-    double * fx;   /* output of user defined f() state-transition function */
-    double * hx;   /* output of user defined h() measurement function */
+    double * fx;  /* output of user defined f() state-transition function */
+    double * hx;  /* output of user defined h() measurement function */
 
     /* temporary storage */
     double * tmp1;
