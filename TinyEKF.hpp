@@ -23,6 +23,7 @@
 
 extern "C" {
     void ekf_init(void *, int, int);
+    void ekf_step(void *, double *);
 }
 
 class TinyEKF {
@@ -98,5 +99,5 @@ class TinyEKF {
           * @param z observation vector, length <i>m</i>
           * @return true on success, false on failure caused by non-positive-definite matrix.
          */
-        bool step(double * z) { return true;}
+        bool step(double * z) { ekf_step(&this->ekf, z); return true;}
 };
