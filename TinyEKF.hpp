@@ -20,6 +20,9 @@
 /**
  * A class for the Extended Kalman Filter.
  */
+
+#include <tinyekf.h>
+
 class TinyEKF {
 
     protected:
