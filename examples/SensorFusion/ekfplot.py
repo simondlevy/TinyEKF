@@ -14,6 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 '''
 
+ARDUINO_PORT = '/dev/ttyACM0'
+
 from realtime_plot import RealtimePlotter
 import numpy as np
 
@@ -24,7 +26,7 @@ class EKF_Plotter(RealtimePlotter):
     def __init__(self):
 
         RealtimePlotter.__init__(self, [(-1,+1), (-1,+1)], 
-                window_name='Sinewave demo',
+                window_name='EKF demo',
                 yticks = [(-1,0,+1),(-1,0,+1)],
                 styles = ['r--', 'b-'], 
                 ylabels=['Slow', 'Fast'])
