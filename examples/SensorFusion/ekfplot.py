@@ -15,7 +15,9 @@ GNU General Public License for more details.
 '''
 
 ARDUINO_PORT = '/dev/ttyACM0'
+ARDUINO_BAUD = 9600
 
+from serial import Serial
 from realtime_plot import RealtimePlotter
 import numpy as np
 
@@ -24,6 +26,8 @@ import numpy as np
 class EKF_Plotter(RealtimePlotter):
 
     def __init__(self):
+
+        port = Serial(ARDUINO_PORT, ARDUINO_BAUD)
 
         RealtimePlotter.__init__(self, [(-1,+1), (-1,+1)], 
                 window_name='EKF demo',
