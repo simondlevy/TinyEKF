@@ -87,11 +87,26 @@ class TinyEKF {
          */
         virtual void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]) = 0;
 
-        void setP(int i, int j, double value) { this->ekf.P[i][j] = value; }
+        /**
+         * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>
+         * @param i row index
+         * @param j column index
+         * @param value value to set
+         */
+        void setP(int i, int j, double value) 
+        { 
+            this->ekf.P[i][j] = value; 
+        }
 
-        void setQ(int i, int j, double value) { this->ekf.Q[i][j] = value; }
+        void setQ(int i, int j, double value) 
+        { 
+            this->ekf.Q[i][j] = value; 
+        }
 
-        void setR(int i, int j, double value) { this->ekf.R[i][j] = value; }
+        void setR(int i, int j, double value) 
+        { 
+            this->ekf.R[i][j] = value; 
+        }
 
     public:
 
@@ -100,12 +115,20 @@ class TinyEKF {
           * @param i the index (at least 0 and less than <i>n</i>
           * @return state value at index
           */
-        double getX(int i) { return this->ekf.x[0]; }
+        double getX(int i) 
+        { 
+            return this->ekf.x[0]; 
+        }
 
         /**
           Performs one step of the prediction and update.
           * @param z observation vector, length <i>m</i>
           * @return true on success, false on failure caused by non-positive-definite matrix.
          */
-        bool step(double * z) { this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); ekf_step(&this->ekf, z); return true;}
+        bool step(double * z) 
+        { 
+            this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
+
+            ekf_step(&this->ekf, z); return true;
+        }
 };
