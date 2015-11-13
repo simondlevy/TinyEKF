@@ -35,6 +35,7 @@
 #include <strings.h>
 #include <math.h>
 
+#include "tinyekf_config.h"
 #include "tinyekf.h"
 
 // positioning interval
@@ -44,10 +45,10 @@ static void blkfill(ekf_t * ekf, const double * a, int off)
 {
     off *= 2;
 
-    ekf->Q[off][ off]     = a[0]; 
-    ekf->Q[off][ off+1]   = a[1];
-    ekf->Q[off+1][ off]   = a[2];
-    ekf->Q[off+1][ off+1] = a[3];
+    ekf->Q[off]   [off]   = a[0]; 
+    ekf->Q[off]   [off+1] = a[1];
+    ekf->Q[off+1] [off]   = a[2];
+    ekf->Q[off+1] [off+1] = a[3];
 }
 
 
@@ -65,7 +66,7 @@ static void init(ekf_t * ekf)
     blkfill(ekf, Qxyz, 2);
     blkfill(ekf, Qb,   3);
 
-    // initial covariances of state, measurement noise 
+    // initial covariances of state noise, measurement noise
     double P0 = 10;
     double R0 = 36;
 
@@ -124,7 +125,7 @@ static void model(ekf_t * ekf, double SV[4][3])
 
     for (i=0; i<4; ++i) {
         for (j=0; j<3; ++j) 
-            ekf->H[i][j*2] = dx[i][j] / ekf->hx[i];
+            ekf->H[i][j*2]  = dx[i][j] / ekf->hx[i];
         ekf->H[i][6] = 1;
     }   
 }
@@ -170,10 +171,12 @@ void error(const char * msg)
 
 int main(int argc, char ** argv)
 {    
-    // Create the EKF
-    ekf_t ekf2;
-    ekf_init(&ekf2);
-    init(&ekf2);
+    // Do generic EKF initialization
+    ekf_t ekf;
+    ekf_init(&ekf, N, M);
+
+    // Do local initialization
+    init(&ekf);
 
     // Open input data file
     FILE * ifp = fopen("gps.csv", "r");
@@ -198,13 +201,13 @@ int main(int argc, char ** argv)
 
         readdata(ifp, SV_Pos, SV_Rho);
 
-        model(&ekf2, SV_Pos);
+        model(&ekf, SV_Pos);
 
-        ekf_step(&ekf2, SV_Rho);
+        ekf_step(&ekf, SV_Rho);
 
         // grab positions, ignoring velocities
         for (k=0; k<3; ++k)
-            Pos_KF[j][k] = ekf2.x[2*k];
+            Pos_KF[j][k] = ekf.x[2*k];
     }
 
     // Compute means of filtered positions
