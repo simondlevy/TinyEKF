@@ -21,8 +21,6 @@
  * A class for the Extended Kalman Filter.
  */
 
-//#include "tinyekf.h"
-
 extern "C" {
     void ekf_init(void *, int, int);
 }
@@ -70,10 +68,7 @@ class TinyEKF {
         /**
          * Initializes a TinyEKF object.
          */
-        TinyEKF() 
-        { 
-            ekf_init(&this->ekf, _N, _M);
-        }
+        TinyEKF() { ekf_init(&this->ekf, _N, _M); }
 
         /**
          * Deallocates memory for a TinyEKF object.
@@ -96,7 +91,7 @@ class TinyEKF {
           * @param i the index (at least 0 and less than <i>n</i>
           * @return state value at index
           */
-        double getX(int i) { }
+        double getX(int i) { return this->ekf.x[0]; }
 
         /**
           Performs one step of the prediction and update.

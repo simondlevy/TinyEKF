@@ -17,6 +17,7 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
+
 /**
   * Sets contents to zero.
   * @param ekf pointer to EKF structure to initialize
