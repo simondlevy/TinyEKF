@@ -239,7 +239,6 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
 
     double * dptr = (double *)cptr;
     ekf->x = dptr;
-    //printf("unpack: x=%p; v=%p\n", ekf->x, v); 
     dptr += n;
     ekf->P = dptr;
     dptr += n*n;
@@ -252,7 +251,6 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     ekf->F = dptr;
     dptr += n*n;
     ekf->H = dptr;
-    //printf("unpack: H=%p\n", ekf->H);
     dptr += m*n;
     ekf->Ht = dptr;
     dptr += n*m;
@@ -288,7 +286,6 @@ void ekf_init(void * v, int n, int m)
     unpack(v, &ekf, n, m);
 
     /* zero-out matrices */
-    zeros(ekf.P, n, n);
     zeros(ekf.Q, n, n);
     zeros(ekf.R, m, m);
     zeros(ekf.G, n, m);
@@ -307,8 +304,6 @@ int ekf_step(void * v, double * z)
 
     ekf_t ekf;
     unpack(v, &ekf, n, m); 
-
-    //printf("\n"); dump(ekf.H, 2, 2, "%+3.3f");  exit(0);
 
     /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
     mulmat(ekf.F, ekf.P, ekf.tmp1, n, n, n);
