@@ -107,7 +107,6 @@ static void zeros(double * a, int m, int n)
         a[j] = 0;
 }
 
-/*
 static void dump(double * a, int m, int n, const char * fmt)
 {
     int i,j;
@@ -120,7 +119,6 @@ static void dump(double * a, int m, int n, const char * fmt)
         printf("\n");
     }
 }
-*/
 
 /* C <- A * B */
 static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
@@ -235,9 +233,13 @@ typedef struct {
 
 static void unpack(void * v, ekf_t * ekf, int n, int m)
 {
-    double * dptr = v + 2*sizeof(int);
+    /* skip over n, m in data structure */
+    char * cptr = (char *)v;
+    cptr += 2*sizeof(int);
 
+    double * dptr = (double *)cptr;
     ekf->x = dptr;
+    //printf("unpack: x=%p; v=%p\n", ekf->x, v); 
     dptr += n;
     ekf->P = dptr;
     dptr += n*n;
@@ -250,6 +252,7 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     ekf->F = dptr;
     dptr += n*n;
     ekf->H = dptr;
+    //printf("unpack: H=%p\n", ekf->H);
     dptr += m*n;
     ekf->Ht = dptr;
     dptr += n*m;
@@ -279,7 +282,7 @@ void ekf_init(void * v, int n, int m)
     *ptr = n;
     ptr++;
     *ptr = m;
-    
+
     /* unpack rest of incoming structure for initlization */
     ekf_t ekf;
     unpack(v, &ekf, n, m);
@@ -304,6 +307,8 @@ int ekf_step(void * v, double * z)
 
     ekf_t ekf;
     unpack(v, &ekf, n, m); 
+
+    //printf("\n"); dump(ekf.H, 2, 2, "%+3.3f");  exit(0);
 
     /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
     mulmat(ekf.F, ekf.P, ekf.tmp1, n, n, n);

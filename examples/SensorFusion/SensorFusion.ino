@@ -16,8 +16,8 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-#define _N 1
-#define _M 1
+#define _N 2
+#define _M 2
 
 #include "TinyEKF.hpp"
 
@@ -27,9 +27,11 @@ class Fuser : public TinyEKF {
 
     Fuser()
     {            
-        this->setP(0, 0, .01);
-        this->setQ(0, 0, .01);
-        this->setR(0, 0, .01);
+        for (int i=0; i<2; ++i)
+            for (int j=0; j<2; ++j) {
+                this->setQ(i, j, .01);
+                this->setR(i, j, .01);
+            }
     }
 
     protected:
@@ -37,10 +39,15 @@ class Fuser : public TinyEKF {
         void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N])
         {
             fx[0] = this->x[0];
-            hx[0] = fx[0];
+            fx[1] = this->x[1];
 
-            F[0][0] = 1;
-            H[0][0] = 1;
+            hx[0] = fx[0];
+            hx[1] = fx[1];
+
+            for (int i=0; i<2; ++i) {
+                F[i][i] = 1;
+                H[i][i] = 1;
+            }
         }
 };
 
@@ -49,21 +56,32 @@ Fuser ekf;
 void setup() {
 
     Serial.begin(9600);
-}
 
+    ekf.setX(0, 0);
+    ekf.setX(1, 0);
+}
 
 void loop() {
 
     static int count;
-    const int LOOPSIZE = 1000;
+    const int LOOPSIZE = 2;
 
-    double z[1];
+    static int flag;
 
-    z[0] = sin(2*M_PI*count/LOOPSIZE);
+    double z[2];
 
-    ekf.step(z);
+    double t = 2*M_PI*count/LOOPSIZE;
 
-    Serial.println(ekf.getX(0));
+    z[0] = sin(t);
+    z[1] = cos(t);
 
-    count = (count + 1) % LOOPSIZE;
+    if (!flag && count < 2) {
+
+        ekf.step(z);
+    }
+
+    if (count >= 2)
+        flag = 1;
+
+    count++;
 }

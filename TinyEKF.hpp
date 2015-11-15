@@ -17,10 +17,27 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-extern "C" {
+#include <stdio.h>
+#include <stdlib.h>
+
+//extern "C" {
     void ekf_init(void *, int, int);
-    void ekf_step(void *, double *);
+    int ekf_step(void *, double *);
+//}
+
+static void dump(double * a, int m, int n, const char * fmt)
+{
+    int i,j;
+
+    char f[100];
+    sprintf(f, "%s ", fmt);
+    for(i=0; i<m; ++i) {
+        for(j=0; j<n; ++j)
+            printf(f, a[i*n+j]);
+        printf("\n");
+    }
 }
+
 
 /**
  * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant _N and 
@@ -77,6 +94,8 @@ class TinyEKF {
         TinyEKF() { 
             ekf_init(&this->ekf, _N, _M); 
             this->x = this->ekf.x; 
+            //printf("TinyE:  x=%p\n", this->x);
+            //exit(0);
         }
 
         /**
@@ -138,6 +157,11 @@ class TinyEKF {
             return this->ekf.x[0]; 
         }
 
+        double setX(int i, double value) 
+        { 
+            this->ekf.x[i] = value; 
+        }
+
         /**
           Performs one step of the prediction and update.
           * @param z observation vector, length <i>m</i>
@@ -147,6 +171,8 @@ class TinyEKF {
         { 
             this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
 
-            ekf_step(&this->ekf, z); return true;
+            dump(&this->ekf.H[0][0], 2, 2, "%+3.3f");printf("\n");
+
+            return ekf_step(&this->ekf, z) ? false : true;
         }
 };

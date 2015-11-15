@@ -42,6 +42,7 @@ class EKF_Plotter(RealtimePlotter):
 
         if c == '\n':
             try:
+                print(self.msg)
                 self.xcurr = float(self.msg)
             except:
                 None
