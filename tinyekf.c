@@ -317,7 +317,6 @@ int ekf_step(void * v, double * z)
     mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n);
     mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m);
     accum(ekf.tmp3, ekf.R, m, m);
-    dump(ekf.R, 2, 2, "%+3.3f"); printf("\n");
     if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
     mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
 
