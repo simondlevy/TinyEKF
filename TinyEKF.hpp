@@ -159,7 +159,7 @@ class TinyEKF {
           */
         double getX(int i) 
         { 
-            return this->ekf.x[0]; 
+            return this->ekf.x[i]; 
         }
 
         double setX(int i, double value) 
