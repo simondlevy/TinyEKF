@@ -286,6 +286,7 @@ void ekf_init(void * v, int n, int m)
     unpack(v, &ekf, n, m);
 
     /* zero-out matrices */
+    zeros(ekf.P, n, n);
     zeros(ekf.Q, n, n);
     zeros(ekf.R, m, m);
     zeros(ekf.G, n, m);
