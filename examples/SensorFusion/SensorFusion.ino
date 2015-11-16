@@ -63,7 +63,7 @@ void setup() {
 void loop() {
 
     static int count;
-    const int LOOPSIZE = 1000;
+    const int LOOPSIZE = 100;
 
     double z[2];
 
