@@ -73,6 +73,8 @@ int main(int argc, char ** argv)
         z[1] = cos(t);
 
         ekf.step(z);
+
+        printf("%f %f\n", ekf.getX(0), ekf.getX(1));
     }
 
     return 0;

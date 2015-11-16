@@ -332,8 +332,6 @@ int ekf_step(void * v, double * z)
     mat_addeye(ekf.tmp1, n);
     mulmat(ekf.tmp1, ekf.Pp, ekf.P, n, n, n);
 
-    printf("%f %f\n", ekf.x[0], ekf.x[1]);
-
     /* success */
     return 0;
 }
