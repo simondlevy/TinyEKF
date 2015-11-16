@@ -31,7 +31,7 @@ class EKF_Plotter(RealtimePlotter):
                 window_name='EKF demo',
                 yticks = [(-1,0,+1),(-1,0,+1)],
                 styles = ['r--', 'b-'], 
-                ylabels=['Slow', 'Fast'])
+                ylabels=['Sin(X)', 'Cos(X)'])
 
         self.xcurr,self.ycurr = 0,0
         self.msg = ''
