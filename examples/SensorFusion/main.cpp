@@ -61,13 +61,15 @@ int main(int argc, char ** argv)
     ekf.setX(0, 0);
     ekf.setX(1, 0);
 
-    const int STEPS = 10;
+    const int PERIOD = 10;
 
-    for (int i=0; i<STEPS; ++i) {
+    int i = 0;
+
+    while (true) {
 
         double z[2];
 
-        double t = M_PI*i/(STEPS-1);
+        double t = M_PI*i/(PERIOD-1);
 
         z[0] = sin(t);
         z[1] = cos(t);
@@ -75,6 +77,8 @@ int main(int argc, char ** argv)
         ekf.step(z);
 
         printf("%f %f\n", ekf.getX(0), ekf.getX(1));
+
+        i = (i+1) % PERIOD;
     }
 
     return 0;
