@@ -27,12 +27,11 @@ class Fuser : public TinyEKF {
 
     Fuser()
     {            
-        for (int i=0; i<2; ++i)
-            for (int j=0; j<2; ++j) {
-                this->setQ(i, j, .01);
-                this->setR(i, j, .01);
-            }
-    }
+        for (int i=0; i<2; ++i) {
+            this->setQ(i, i, .01);
+            this->setR(i, i, .01);
+        }
+     }
 
     protected:
 
