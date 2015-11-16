@@ -30,6 +30,7 @@ extern "C" {
 }
 #endif
 
+/*
 static void dump(double * a, int m, int n, const char * fmt)
 {
     int i,j;
@@ -42,7 +43,7 @@ static void dump(double * a, int m, int n, const char * fmt)
         printf("\n");
     }
 }
-
+*/
 
 /**
  * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant _N and 
@@ -162,7 +163,12 @@ class TinyEKF {
             return this->ekf.x[i]; 
         }
 
-        double setX(int i, double value) 
+        /**
+          * Sets the state element at a given index.
+          * @param i the index (at least 0 and less than <i>n</i>
+          * @param value value to set
+          */
+         void setX(int i, double value) 
         { 
             this->ekf.x[i] = value; 
         }

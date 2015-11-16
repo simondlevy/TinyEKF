@@ -35,12 +35,9 @@ probe:
 listen:
 	miniterm.py /dev/tty$(PORT) 9600 --exit-char=27
 
-run: main
-	./main
-
-main: main.cpp ../../tinyekf.c ../../TinyEKF.hpp
-	g++ -D_MAIN -I../.. -o main main.cpp ../../tinyekf.c
-
 commit:
 	git commit -a --allow-empty-message -m ''
 	git push
+
+clean:
+	rm -f *~
