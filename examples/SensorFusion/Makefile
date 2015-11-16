@@ -39,7 +39,7 @@ run: main
 	./main
 
 main: main.cpp ../../tinyekf.c ../../TinyEKF.hpp
-	g++ -I../.. -o main main.cpp ../../tinyekf.c
+	g++ -D_MAIN -I../.. -o main main.cpp ../../tinyekf.c
 
 commit:
 	git commit -a --allow-empty-message -m ''

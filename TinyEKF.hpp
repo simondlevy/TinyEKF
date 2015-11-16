@@ -20,10 +20,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//extern "C" {
+// Support both Arduino and command-line versions
+#ifndef _MAIN
+extern "C" {
+#endif
     void ekf_init(void *, int, int);
     int ekf_step(void *, double *);
-//}
+#ifndef _MAIN
+}
+#endif
 
 static void dump(double * a, int m, int n, const char * fmt)
 {

@@ -64,24 +64,21 @@ void setup() {
 void loop() {
 
     static int count;
-    const int LOOPSIZE = 2;
-
-    static int flag;
+    const int LOOPSIZE = 1000;
 
     double z[2];
 
-    double t = 2*M_PI*count/LOOPSIZE;
+    double t = 2*M_PI*count/(LOOPSIZE-1);
 
     z[0] = sin(t);
     z[1] = cos(t);
 
-    if (!flag && count < 2) {
+    ekf.step(z);
 
-        ekf.step(z);
-    }
+    Serial.print(ekf.getX(0));
+    Serial.print(" ");
+    Serial.print(ekf.getX(1));
+    Serial.println();
 
-    if (count >= 2)
-        flag = 1;
-
-    count++;
+    count = (count + 1) % LOOPSIZE;
 }
