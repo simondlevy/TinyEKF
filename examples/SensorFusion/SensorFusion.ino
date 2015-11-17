@@ -31,7 +31,7 @@ double pressureBaseline;
 
 class POSLLH_Parser : public UBX_Parser {
 
-    void handle_NAV_POSLLH(unsigned long iTOW, 
+    void handleNAV_POSLLH(unsigned long iTOW, 
             long lon, 
             long lat, 
             long height, 
@@ -71,11 +71,11 @@ bool success;
 
 #else
 
-#define _N 2
-#define _M 2
+#define N 2
+#define M 2
 
 #include <Arduino.h>
-#include "TinyEKF.hpp"
+#include <TinyEKF.h>
 
 
 
@@ -93,7 +93,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N])
+        void model(double fx[N], double F[N][N], double hx[N], double H[M][N])
         {
             fx[0] = this->x[0];
             fx[1] = this->x[1];

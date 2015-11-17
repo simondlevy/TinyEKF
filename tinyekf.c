@@ -107,6 +107,7 @@ static void zeros(double * a, int m, int n)
         a[j] = 0;
 }
 
+/*
 static void dump(double * a, int m, int n, const char * fmt)
 {
     int i,j;
@@ -119,6 +120,7 @@ static void dump(double * a, int m, int n, const char * fmt)
         printf("\n");
     }
 }
+*/
 
 /* C <- A * B */
 static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)

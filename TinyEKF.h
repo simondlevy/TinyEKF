@@ -21,12 +21,12 @@
 #include <stdlib.h>
 
 // Support both Arduino and command-line versions
-#ifndef _MAIN
+#ifndef MAIN
 extern "C" {
 #endif
     void ekf_init(void *, int, int);
     int ekf_step(void *, double *);
-#ifndef _MAIN
+#ifndef MAIN
 }
 #endif
 
@@ -46,8 +46,8 @@ static void dump(double * a, int m, int n, const char * fmt)
 */
 
 /**
- * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant _N and 
- * _M and then #include <TinyKalman.hpp>
+ * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant N and 
+ * M and then #include <TinyKalman.hpp>
  */
 class TinyEKF {
 
@@ -58,30 +58,30 @@ class TinyEKF {
             int n;          /* number of state values */
             int m;          /* number of observables */
 
-            double x[_N];    /* state vector */
+            double x[N];    /* state vector */
 
-            double P[_N][_N];  /* prediction error covariance */
-            double Q[_N][_N];  /* process noise covariance */
-            double R[_M][_M];  /* measurement error covariance */
+            double P[N][N];  /* prediction error covariance */
+            double Q[N][N];  /* process noise covariance */
+            double R[M][M];  /* measurement error covariance */
 
-            double G[_N][_M];  /* Kalman gain; a.k.a. K */
+            double G[N][M];  /* Kalman gain; a.k.a. K */
 
-            double F[_N][_N];  /* Jacobian of process model */
-            double H[_M][_N];  /* Jacobian of measurement model */
+            double F[N][N];  /* Jacobian of process model */
+            double H[M][N];  /* Jacobian of measurement model */
 
-            double Ht[_N][_M]; /* transpose of measurement Jacobian */
-            double Ft[_N][_N]; /* transpose of process Jacobian */
-            double Pp[_N][_N]; /* P, post-prediction, pre-update */
+            double Ht[N][M]; /* transpose of measurement Jacobian */
+            double Ft[N][N]; /* transpose of process Jacobian */
+            double Pp[N][N]; /* P, post-prediction, pre-update */
 
-            double fx[_N];   /* output of user defined f() state-transition function */
-            double hx[_N];   /* output of user defined h() measurement function */
+            double fx[N];   /* output of user defined f() state-transition function */
+            double hx[N];   /* output of user defined h() measurement function */
 
             /* temporary storage */
-            double tmp1[_N][_N];
-            double tmp2[_M][_N];
-            double tmp3[_M][_M];
-            double tmp4[_M][_M];
-            double tmp5[_M]; 
+            double tmp1[N][N];
+            double tmp2[M][N];
+            double tmp3[M][M];
+            double tmp4[M][M];
+            double tmp5[M]; 
 
         } ekf_t;        
 
@@ -98,7 +98,7 @@ class TinyEKF {
          * Initializes a TinyEKF object.
          */
         TinyEKF() { 
-            ekf_init(&this->ekf, _N, _M); 
+            ekf_init(&this->ekf, N, M); 
             this->x = this->ekf.x; 
             //printf("TinyE:  x=%p\n", this->x);
             //exit(0);
@@ -116,7 +116,7 @@ class TinyEKF {
          * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
          * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
          */
-        virtual void model(double fx[_N], double F[_N][_N], double hx[_N], double H[_M][_N]) = 0;
+        virtual void model(double fx[N], double F[N][N], double hx[N], double H[M][N]) = 0;
 
         /**
          * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>
