@@ -27,9 +27,12 @@ class EKF_Plotter(RealtimePlotter):
 
         self.port = Serial(ARDUINO_PORT, ARDUINO_BAUD)
 
-        RealtimePlotter.__init__(self, [(0,100), (950,1000)], 
+        p_lo = 989
+        p_hi = 990
+
+        RealtimePlotter.__init__(self, [(0,100), (p_lo,p_hi)], 
                 window_name='EKF demo',
-                yticks = [tuple(range(0,100,20)),tuple(range(950,1000,10))]
+                yticks = [tuple(range(0,100,20)),tuple(range(p_lo,p_hi,1))],
                 styles = ['r--', 'b-'], 
                 ylabels=['Temperature (C)', 'Pressure (mb)'],
                 interval_msec=1)

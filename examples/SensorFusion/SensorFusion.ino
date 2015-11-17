@@ -18,8 +18,8 @@
  */
 
 // These must be defined before including TinyEKF.h
-#define N 1
-#define M 1
+#define N 2
+#define M 2
 
 #include <TinyEKF.h>
 
@@ -70,10 +70,12 @@ void loop() {
 
     double temperature, pressure;
     getReadings(temperature, pressure);
-    Serial.print(temperature);
+    double z[2] = {temperature, pressure};
+    ekf.step(z);
+    Serial.print(ekf.getX(0));
     Serial.print(" ");
-    Serial.println(pressure);
-}
+    Serial.println(ekf.getX(1));
+ }
 
 void getReadings(double & T, double & P)
 {
