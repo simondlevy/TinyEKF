@@ -26,11 +26,6 @@
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
-SFE_BMP180 baro;
-double pressureBaseline; 
-
-bool success;
-
 class Fuser : public TinyEKF {
 
     public:
@@ -61,6 +56,7 @@ class Fuser : public TinyEKF {
 };
 
 Fuser ekf;
+SFE_BMP180 baro;
 
 void setup() {
 
@@ -72,13 +68,16 @@ void setup() {
 
 void loop() {
 
-    Serial.println(getPressure());
+    double temperature, pressure;
+    getReadings(temperature, pressure);
+    //Serial.print(temperature);
+    //Serial.print(" ");
+    //Serial.println(pressure);
 }
 
-double getPressure()
+void getReadings(double & T, double & P)
 {
   char status;
-  double T,P;
   
   // You must first get a temperature measurement to perform a pressure reading.
   
@@ -106,6 +105,8 @@ double getPressure()
       // If request is successful, the number of ms to wait is returned.
       // If request is unsuccessful, 0 is returned.
 
+      Serial.println(T);
+
       status = baro.startPressure(3);
       if (status != 0)
       {
@@ -121,17 +122,13 @@ double getPressure()
         // Function returns 1 if successful, 0 if failure.
 
         status = baro.getPressure(P,T);
-        if (status != 0)
-        {
-          return(P);
-        }
-        else Serial.println("error retrieving pressure measurement\n");
+
+        if (status == 0)
+            Serial.println("error retrieving pressure measurement\n");
       }
       else Serial.println("error starting pressure measurement\n");
     }
     else Serial.println("error retrieving temperature measurement\n");
   }
   else Serial.println("error starting temperature measurement\n");
-
-  return -1;
 }
