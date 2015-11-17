@@ -15,7 +15,7 @@ GNU General Public License for more details.
 '''
 
 ARDUINO_PORT = '/dev/ttyACM0'
-ARDUINO_BAUD = 9600
+ARDUINO_BAUD = 115200
 
 from serial import Serial
 from realtime_plot import RealtimePlotter
@@ -27,11 +27,12 @@ class EKF_Plotter(RealtimePlotter):
 
         self.port = Serial(ARDUINO_PORT, ARDUINO_BAUD)
 
-        RealtimePlotter.__init__(self, [(-1,+1), (-1,+1)], 
+        RealtimePlotter.__init__(self, [(0,100), (900,1000)], 
                 window_name='EKF demo',
-                yticks = [(-1,0,+1),(-1,0,+1)],
+                yticks = [tuple(range(0,100,20)),(900,950,1000)],
                 styles = ['r--', 'b-'], 
-                ylabels=['Sin(X)', 'Cos(X)'])
+                ylabels=['Temperature (C)', 'Pressure (mb)'],
+                interval_msec=1)
 
         self.xcurr,self.ycurr = 0,0
         self.msg = ''

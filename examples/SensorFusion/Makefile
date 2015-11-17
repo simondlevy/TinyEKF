@@ -33,7 +33,7 @@ probe:
 	ls /dev/ttyA*
 
 listen:
-	miniterm.py /dev/tty$(PORT) 9600 --exit-char=27
+	miniterm.py /dev/tty$(PORT) 115200
 
 commit:
 	git commit -a --allow-empty-message -m ''

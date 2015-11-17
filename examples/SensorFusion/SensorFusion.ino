@@ -60,7 +60,7 @@ SFE_BMP180 baro;
 
 void setup() {
 
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Start reading from BMP180
     baro.begin();
@@ -70,9 +70,9 @@ void loop() {
 
     double temperature, pressure;
     getReadings(temperature, pressure);
-    //Serial.print(temperature);
-    //Serial.print(" ");
-    //Serial.println(pressure);
+    Serial.print(temperature);
+    Serial.print(" ");
+    Serial.println(pressure);
 }
 
 void getReadings(double & T, double & P)
@@ -104,8 +104,6 @@ void getReadings(double & T, double & P)
       // The parameter is the oversampling setting, from 0 to 3 (highest res, longest wait).
       // If request is successful, the number of ms to wait is returned.
       // If request is unsuccessful, 0 is returned.
-
-      Serial.println(T);
 
       status = baro.startPressure(3);
       if (status != 0)
