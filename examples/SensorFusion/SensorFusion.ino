@@ -17,79 +17,31 @@
  * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
  */
 
-// Un-comment this to continue working on GPS / Barometer fusion
-//#define ACTUAL
+// These must be defined before including TinyEKF.h
+#define N 1
+#define M 1
 
-#ifdef ACTUAL
+#include <TinyEKF.h>
 
 #include <SFE_BMP180.h>
-#include <UBX_Parser.h>
 #include <Wire.h>
 
 SFE_BMP180 baro;
 double pressureBaseline; 
 
-class POSLLH_Parser : public UBX_Parser {
-
-    void handleNAV_POSLLH(unsigned long iTOW, 
-            long lon, 
-            long lat, 
-            long height, 
-            long hMSL, 
-            unsigned long hAcc, 
-            unsigned long vAcc) {
-
-        // Grab starting altitude first time around
-        if (!this->ready) {
-          this->hMSL_Basline = hMSL;
-        }
-        this->ready = true;
-
-        this->lat = lat / 1e7;
-        this->lon = lon / 1e7;
-        this->alt = (hMSL-this->hMSL_Basline)/1e3;
-
-    }  
-
-  public:
-
-   double lat;
-   double lon;
-   double alt;
-
- private:
-   double hMSL_Basline;
-   bool ready;
-    
-};
-
-
-POSLLH_Parser parser;
-
-
 bool success;
-
-#else
-
-#define N 2
-#define M 2
-
-#include <Arduino.h>
-#include <TinyEKF.h>
-
-
 
 class Fuser : public TinyEKF {
 
     public:
 
-    Fuser()
-    {            
-        for (int i=0; i<2; ++i) {
-            this->setQ(i, i, .01);
-            this->setR(i, i, .01);
+        Fuser()
+        {            
+            for (int i=0; i<2; ++i) {
+                this->setQ(i, i, .01);
+                this->setR(i, i, .01);
+            }
         }
-     }
 
     protected:
 
@@ -109,81 +61,20 @@ class Fuser : public TinyEKF {
 };
 
 Fuser ekf;
-#endif
 
 void setup() {
 
     Serial.begin(9600);
 
-#ifdef ACTUAL
-  // Start reading from BMP180
-  baro.begin();
-
-  // Start reading from UBlox
-  Serial1.begin(57600);
-
-  pressureBaseline = getPressure();
-#else
-    ekf.setX(0, 0);
-    ekf.setX(1, 0);
-#endif
+    // Start reading from BMP180
+    baro.begin();
 }
 
 void loop() {
 
-#ifdef ACTUAL
-
-   static double baroRelativeAltitude;
-
-   // If byte available from GPS, parse it
-    if (Serial1.available()) {
-        parser.parse(Serial1.read());
-    }
-
-    // Otherwise, read from baro
-    else {
-
-        baroRelativeAltitude = baro.altitude(getPressure(), pressureBaseline);
-
-        // tiny pause to avoid contention
-        delay(100);
-    }
-
-    Serial.print(parser.lat, 7);
-    Serial.print(" ");
-    Serial.print(parser.lon, 7);
-    Serial.print(" ");
-    Serial.print(parser.alt);
-    Serial.print(" ");
-    Serial.print(baroRelativeAltitude);
-    Serial.println();
-#else
-
-    static int count;
-    const int LOOPSIZE = 100;
-
-    double z[2];
-
-    double t = 2*M_PI*count/(LOOPSIZE-1);
-
-    z[0] = sin(t);
-    z[1] = cos(t);
-
-    ekf.step(z);
-
-    Serial.print(ekf.getX(0));
-    Serial.print(" ");
-    Serial.print(ekf.getX(1));
-    Serial.println();
-
-    count = (count + 1) % LOOPSIZE;
-    
-#endif
-
-    
+    Serial.println(getPressure());
 }
 
-#ifdef ACTUAL
 double getPressure()
 {
   char status;
@@ -244,4 +135,3 @@ double getPressure()
 
   return -1;
 }
-#endif
