@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 Plots output of Arduino EKF sketch.
 
@@ -21,7 +21,6 @@ from serial import Serial
 from realtime_plot import RealtimePlotter
 import numpy as np
 from time import sleep
-
 
 class EKF_Plotter(RealtimePlotter):
 
@@ -55,16 +54,19 @@ def _update(plotter):
 
     while True:
 
-        c = plotter.port.read(1)
+        try:
+            c = plotter.port.read(1).decode('utf-8')
 
-        if c == '\n':
-            try:
-                plotter.pbaro, plotter.tbaro, plotter.tlm35 = map(lambda s:float(s), plotter.msg.split())
-            except:
-                None
-            plotter.msg = ''
-        else:
-            plotter.msg += c
+            if c == '\n':
+                try:
+                    plotter.pbaro, plotter.tbaro, plotter.tlm35 = map(lambda s:float(s), plotter.msg.split())
+                except:
+                    None
+                plotter.msg = ''
+            else:
+                plotter.msg += c
+        except:
+            pass
 
         sleep(0)
 
