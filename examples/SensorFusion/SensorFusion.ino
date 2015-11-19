@@ -18,7 +18,7 @@
 
 // These must be defined before including TinyEKF.h
 #define N 2     // Two state values: pressure, temperature
-#define M 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
+#define M 2     // Three measurements: baro pressure, baro temperature, LM35 temperature
 
 #define LM35_PIN 0
 
@@ -32,12 +32,14 @@ class Fuser : public TinyEKF {
 
         Fuser()
         {            
+            this->setP(0, 0, 1);
+            this->setP(1, 1, 1);
+
             this->setQ(0, 0, .00001);
             this->setQ(1, 1, .00001);
 
             this->setR(0, 0, .00001);
             this->setR(1, 1, .00001);
-            this->setR(2, 2, .00001);
         }
 
     protected:
@@ -49,14 +51,12 @@ class Fuser : public TinyEKF {
 
             hx[0] = fx[0];
             hx[1] = fx[1];
-            hx[2] = fx[1];
 
             F[0][0] = 1;
             F[1][1] = 1;
 
             H[0][0] = 1;
             H[1][1] = 1;
-            H[2][1] = 1;
         }
 };
 
@@ -91,7 +91,7 @@ void loop() {
     */
     
      
-    double z[3] = {baroPressure, baroTemperature, lm35Temperature};
+    double z[2] = {baroPressure, baroTemperature};
 
     ekf.step(z);
 
