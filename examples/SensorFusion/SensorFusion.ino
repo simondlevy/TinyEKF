@@ -1,5 +1,4 @@
-/* SensorFusion: Sensor fusion on Arduino using TinyEKF.  Currently just uses sine and cosine
- *  waves as measurement proxy.
+/* SensorFusion: Sensor fusion on Arduino using TinyEKF.  
  *
  * Copyright (C) 2015 Simon D. Levy
  *
@@ -18,13 +17,12 @@
  */
 
 // These must be defined before including TinyEKF.h
-#define N 1
-#define M 1
+#define N 2     // Two state values: pressure, temperature
+#define M 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
 
 #define LM35_PIN 0
 
 #include <TinyEKF.h>
-
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
@@ -34,10 +32,12 @@ class Fuser : public TinyEKF {
 
         Fuser()
         {            
-            for (int i=0; i<1; ++i) {
-                this->setQ(i, i, .00001);
-                this->setR(i, i, .00001);
-            }
+            this->setQ(0, 0, .00001);
+            this->setQ(1, 1, .00001);
+
+            this->setR(0, 0, .00001);
+            this->setR(1, 1, .00001);
+            this->setR(2, 2, .00001);
         }
 
     protected:
@@ -45,15 +45,18 @@ class Fuser : public TinyEKF {
         void model(double fx[N], double F[N][N], double hx[N], double H[M][N])
         {
             fx[0] = this->x[0];
-            //fx[1] = this->x[1];
+            fx[1] = this->x[1];
 
             hx[0] = fx[0];
-            //hx[1] = fx[1];
+            hx[1] = fx[1];
+            hx[2] = fx[1];
 
-            for (int i=0; i<1; ++i) {
-                F[i][i] = 1;
-                H[i][i] = 1;
-            }
+            F[0][0] = 1;
+            F[1][1] = 1;
+
+            H[0][0] = 1;
+            H[1][1] = 1;
+            H[2][1] = 1;
         }
 };
 
@@ -64,7 +67,7 @@ void setup() {
 
     Serial.begin(9600);
 
-    // Start reading from BMP180
+    // Start reading from baro
     baro.begin();
 
     // Set up to read from LM35
@@ -78,22 +81,24 @@ void loop() {
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
 
+    /*
     Serial.print(baroPressure);
     Serial.print(" ");
     Serial.print(baroTemperature);
     Serial.print(" ");
     Serial.print(lm35Temperature);
     Serial.println();
+    */
     
      
-    /*
-    double z[1] = {barroPressure*1.2};
+    double z[3] = {baroPressure, baroTemperature, lm35Temperature};
+
     ekf.step(z);
-    Serial.print(z[0]);
+
+    Serial.print(ekf.getX(0));
     Serial.print(" ");
-    Serial.println(ekf.getX(0));
-    */
- }
+    Serial.println(ekf.getX(1));
+  }
 
 void getBaroReadings(double & T, double & P)
 {
