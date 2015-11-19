@@ -33,9 +33,11 @@ class EKF_Plotter(RealtimePlotter):
         t_lo = 20
         t_hi = 40 
 
+        trange = tuple(range(t_lo,t_hi,2))
+
         RealtimePlotter.__init__(self, [(p_lo,p_hi), (t_lo,t_hi), (t_lo, t_hi)], 
                 window_name='EKF demo',
-                yticks = [tuple(range(p_lo,p_hi,2)), tuple(range(t_lo,t_hi,1)), tuple(range(t_lo,t_hi,1))],
+                yticks = [tuple(range(p_lo,p_hi,2)), trange, trange],
                 styles = ['r--', 'b-', 'g-'], 
                 ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)'],
                 interval_msec=100)
