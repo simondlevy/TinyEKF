@@ -27,18 +27,18 @@ class EKF_Plotter(RealtimePlotter):
 
         self.port = Serial(ARDUINO_PORT, ARDUINO_BAUD)
 
-        p_lo = 989
+        p_lo = 970
         p_hi = 990
 
-        t_lo = 18
-        t_hi = 25
+        t_lo = 20
+        t_hi = 40 
 
         RealtimePlotter.__init__(self, [(p_lo,p_hi), (t_lo,t_hi), (t_lo, t_hi)], 
                 window_name='EKF demo',
-                yticks = [tuple(range(p_lo,p_hi,1)), tuple(range(t_lo,t_hi,1)), tuple(range(t_lo,t_hi,1))],
+                yticks = [tuple(range(p_lo,p_hi,2)), tuple(range(t_lo,t_hi,1)), tuple(range(t_lo,t_hi,1))],
                 styles = ['r--', 'b-', 'g-'], 
                 ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)'],
-                interval_msec=10)
+                interval_msec=100)
 
         self.pbaro, self.tbaro, self.tlm35 = 0,0,0
         self.msg = ''

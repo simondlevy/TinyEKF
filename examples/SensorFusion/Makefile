@@ -35,9 +35,14 @@ probe:
 listen:
 	miniterm.py /dev/tty$(PORT) 9600
 
+plot:
+	./ekfplot.py
+
 commit:
 	git commit -a --allow-empty-message -m ''
 	git push
 
 clean:
 	rm -f *~
+
+
