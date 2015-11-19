@@ -15,7 +15,7 @@ GNU General Public License for more details.
 '''
 
 ARDUINO_PORT = '/dev/ttyACM0'
-ARDUINO_BAUD = 115200
+ARDUINO_BAUD = 9600
 
 from serial import Serial
 from realtime_plot import RealtimePlotter
@@ -30,14 +30,17 @@ class EKF_Plotter(RealtimePlotter):
         p_lo = 989
         p_hi = 990
 
-        RealtimePlotter.__init__(self, [(0,100), (p_lo,p_hi)], 
-                window_name='EKF demo',
-                yticks = [tuple(range(0,100,20)),tuple(range(p_lo,p_hi,1))],
-                styles = ['r--', 'b-'], 
-                ylabels=['Temperature (C)', 'Pressure (mb)'],
-                interval_msec=1)
+        t_lo = 18
+        t_hi = 25
 
-        self.xcurr,self.ycurr = 0,0
+        RealtimePlotter.__init__(self, [(p_lo,p_hi), (t_lo,t_hi), (t_lo, t_hi)], 
+                window_name='EKF demo',
+                yticks = [tuple(range(p_lo,p_hi,1)), tuple(range(t_lo,t_hi,1)), tuple(range(t_lo,t_hi,1))],
+                styles = ['r--', 'b-', 'g-'], 
+                ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)'],
+                interval_msec=10)
+
+        self.pbaro, self.tbaro, self.tlm35 = 0,0,0
         self.msg = ''
 
     def getValues(self):
@@ -46,14 +49,14 @@ class EKF_Plotter(RealtimePlotter):
 
         if c == '\n':
             try:
-                self.xcurr, self.ycurr = map(lambda s:float(s), self.msg.split())
+                self.pbaro, self.tbaro, self.tlm35 = map(lambda s:float(s), self.msg.split())
             except:
                 None
             self.msg = ''
         else:
             self.msg += c
 
-        return self.xcurr, self.ycurr
+        return self.pbaro, self.tbaro, self.tlm35
 
 def _update(plotter):
 

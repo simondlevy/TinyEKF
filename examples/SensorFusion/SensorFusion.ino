@@ -18,8 +18,10 @@
  */
 
 // These must be defined before including TinyEKF.h
-#define N 2
-#define M 2
+#define N 1
+#define M 1
+
+#define LM35_PIN 0
 
 #include <TinyEKF.h>
 
@@ -32,9 +34,9 @@ class Fuser : public TinyEKF {
 
         Fuser()
         {            
-            for (int i=0; i<2; ++i) {
-                this->setQ(i, i, .01);
-                this->setR(i, i, .01);
+            for (int i=0; i<1; ++i) {
+                this->setQ(i, i, .00001);
+                this->setR(i, i, .00001);
             }
         }
 
@@ -43,12 +45,12 @@ class Fuser : public TinyEKF {
         void model(double fx[N], double F[N][N], double hx[N], double H[M][N])
         {
             fx[0] = this->x[0];
-            fx[1] = this->x[1];
+            //fx[1] = this->x[1];
 
             hx[0] = fx[0];
-            hx[1] = fx[1];
+            //hx[1] = fx[1];
 
-            for (int i=0; i<2; ++i) {
+            for (int i=0; i<1; ++i) {
                 F[i][i] = 1;
                 H[i][i] = 1;
             }
@@ -60,24 +62,40 @@ SFE_BMP180 baro;
 
 void setup() {
 
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Start reading from BMP180
     baro.begin();
+
+    // Set up to read from LM35
+    analogReference(INTERNAL);
 }
 
 void loop() {
 
-    double temperature, pressure;
-    getReadings(temperature, pressure);
-    double z[2] = {temperature, pressure};
-    ekf.step(z);
-    Serial.print(ekf.getX(0));
+    float lm35Temperature = analogRead(LM35_PIN) / 9.31;
+
+    double baroTemperature, baroPressure;
+    getBaroReadings(baroTemperature, baroPressure);
+
+    Serial.print(baroPressure);
     Serial.print(" ");
-    Serial.println(ekf.getX(1));
+    Serial.print(baroTemperature);
+    Serial.print(" ");
+    Serial.print(lm35Temperature);
+    Serial.println();
+    
+     
+    /*
+    double z[1] = {barroPressure*1.2};
+    ekf.step(z);
+    Serial.print(z[0]);
+    Serial.print(" ");
+    Serial.println(ekf.getX(0));
+    */
  }
 
-void getReadings(double & T, double & P)
+void getBaroReadings(double & T, double & P)
 {
   char status;
   
