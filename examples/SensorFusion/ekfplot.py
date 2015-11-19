@@ -20,6 +20,8 @@ ARDUINO_BAUD = 9600
 from serial import Serial
 from realtime_plot import RealtimePlotter
 import numpy as np
+from time import sleep
+
 
 class EKF_Plotter(RealtimePlotter):
 
@@ -40,31 +42,29 @@ class EKF_Plotter(RealtimePlotter):
                 yticks = [tuple(range(p_lo,p_hi,2)), trange, trange],
                 styles = ['r--', 'b-', 'g-'], 
                 ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)'],
-                interval_msec=100)
+                interval_msec=1)
 
         self.pbaro, self.tbaro, self.tlm35 = 0,0,0
         self.msg = ''
 
     def getValues(self):
 
-        c = self.port.read(1)
-
-        if c == '\n':
-            try:
-                self.pbaro, self.tbaro, self.tlm35 = map(lambda s:float(s), self.msg.split())
-            except:
-                None
-            self.msg = ''
-        else:
-            self.msg += c
-
-        return self.pbaro, self.tbaro, self.tlm35
+       return self.pbaro, self.tbaro, self.tlm35
 
 def _update(plotter):
 
-    from time import sleep
-
     while True:
+
+        c = plotter.port.read(1)
+
+        if c == '\n':
+            try:
+                plotter.pbaro, plotter.tbaro, plotter.tlm35 = map(lambda s:float(s), plotter.msg.split())
+            except:
+                None
+            plotter.msg = ''
+        else:
+            plotter.msg += c
 
         sleep(0)
 
