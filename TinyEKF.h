@@ -30,21 +30,6 @@ extern "C" {
 }
 #endif
 
-/*
-static void dump(double * a, int m, int n, const char * fmt)
-{
-    int i,j;
-
-    char f[100];
-    sprintf(f, "%s ", fmt);
-    for(i=0; i<m; ++i) {
-        for(j=0; j<n; ++j)
-            printf(f, a[i*n+j]);
-        printf("\n");
-    }
-}
-*/
-
 /**
  * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant N and 
  * M and then #include <TinyKalman.hpp>
@@ -77,7 +62,7 @@ class TinyEKF {
             double hx[M];   /* output of user defined h() measurement function */
 
             /* temporary storage */
-            double tmp1[N][N];
+            double tmp1[N][M];
             double tmp2[M][N];
             double tmp3[M][M];
             double tmp4[M][M];
@@ -100,8 +85,6 @@ class TinyEKF {
         TinyEKF() { 
             ekf_init(&this->ekf, N, M); 
             this->x = this->ekf.x; 
-            //printf("TinyE:  x=%p\n", this->x);
-            //exit(0);
         }
 
         /**
@@ -135,7 +118,7 @@ class TinyEKF {
          * @param j column index
          * @param value value to set
          */
-         void setQ(int i, int j, double value) 
+        void setQ(int i, int j, double value) 
         { 
             this->ekf.Q[i][j] = value; 
         }
@@ -146,7 +129,7 @@ class TinyEKF {
          * @param j column index
          * @param value value to set
          */
-         void setR(int i, int j, double value) 
+        void setR(int i, int j, double value) 
         { 
             this->ekf.R[i][j] = value; 
         }
@@ -154,29 +137,29 @@ class TinyEKF {
     public:
 
         /**
-          * Returns the state element at a given index.
-          * @param i the index (at least 0 and less than <i>n</i>
-          * @return state value at index
-          */
+         * Returns the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @return state value at index
+         */
         double getX(int i) 
         { 
             return this->ekf.x[i]; 
         }
 
         /**
-          * Sets the state element at a given index.
-          * @param i the index (at least 0 and less than <i>n</i>
-          * @param value value to set
-          */
-         void setX(int i, double value) 
+         * Sets the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @param value value to set
+         */
+        void setX(int i, double value) 
         { 
             this->ekf.x[i] = value; 
         }
 
         /**
           Performs one step of the prediction and update.
-          * @param z observation vector, length <i>m</i>
-          * @return true on success, false on failure caused by non-positive-definite matrix.
+         * @param z observation vector, length <i>m</i>
+         * @return true on success, false on failure caused by non-positive-definite matrix.
          */
         bool step(double * z) 
         { 
