@@ -89,7 +89,7 @@ void loop() {
     float lm35Temperature = analogRead(LM35_PIN) / 9.31;
 
     // Send these measurements to the EKF
-    double z[3] = {baroPressure, baroTemperature, lm35Temperature};
+    double z[3] = {baroPressure, baroTemperature-5, lm35Temperature+5};
     ekf.step(z);
 
     // Report measured and predicte/fused values
