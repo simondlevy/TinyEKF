@@ -60,8 +60,8 @@ class Fuser : public TinyEKF {
 
             // Jacobian of measurement function
             H[0][0] = 1;        // Barometric pressure from previous state
-            H[1][1] = 1;        // Baro temperature from previous state
-            H[2][1] = 1;        // LM35 temperature from previous state
+            H[1][1] = .5;        // Baro temperature from previous state
+            H[2][1] = .5;        // LM35 temperature from previous state
         }
 };
 
@@ -90,16 +90,15 @@ void loop() {
 
     // Send these measurements to the EKF
     double z[3] = {baroPressure, baroTemperature, lm35Temperature};
-    //Serial.print(z[0]);
-    //Serial.print(" ");
-    //Serial.print(z[1]);
-    //Serial.print(" ");
-    //Serial.println(z[2]);
-    //return;
-
     ekf.step(z);
 
-    // Report predicated state (pressure and temperature)
+    // Report measured and predicte/fused values
+    Serial.print(z[0]);
+    Serial.print(" ");
+    Serial.print(z[1]);
+    Serial.print(" ");
+    Serial.print(z[2]);
+    Serial.print(" ");
     Serial.print(ekf.getX(0));
     Serial.print(" ");
     Serial.println(ekf.getX(1));
