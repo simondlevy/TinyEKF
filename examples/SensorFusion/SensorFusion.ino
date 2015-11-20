@@ -33,9 +33,11 @@ class Fuser : public TinyEKF {
 
         Fuser()
         {            
+            // We approximate the process noise using a small constant
             this->setQ(0, 0, .0001);
             this->setQ(1, 1, .0001);
 
+            // Same for measurement noise
             this->setR(0, 0, .0001);
             this->setR(1, 1, .0001);
             this->setR(2, 2, .0001);
@@ -60,8 +62,8 @@ class Fuser : public TinyEKF {
 
             // Jacobian of measurement function
             H[0][0] = 1;        // Barometric pressure from previous state
-            H[1][1] = .5;        // Baro temperature from previous state
-            H[2][1] = .5;        // LM35 temperature from previous state
+            H[1][1] = 1 ;       // Baro temperature from previous state
+            H[2][1] = 1 ;       // LM35 temperature from previous state
         }
 };
 
