@@ -116,7 +116,7 @@ class TinyEKF {
          * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
          * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
          */
-        virtual void model(double fx[N], double F[N][N], double hx[N], double H[M][N]) = 0;
+        virtual void model(double fx[N], double F[N][N], double hx[M], double H[M][N]) = 0;
 
         /**
          * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>

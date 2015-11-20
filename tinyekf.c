@@ -151,8 +151,9 @@ static void transpose(double * a, double * at, int m, int n)
     int i,j;
 
     for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j) 
+        for(j=0; j<n; ++j) {
             at[j*m+i] = a[i*n+j];
+        }
 }
 
 /* A <- A + B */
@@ -263,7 +264,7 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     ekf->fx = dptr;
     dptr += n;
     ekf->hx = dptr;
-    dptr += n;
+    dptr += m;
     ekf->tmp1 = dptr;
     dptr += n*n;
     ekf->tmp2 = dptr;
@@ -316,16 +317,19 @@ int ekf_step(void * v, double * z)
 
     /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
     transpose(ekf.H, ekf.Ht, m, n);
+    //dump(ekf.hx, m, 1, "%f"); printf("\n");
     mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m);
+    //dump(ekf.hx, m, 1, "%f"); exit(0);
     mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n);
     mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m);
     accum(ekf.tmp3, ekf.R, m, m);
     if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
     mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
 
+    //dump(ekf.hx, m, 1, "%f"); exit(0);
+
     /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
     sub(z, ekf.hx, ekf.tmp5, m);
-    dump(z, m, 1, "%f"); exit(0);
     mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
     add(ekf.fx, ekf.tmp2, ekf.x, n);
 
