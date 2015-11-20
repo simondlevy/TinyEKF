@@ -18,8 +18,8 @@
 
 
 // These must be defined before including TinyEKF.h
-#define N 1     // Two state values: pressure, temperature
-#define M 2     // Three measurements: baro pressure, baro temperature, LM35 temperature
+#define N 2     // Two state values: pressure, temperature
+#define M 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
 
 #define LM35_PIN 0
 
@@ -33,32 +33,40 @@ class Fuser : public TinyEKF {
 
         Fuser()
         {            
-            this->setQ(0, 0, 1);
+            this->setQ(0, 0, .0001);
+            this->setQ(1, 1, .0001);
 
-            this->setR(0, 0, 1);
-            this->setR(1, 1, 1);
+            this->setR(0, 0, .0001);
+            this->setR(1, 1, .0001);
+            this->setR(2, 2, .0001);
         }
 
     protected:
 
         void model(double fx[N], double F[N][N], double hx[M], double H[M][N])
         {
+            // Process model is f(x) = x
             fx[0] = this->x[0];
+            fx[1] = this->x[1];
 
+            // So process model Jacobian is identity matrix
             F[0][0] = 1;
+            F[1][1] = 1;
 
-            hx[0] = this->x[0];
-            hx[1] = this->x[0];
+            // Measurement function
+            hx[0] = this->x[0]; // Barometric pressure from previous state
+            hx[1] = this->x[1]; // Baro temperature from previous state
+            hx[2] = this->x[1]; // LM35 temperature from previous state
 
-            H[0][0] = 1;
-            H[1][0] = 1;
+            // Jacobian of measurement function
+            H[0][0] = 1;        // Barometric pressure from previous state
+            H[1][1] = 1;        // Baro temperature from previous state
+            H[2][1] = 1;        // LM35 temperature from previous state
         }
 };
 
-
 Fuser ekf;
 SFE_BMP180 baro;
-
 
 void setup() {
 
@@ -73,20 +81,32 @@ void setup() {
 
 void loop() {
 
-    float lm35Temperature = analogRead(LM35_PIN) / 9.31;
-
-    Serial.println(lm35Temperature); return;
-
+    // Read pressure, temperature from BMP180
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
 
-    double z[2] = {baroTemperature, lm35Temperature};
+    // Read temperature from LM35
+    float lm35Temperature = analogRead(LM35_PIN) / 9.31;
+
+    // Send these measurements to the EKF
+    double z[3] = {baroPressure, baroTemperature, lm35Temperature};
+    //Serial.print(z[0]);
+    //Serial.print(" ");
+    //Serial.print(z[1]);
+    //Serial.print(" ");
+    //Serial.println(z[2]);
+    //return;
 
     ekf.step(z);
 
-    Serial.println(ekf.getX(0));
+    // Report predicated state (pressure and temperature)
+    Serial.print(ekf.getX(0));
+    Serial.print(" ");
+    Serial.println(ekf.getX(1));
 }
 
+
+// Adapted from https://github.com/sparkfun/BMP180_Breakout
 void getBaroReadings(double & T, double & P)
 {
     char status = baro.startTemperature();
