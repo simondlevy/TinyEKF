@@ -19,19 +19,13 @@
 PORT = ACM0
 
 #all: build SensorFusion
-all: SensorFusion
+all: build
 
 edit:
 	vim SensorFusion.ino
 
 build: SensorFusion.ino
 	arduino --verify SensorFusion.ino
-
-SensorFusion: SensorFusion.cpp ../../tinyekf.h ../../tinyekf.c ../../TinyEKF.h
-	g++ -DMAIN -DDEBUG -o SensorFusion -I../.. SensorFusion.cpp ../../tinyekf.c
-
-run: SensorFusion
-	./SensorFusion
 
 upload: SensorFusion.ino
 	arduino --upload SensorFusion.ino
@@ -51,5 +45,3 @@ commit:
 
 clean:
 	rm -f *~
-
-
