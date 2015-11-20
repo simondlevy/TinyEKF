@@ -1,6 +1,6 @@
 # TinyEKF: Lightweight C/C++ Extended Kalman Filter with Arduino Sensor Fusion Example
 
-TinyEKF is simple C/C++ implementation of the Extended Kalman filter that is general enough to use on different 
+TinyEKF is a simple C/C++ implementation of the Extended Kalman filter that is general enough to use on different 
 projects.  In order to make it practical for running on Arduino, STM32, and other microcontrollers, it uses static 
 (compile-time) memory allocation (no "new" or "malloc").  The examples folder includes both a "pure C" example 
 from the literature, 

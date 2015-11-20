@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 '''
 
-ARDUINO_PORT = '/dev/ttyACM0'
+ARDUINO_PORT = '/dev/ttyACM1'
 ARDUINO_BAUD = 9600
 
 from serial import Serial
