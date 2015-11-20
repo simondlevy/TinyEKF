@@ -324,8 +324,8 @@ int ekf_step(void * v, double * z)
     mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
 
     /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
-    sub(z, ekf.hx, ekf.tmp1, m);
-    mulvec(ekf.G, ekf.tmp1, ekf.tmp2, n, m);
+    sub(z, ekf.hx, ekf.tmp5, m);
+    mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
     add(ekf.fx, ekf.tmp2, ekf.x, n);
 
     /* P_k = (I - G_k H_k) P_k */
