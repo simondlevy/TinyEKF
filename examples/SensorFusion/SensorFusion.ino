@@ -33,10 +33,6 @@ class Fuser : public TinyEKF {
 
         Fuser()
         {            
-            this->x[0] = 0;
-
-            this->setP(0, 0, 0);
-
             this->setQ(0, 0, 1);
 
             this->setR(0, 0, 1);
@@ -84,7 +80,6 @@ void loop() {
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
 
-
     double z[2] = {baroTemperature, lm35Temperature};
 
     ekf.step(z);
@@ -95,7 +90,7 @@ void loop() {
 void getBaroReadings(double & T, double & P)
 {
     char status = baro.startTemperature();
-
+   
     if (status != 0) {
         delay(status);
         status = baro.getTemperature(T);
