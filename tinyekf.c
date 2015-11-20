@@ -325,7 +325,7 @@ int ekf_step(void * v, double * z)
 
     /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
     sub(z, ekf.hx, ekf.tmp5, m);
-    dump(ekf.tmp5, m, 1, "%f"); exit(0);
+    dump(ekf.z, m, 1, "%f"); exit(0);
     mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
     add(ekf.fx, ekf.tmp2, ekf.x, n);
 
