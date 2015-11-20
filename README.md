@@ -6,9 +6,9 @@ projects.  In order to make it practical for running on Arduino, STM32, and othe
 from the literature, 
 as well as an Arduino example of sensor fusion.
 
-Arduino users can simply install or drag the whole folder into their Arduino libraries folder, then launch 
-the example by going to File/Sketchbook/libraries/TinyEKF/SensorFusion.  As of 13 November 2015 the example 
-is working with some faked-up sensor data, but will shortly support an actual sensor suite (GPS / magnetometer).
+Arduino users can simply install or drag the whole folder into their Arduino libraries folder. This folder
+contains a little sensor fusion example using a [BMP180 barometer](https://www.sparkfun.com/products/11824) and 
+[LM35 temperature sensor](http://www.robotshop.com/en/dfrobot-lm35-linear-temperature-sensor.html).
 
 To learn about the Extended Kalman Filter and why it is so useful, try 
 this [interactive tutorial](http://home.wlu.edu/~levys/kalman_tutorial/).
