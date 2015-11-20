@@ -107,7 +107,7 @@ static void zeros(double * a, int m, int n)
         a[j] = 0;
 }
 
-/*
+#ifdef DEBUG
 static void dump(double * a, int m, int n, const char * fmt)
 {
     int i,j;
@@ -120,7 +120,7 @@ static void dump(double * a, int m, int n, const char * fmt)
         printf("\n");
     }
 }
-*/
+#endif
 
 /* C <- A * B */
 static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
@@ -325,6 +325,7 @@ int ekf_step(void * v, double * z)
 
     /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
     sub(z, ekf.hx, ekf.tmp5, m);
+    dump(ekf.tmp5, m, 1, "%f"); exit(0);
     mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
     add(ekf.fx, ekf.tmp2, ekf.x, n);
 
