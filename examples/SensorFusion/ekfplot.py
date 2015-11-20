@@ -30,25 +30,28 @@ class EKF_Plotter(RealtimePlotter):
 
         p_lo = 970
         p_hi = 990
+        p_range = p_lo, p_hi
 
         t_lo = 20
         t_hi = 40 
+        t_range = t_lo, t_hi
 
-        trange = tuple(range(t_lo,t_hi,2))
+        t_ticks = tuple(range(t_lo,t_hi,2))
+        p_ticks = tuple(range(p_lo,p_hi,2))
 
-        RealtimePlotter.__init__(self, [(p_lo,p_hi), (t_lo,t_hi), (t_lo, t_hi)], 
+        RealtimePlotter.__init__(self, [p_range, t_range, t_range, p_range, t_range],
                 window_name='EKF demo',
-                yticks = [tuple(range(p_lo,p_hi,2)), trange, trange],
-                styles = ['r--', 'b-', 'g-'], 
-                ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)'],
+                yticks = [p_ticks, t_ticks, t_ticks, p_ticks, t_ticks],
+                styles = ['r--', 'b-', 'g-', 'k-', 'k-'], 
+                ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)', 'Baro EKF', 'Temp EKF'],
                 interval_msec=1)
 
-        self.pbaro, self.tbaro, self.tlm35 = 0,0,0
+        self.pbaro, self.tbaro, self.tlm35, self.p_ekf, self.t_ekf = 0,0,0,0,0
         self.msg = ''
 
     def getValues(self):
 
-       return self.pbaro, self.tbaro, self.tlm35
+       return self.pbaro, self.tbaro, self.tlm35, self.p_ekf, self.t_ekf
 
 def _update(plotter):
 
@@ -59,7 +62,8 @@ def _update(plotter):
 
             if c == '\n':
                 try:
-                    plotter.pbaro, plotter.tbaro, plotter.tlm35 = map(lambda s:float(s), plotter.msg.split())
+                    plotter.pbaro, plotter.tbaro, plotter.tlm35, plotter.p_ekf, plotter.t_ekf = \
+                        map(lambda s:float(s), plotter.msg.split())
                 except:
                     None
                 plotter.msg = ''
@@ -68,6 +72,7 @@ def _update(plotter):
         except:
             pass
 
+        # yield to other thread
         sleep(0)
 
 if __name__ == '__main__':
