@@ -32,7 +32,7 @@ extern "C" {
 
 /**
  * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant N and 
- * M and the type double (as float or double) and then #include <TinyEKF.h>
+ * and then #include <TinyEKF.h>  You will also need to implement a model() method for your application.
  */
 class TinyEKF {
 
