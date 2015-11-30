@@ -36,7 +36,7 @@
 #include <math.h>
 
 #include "tinyekf_config.h"
-#include "tinyekf.h"
+#include "tiny_ekf.h"
 
 // positioning interval
 static const double T = 1;

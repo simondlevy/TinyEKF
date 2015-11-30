@@ -21,8 +21,8 @@ all: gps_ekf
 run: gps_ekf
 	./gps_ekf
 
-gps_ekf: gps_ekf.c ../tinyekf.c ../tinyekf.h
-	gcc -Wall -I. -I.. -o gps_ekf gps_ekf.c ../tinyekf.c -lm
+gps_ekf: gps_ekf.c ../tiny_ekf.c ../tiny_ekf.h
+	gcc -Wall -I. -I.. -o gps_ekf gps_ekf.c ../tiny_ekf.c -lm
 
 edit:
 	vim gps_ekf.c

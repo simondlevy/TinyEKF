@@ -17,7 +17,7 @@
  */
 
 
-#define N 6     // states, will also be measurement values M
+#define N 5     // states, will also be measurement values M
 #define M N
 
 #include <TinyEKF.h>
