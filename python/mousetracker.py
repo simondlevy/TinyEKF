@@ -26,14 +26,14 @@ class RoleGame(tk.Frame):
         self.canvas =  tk.Canvas(self, width = canvas_width, height = canvas_height, background = DISPLAY_BACKGROUND)
         self.canvas.grid(row = 0, column = 0)
 
-        self.bind('<Key>', self._handle_key)
-        self.canvas.bind('<Motion>', self._handle_motion)
+        self.bind('<Key>', self.handle_key)
+        self.canvas.bind('<Motion>', self.handle_motion)
 
-        self._reset_lines()
+        self.reset_lines()
 
         self.focus_set()
 
-    def _reset_lines(self):
+    def reset_lines(self):
 
             self.lines = []
 
@@ -44,14 +44,14 @@ class RoleGame(tk.Frame):
 
             return coord < DISPLAY_BORDER or coord > int(self.canvas[dimname])-DISPLAY_BORDER
  
-    def _handle_motion(self, event):
+    def handle_motion(self, event):
 
         x, y = event.x, event.y
 
         if self.x != -1:
             if self.out_of_bounds(x, 'width') or self.out_of_bounds(y, 'height'):
                 [self.canvas.delete(line) for line in self.lines]
-                self._reset_lines()
+                self.reset_lines()
             else:
                 self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR))
 
@@ -59,7 +59,7 @@ class RoleGame(tk.Frame):
         self.y = y
 
                  
-    def _handle_key(self, event):
+    def handle_key(self, event):
 
         # Make sure the frame is receiving input!
         self.focus_force()
