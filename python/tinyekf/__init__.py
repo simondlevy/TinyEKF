@@ -13,9 +13,11 @@
     GNU General Public License for more details.
 '''
 
+import numpy as np
+
 class EKF(object):
 
-    def __init__(self):
+    def __init__(self, m, n):
 
-        None
+        self.P = np.zeros(n, n)
 

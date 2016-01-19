@@ -29,7 +29,7 @@ LINE_WIDTH         = 3
 import tkinter as tk
 from tinyekf import EKF
 
-class RoleGame(tk.Frame):
+class Tracker(tk.Frame):
 
     def __init__(self):
 
@@ -89,7 +89,7 @@ class RoleGame(tk.Frame):
 
 if __name__ == '__main__':
     
-    game = RoleGame()
+    game = Tracker()
     
     game.mainloop()
 
