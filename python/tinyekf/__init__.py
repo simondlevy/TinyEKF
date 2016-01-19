@@ -61,3 +61,9 @@ class EKF(object):
         '''
         self.x[i] = value
 
+    def step(self, z):
+        '''
+        Performs one step of the prediction and update based on observations in tuple z
+        '''
+        None
+
