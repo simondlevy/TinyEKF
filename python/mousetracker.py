@@ -45,7 +45,7 @@ class RoleGame(tk.Frame):
         x, y = event.x, event.y
 
         if self.x != -1:
-            if x < 10 or x > int(self.canvas['width']) or y < 10 or y > int(self.canvas['height']):
+            if x < 10 or x > int(self.canvas['width'])-10 or y < 10 or y > int(self.canvas['height'])-10:
                 [self.canvas.delete(line) for line in self.lines]
                 self._reset_lines()
             else:
