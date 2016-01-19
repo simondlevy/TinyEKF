@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+'''
+TinyEKF mouse-tracking example.  
+
+Inspired by
+
+  http://opencvexamples.blogspot.com/2014/01/kalman-filter-implementation-tracking.html
+
+Copyright (C) 2016 Simon D. Levy
+'''
+
 DISPLAY_SIZE       = 600
 DISPLAY_BORDER     = 4
 CANVAS_MARGIN      = 20
