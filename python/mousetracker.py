@@ -29,12 +29,16 @@ class RoleGame(tk.Frame):
         self.bind('<Key>', self._handle_key)
         self.canvas.bind('<Motion>', self._handle_motion)
 
-        self.lines = []
-
-        self.x = -1
-        self.y = -1
+        self._reset_lines()
 
         self.focus_set()
+
+    def _reset_lines(self):
+
+            self.lines = []
+
+            self.x = -1
+            self.y = -1
 
     def _handle_motion(self, event):
 
@@ -42,14 +46,10 @@ class RoleGame(tk.Frame):
 
         if self.x != -1:
             if x < 10 or x > int(self.canvas['width']) or y < 10 or y > int(self.canvas['height']):
-                print('DELETE')
                 [self.canvas.delete(line) for line in self.lines]
-                self.lines = []
-                self.x = -1
-                self.y = -1
+                self._reset_lines()
             else:
                 self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR))
-                print(len(self.lines))
 
         self.x = x
         self.y = y
