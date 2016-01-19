@@ -17,7 +17,10 @@ import numpy as np
 
 class EKF(object):
 
-    def __init__(self, m, n):
+    def __init__(self, n, m):
+        '''
+        Creates an EKF object with n states and m observables.
+        '''
 
         self.x = np.zeros((1, n))
 
@@ -27,4 +30,11 @@ class EKF(object):
         self.G = np.zeros((n, m))
         self.F = np.zeros((n, n))
         self.H = np.zeros((m, n))
+
+    def setP(self, i, j, value):
+        '''
+         Sets the value of the prediction error covariance P[i,j].
+        '''
+ 
+        self.P[i][j] = value
 
