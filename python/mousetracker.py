@@ -41,7 +41,7 @@ class TrackerFrame(tk.Frame):
 
         tk.Frame.__init__(self, borderwidth = DISPLAY_BORDER, relief = 'sunken')
         self.master.geometry(str(DISPLAY_SIZE)+ "x" + str(DISPLAY_SIZE))
-        self.master.title('Mouse Tracker')
+        self.master.title('TinyEKF Mouse Tracker')
         self.grid()
         self.master.rowconfigure(0, weight = 1)
         self.master.columnconfigure(0, weight = 1)
