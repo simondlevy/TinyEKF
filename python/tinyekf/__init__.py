@@ -20,4 +20,9 @@ class EKF(object):
     def __init__(self, m, n):
 
         self.P = np.zeros((n, n))
+        self.Q = np.zeros((n, n))
+        self.R = np.zeros((m, m))
+        self.G = np.zeros((n, m))
+        self.F = np.zeros((n, n))
+        self.H = np.zeros((m, n))
 
