@@ -14,5 +14,7 @@ to pins 4 (SDA) and 5 (SCL) of the Uno, or pins 18 (SDA) and 19 (SCL) of the Tee
 consult the [documentation](https://www.arduino.cc/en/Reference/Wire) on the Wire library. The analog output
 from the LM35 should go to the A0 pin of your Arduino or Teensy.
 
+A Python version is in the works, as a way of prototyping your EKF before implementing in C/C++.
+
 To learn about the Extended Kalman Filter and why it is so useful, try 
 this [interactive tutorial](http://home.wlu.edu/~levys/kalman_tutorial/).
