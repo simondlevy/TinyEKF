@@ -1,21 +1,53 @@
 #!/usr/bin/env python3
-'''
-TinyEKF mouse-tracking example.  
 
-Inspired by
-
-  http://opencvexamples.blogspot.com/2014/01/kalman-filter-implementation-tracking.html
-
-Copyright (C) 2016 Simon D. Levy
-
-'''
+DISPLAY_SIZE     = 600
+DISPLAY_BORDER     = 4
+CANVAS_MARGIN      = 20
+DISPLAY_BACKGROUND = 'black'
 
 import tkinter as tk
-root = tk.Tk()
 
-def motion(event):
-    x, y = event.x, event.y
-    print('{}, {}'.format(x, y))
+class RoleGame(tk.Frame):
 
-root.bind('<Motion>', motion)
-root.mainloop()
+    def __init__(self):
+
+        tk.Frame.__init__(self, borderwidth = DISPLAY_BORDER, relief = 'sunken')
+        self.master.geometry(str(DISPLAY_SIZE)+ "x" + str(DISPLAY_SIZE))
+        self.master.title('Mouse Tracker')
+        self.grid()
+        self.master.rowconfigure(0, weight = 1)
+        self.master.columnconfigure(0, weight = 1)
+        self.grid(sticky = tk.W+tk.E+tk.N+tk.S)
+
+        canvas_width = DISPLAY_SIZE-2*DISPLAY_BORDER
+        canvas_height = DISPLAY_SIZE-2*DISPLAY_BORDER
+        
+        self.canvas =  tk.Canvas(self, width = canvas_width, height = canvas_height, background = DISPLAY_BACKGROUND)
+        self.canvas.grid(row = 0, column = 0)
+
+        self.canvas.bind('<Motion>', self._motion)
+
+        # This call gives the frame focus so that it receives input
+        self.focus_set()
+
+    def _motion(self, event):
+        x, y = event.x, event.y
+        print(x, y)
+
+                 
+    def _handle_key(self, event):
+
+        # Make sure the frame is receiving input!
+        self.focus_force()
+        if event.keysym == 'Escape':
+            exit(0)
+
+if __name__ == '__main__':
+    
+    game = RoleGame()
+    
+    game.mainloop()
+
+
+
+
