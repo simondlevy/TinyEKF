@@ -5,6 +5,7 @@ DISPLAY_BORDER     = 4
 CANVAS_MARGIN      = 20
 DISPLAY_BACKGROUND = 'black'
 MOUSE_COLOR        = 'green'
+LINE_WIDTH         = 3
 
 import tkinter as tk
 
@@ -53,7 +54,7 @@ class RoleGame(tk.Frame):
                 [self.canvas.delete(line) for line in self.lines]
                 self.reset_lines()
             else:
-                self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR, width=5))
+                self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR, width=LINE_WIDTH))
 
         self.x = x
         self.y = y
