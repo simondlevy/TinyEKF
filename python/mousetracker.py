@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-DISPLAY_SIZE     = 600
+DISPLAY_SIZE       = 600
 DISPLAY_BORDER     = 4
 CANVAS_MARGIN      = 20
 DISPLAY_BACKGROUND = 'black'
+MOUSE_COLOR        = 'green'
 
 import tkinter as tk
 
@@ -28,12 +29,21 @@ class RoleGame(tk.Frame):
         self.bind('<Key>', self._handle_key)
         self.canvas.bind('<Motion>', self._handle_motion)
 
-        # This call gives the frame focus so that it receives input
+        self.x = -1
+        self.y = -1
+
         self.focus_set()
 
     def _handle_motion(self, event):
+
         x, y = event.x, event.y
-        print(x, y)
+
+        if self.x != -1:
+            self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR)
+            print((self.x, self.y), (x, y))
+
+        self.x = x
+        self.y = y
 
                  
     def _handle_key(self, event):
