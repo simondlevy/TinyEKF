@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 
 '''
-TinyEKF mouse-tracking example.  
+    TinyEKF mouse-tracking example.  
 
-Inspired by
+    Inspired by
 
-  http://opencvexamples.blogspot.com/2014/01/kalman-filter-implementation-tracking.html
+      http://opencvexamples.blogspot.com/2014/01/kalman-filter-implementation-tracking.html
 
-Copyright (C) 2016 Simon D. Levy
+    Copyright (C) 2016 Simon D. Levy
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as 
+    published by the Free Software Foundation, either version 3 of the 
+    License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 '''
 
 DISPLAY_SIZE       = 600
@@ -18,6 +27,7 @@ MOUSE_COLOR        = 'green'
 LINE_WIDTH         = 3
 
 import tkinter as tk
+from tinyekf import EKF
 
 class RoleGame(tk.Frame):
 
