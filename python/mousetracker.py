@@ -29,7 +29,8 @@ LINE_WIDTH         = 3
 import tkinter as tk
 from tinyekf import EKF
 
-class Tracker(tk.Frame):
+
+class TrackerFrame(tk.Frame):
 
     def __init__(self):
 
@@ -89,9 +90,7 @@ class Tracker(tk.Frame):
 
 if __name__ == '__main__':
     
-    game = Tracker()
-    
-    game.mainloop()
+    TrackerFrame().mainloop()
 
 
 
