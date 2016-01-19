@@ -35,13 +35,29 @@ class EKF(object):
         '''
          Sets the value of the prediction error covariance P[i,j].
         '''
- 
         self.P[i][j] = value
 
     def setQ(self, i, j, value):
         '''
          Sets the value of the process noise covariance Q[i,j].
         '''
- 
         self.Q[i][j] = value
+
+    def setR(self, i, j, value):
+        '''
+         Sets the value of the observation noise covariance R[i,j].
+        '''
+        self.R[i][j] = value
+
+    def getX(self, i):
+        '''
+        Returns the state element at index i.
+        '''
+        return self.x[i]
+
+    def setX(self, i, value):
+        '''
+        Sets the state element at index i.
+        '''
+        self.x[i] = value
 
