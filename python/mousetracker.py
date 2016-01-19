@@ -29,6 +29,11 @@ LINE_WIDTH         = 3
 import tkinter as tk
 from tinyekf import EKF
 
+class TrackerEKF(EKF):
+
+    def __init__(self):
+
+        EKF.__init__(self, 2, 2)
 
 class TrackerFrame(tk.Frame):
 
@@ -54,6 +59,8 @@ class TrackerFrame(tk.Frame):
         self.reset_lines()
 
         self.focus_set()
+ 
+        self.ekf = TrackerEKF()
 
     def reset_lines(self):
 
