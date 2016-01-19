@@ -53,7 +53,7 @@ class RoleGame(tk.Frame):
                 [self.canvas.delete(line) for line in self.lines]
                 self.reset_lines()
             else:
-                self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR))
+                self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR, width=5))
 
         self.x = x
         self.y = y
