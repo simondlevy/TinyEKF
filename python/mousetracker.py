@@ -25,12 +25,13 @@ class RoleGame(tk.Frame):
         self.canvas =  tk.Canvas(self, width = canvas_width, height = canvas_height, background = DISPLAY_BACKGROUND)
         self.canvas.grid(row = 0, column = 0)
 
-        self.canvas.bind('<Motion>', self._motion)
+        self.bind('<Key>', self._handle_key)
+        self.canvas.bind('<Motion>', self._handle_motion)
 
         # This call gives the frame focus so that it receives input
         self.focus_set()
 
-    def _motion(self, event):
+    def _handle_motion(self, event):
         x, y = event.x, event.y
         print(x, y)
 
