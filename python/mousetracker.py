@@ -40,12 +40,16 @@ class RoleGame(tk.Frame):
             self.x = -1
             self.y = -1
 
+    def out_of_bounds(self, coord, dimname):
+
+            return coord < DISPLAY_BORDER or coord > int(self.canvas[dimname])-DISPLAY_BORDER
+ 
     def _handle_motion(self, event):
 
         x, y = event.x, event.y
 
         if self.x != -1:
-            if x < DISPLAY_BORDER or x > int(self.canvas['width'])-DISPLAY_BORDER or y < DISPLAY_BORDER or y > int(self.canvas['height'])-DISPLAY_BORDER:
+            if self.out_of_bounds(x, 'width') or self.out_of_bounds(y, 'height'):
                 [self.canvas.delete(line) for line in self.lines]
                 self._reset_lines()
             else:
