@@ -38,3 +38,10 @@ class EKF(object):
  
         self.P[i][j] = value
 
+    def setQ(self, i, j, value):
+        '''
+         Sets the value of the process noise covariance Q[i,j].
+        '''
+ 
+        self.Q[i][j] = value
+
