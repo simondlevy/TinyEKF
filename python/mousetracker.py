@@ -37,20 +37,21 @@ class TrackerEKF(EKF):
 
     def model(self, x, fx, F, hx, H):
 
-        for j in range(2):
+        # Process model is f(x) = x
+        fx[0] = x[0]
+        fx[1] = x[1]
 
-            # Process model is f(x) = x
-            fx[j] = x[j]
+        # So process model Jacobian is identity matrix
+        F[0][0] = 1
+        F[1][1] = 1
 
-            # So process model Jacobian is identity matrix
-            F[j][j] = 1
+        # Measurement function
+        hx[0] = x[0]
+        hx[1] = x[1]
 
-            # Measurement function
-            hx[j] = x[j]
-
-            # Jacobian of measurement function
-            H[j][j] = 1
- 
+        # Jacobian of measurement function
+        H[0][0] = 1
+        H[1][1] = 1
 
 class TrackerFrame(tk.Frame):
 

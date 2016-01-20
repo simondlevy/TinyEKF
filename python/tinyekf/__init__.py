@@ -8,12 +8,54 @@
     published by the Free Software Foundation, either version 3 of the 
     License, or (at your option) any later version.
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 '''
 
 import numpy as np
+
+class Matrix(object):
+
+    def __init__(self, r=0, c=0):
+
+        self.data = np.zeros((r,c)) if r>0 and c>0 else None
+
+    def __str__(self):
+
+        return str(self.data)
+
+    def __mul__(self, other):
+
+        new = Matrix()
+        new.data = np.dot(self.data, other.data)
+        return new
+
+    def __add__(self, other):
+
+        new = Matrix()
+        new.data = self.data + other.data
+        return new
+
+    def __setitem__(self, key, value):
+
+        self.data[key] = value
+
+    def __getitem__(self, key):
+
+        return self.data[key]
+
+    def transpose(self):
+
+        new = Matrix()
+        new.data = self.data.T
+        return new
+
+class Vector(Matrix):
+
+    def __init__(self, n):
+
+        Matrix.__init__(self, n, 1)
 
 class EKF(object):
 
@@ -22,35 +64,41 @@ class EKF(object):
         Creates an EKF object with n states and m observables.
         '''
 
-        self.x = np.zeros((n))
+        self.x = Vector(n)    # state vector 
 
-        self.fx = np.zeros((n))
-        self.hx = np.zeros((n))
+        self.P = Matrix(n,n)  # prediction error covariance 
+        self.Q = Matrix(n,n)  # process noise covariance 
+        self.R = Matrix(m,m)  # measurement error covariance 
 
-        self.P = np.zeros((n, n))
-        self.Q = np.zeros((n, n))
-        self.R = np.zeros((m, m))
-        self.G = np.zeros((n, m))
-        self.F = np.zeros((n, n))
-        self.H = np.zeros((m, n))
+        self.G = Matrix(n,m)  # Kalman gain a.k.a. K 
+
+        self.F = Matrix(n,n)  # Jacobian of process model 
+        self.H = Matrix(m,n)  # Jacobian of measurement model 
+
+        self.Ht = Matrix(n,m) # transpose of measurement Jacobian 
+        self.Ft = Matrix(n,n) # transpose of process Jacobian 
+        self.Pp = Matrix(n,n) # P, post-prediction, pre-update 
+
+        self.fx = Vector(n)   # output of user defined f() state-transition function 
+        self.hx = Vector(m)   # output of user defined h() measurement function 
 
     def setP(self, i, j, value):
         '''
          Sets the value of the prediction error covariance P[i,j].
         '''
-        self.P[i][j] = value
+        self.P[i,j] = value
 
     def setQ(self, i, j, value):
         '''
          Sets the value of the process noise covariance Q[i,j].
         '''
-        self.Q[i][j] = value
+        self.Q[i,j] = value
 
     def setR(self, i, j, value):
         '''
          Sets the value of the observation noise covariance R[i,j].
         '''
-        self.R[i][j] = value
+        self.R[i,j] = value
 
     def getX(self, i):
         '''
@@ -74,31 +122,29 @@ class EKF(object):
          H gets $m \times n$ Jacobian of $h(x)$
         '''
         self.model(self.x, self.fx, self.F, self.hx, self.H)
-        
+
         # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-        #mulmat(ekf.F, ekf.P, ekf.tmp1, n, n, n);
-        #transpose(ekf.F, ekf.Ft, n, n);
-        #mulmat(ekf.tmp1, ekf.Ft, ekf.Pp, n, n, n);
-        #accum(ekf.Pp, ekf.Q, n, n);
+        self.Pp += self.F * self.P * self.F.transpose() + self.Q
 
         # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-        #transpose(ekf.H, ekf.Ht, m, n);
-        #mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m);
-        #mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n);
-        #mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m);
-        #accum(ekf.tmp3, ekf.R, m, m);
-        #if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
-        #mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
+        #self.G = np.dot(self.Pp, self.Ht.T) 
+        #transpose(ekf.H, ekf.Ht, m, n)
+        #mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m)
+        #mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n)
+        #mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m)
+        #accum(ekf.tmp3, ekf.R, m, m)
+        #if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1
+        #mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m)
 
         # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-        #sub(z, ekf.hx, ekf.tmp5, m);
-        #mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
-        #add(ekf.fx, ekf.tmp2, ekf.x, n);
+        #sub(z, ekf.hx, ekf.tmp5, m)
+        #mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m)
+        #add(ekf.fx, ekf.tmp2, ekf.x, n)
 
         # P_k = (I - G_k H_k) P_k
-        #mulmat(ekf.G, ekf.H, ekf.tmp1, n, m, n);
-        #negate(ekf.tmp1, n, n);
-        #mat_addeye(ekf.tmp1, n);
-        #mulmat(ekf.tmp1, ekf.Pp, ekf.P, n, n, n);
+        #mulmat(ekf.G, ekf.H, ekf.tmp1, n, m, n)
+        #negate(ekf.tmp1, n, n)
+        #mat_addeye(ekf.tmp1, n)
+        #mulmat(ekf.tmp1, ekf.Pp, ekf.P, n, n, n)
 
  
