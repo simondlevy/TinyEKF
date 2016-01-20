@@ -24,6 +24,9 @@ class EKF(object):
 
         self.x = np.zeros((1, n))
 
+        self.fx = np.zeros((1, n))
+        self.hx = np.zeros((1, n))
+
         self.P = np.zeros((n, n))
         self.Q = np.zeros((n, n))
         self.R = np.zeros((m, m))
@@ -63,7 +66,39 @@ class EKF(object):
 
     def step(self, z):
         '''
-        Performs one step of the prediction and update based on observations in tuple z
+        Performs one step of the prediction and update based on observations in tuple z.
+        Calls subclass model() method with following output arguments:
+         fx gets output of state-transition function $f(x_{0 .. n-1})$
+         F gets $n \times n$ Jacobian of $f(x)$
+         hx gets output of observation function $h(x_{0 .. n-1})$
+         H gets $m \times n$ Jacobian of $h(x)$
         '''
-        None
+        self.model(self.fx, self.F, self.hx, self.H)
+        
+        # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+        #mulmat(ekf.F, ekf.P, ekf.tmp1, n, n, n);
+        #transpose(ekf.F, ekf.Ft, n, n);
+        #mulmat(ekf.tmp1, ekf.Ft, ekf.Pp, n, n, n);
+        #accum(ekf.Pp, ekf.Q, n, n);
 
+        # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+        #transpose(ekf.H, ekf.Ht, m, n);
+        #mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m);
+        #mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n);
+        #mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m);
+        #accum(ekf.tmp3, ekf.R, m, m);
+        #if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
+        #mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
+
+        # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
+        #sub(z, ekf.hx, ekf.tmp5, m);
+        #mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
+        #add(ekf.fx, ekf.tmp2, ekf.x, n);
+
+        # P_k = (I - G_k H_k) P_k
+        #mulmat(ekf.G, ekf.H, ekf.tmp1, n, m, n);
+        #negate(ekf.tmp1, n, n);
+        #mat_addeye(ekf.tmp1, n);
+        #mulmat(ekf.tmp1, ekf.Pp, ekf.P, n, n, n);
+
+ 
