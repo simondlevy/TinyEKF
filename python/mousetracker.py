@@ -80,10 +80,7 @@ class TrackerFrame(tk.Frame):
         self.ekf = TrackerEKF()
 
         self.ekf.setQ(0, 0, .0001)
-        self.ekf.setQ(1, 1, .0001)
         self.ekf.setR(0, 0, .0001)
-        self.ekf.setR(1, 1, .0001)
-
 
     def reset_lines(self):
 
