@@ -22,10 +22,10 @@ class EKF(object):
         Creates an EKF object with n states and m observables.
         '''
 
-        self.x = np.zeros((1, n))
+        self.x = np.zeros((n))
 
-        self.fx = np.zeros((1, n))
-        self.hx = np.zeros((1, n))
+        self.fx = np.zeros((n))
+        self.hx = np.zeros((n))
 
         self.P = np.zeros((n, n))
         self.Q = np.zeros((n, n))
@@ -73,7 +73,7 @@ class EKF(object):
          hx gets output of observation function $h(x_{0 .. n-1})$
          H gets $m \times n$ Jacobian of $h(x)$
         '''
-        self.model(self.fx, self.F, self.hx, self.H)
+        self.model(self.x, self.fx, self.F, self.hx, self.H)
         
         # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
         #mulmat(ekf.F, ekf.P, ekf.tmp1, n, n, n);

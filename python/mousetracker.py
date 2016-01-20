@@ -35,6 +35,23 @@ class TrackerEKF(EKF):
 
         EKF.__init__(self, 2, 2)
 
+    def model(self, x, fx, F, hx, H):
+
+        for j in range(2):
+
+            # Process model is f(x) = x
+            fx[j] = x[j]
+
+            # So process model Jacobian is identity matrix
+            F[j][j] = 1
+
+            # Measurement function
+            hx[j] = x[j]
+
+            # Jacobian of measurement function
+            H[j][j] = 1
+ 
+
 class TrackerFrame(tk.Frame):
 
     def __init__(self):
@@ -62,6 +79,12 @@ class TrackerFrame(tk.Frame):
  
         self.ekf = TrackerEKF()
 
+        self.ekf.setQ(0, 0, .0001)
+        self.ekf.setQ(1, 1, .0001)
+        self.ekf.setR(0, 0, .0001)
+        self.ekf.setR(1, 1, .0001)
+
+
     def reset_lines(self):
 
             self.lines = []
@@ -87,6 +110,7 @@ class TrackerFrame(tk.Frame):
         self.x = x
         self.y = y
 
+        self.ekf.step((x, y))
                  
     def handle_key(self, event):
 
