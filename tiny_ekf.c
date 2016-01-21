@@ -324,7 +324,7 @@ int ekf_step(void * v, double * z)
     if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
     mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
 
-    /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k */
+    /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
     sub(z, ekf.hx, ekf.tmp5, m);
     mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
     add(ekf.fx, ekf.tmp2, ekf.x, n);

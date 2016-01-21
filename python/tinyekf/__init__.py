@@ -37,6 +37,12 @@ class Matrix(object):
         new.data = self.data + other.data
         return new
 
+    def __sub__(self, other):
+
+        new = Matrix()
+        new.data = self.data - other.data
+        return new
+
     def __setitem__(self, key, value):
 
         self.data[key] = value
@@ -50,6 +56,22 @@ class Matrix(object):
         new = Matrix()
         new.data = self.data.T
         return new
+
+    def invert(self):
+
+        new = Matrix()
+        new.data = np.linalg.inv(self.data)
+        return new
+
+    @staticmethod
+    def eye(n):
+
+        I = Matrix(n,n)
+
+        for k in range(n):
+            I[k,k] = 1
+
+        return I
 
 class Vector(Matrix):
 
@@ -81,6 +103,8 @@ class EKF(object):
 
         self.fx = Vector(n)   # output of user defined f() state-transition function 
         self.hx = Vector(m)   # output of user defined h() measurement function 
+
+        self.I = Matrix.eye(n)
 
     def setP(self, i, j, value):
         '''
@@ -121,30 +145,19 @@ class EKF(object):
          hx gets output of observation function $h(x_{0 .. n-1})$
          H gets $m \times n$ Jacobian of $h(x)$
         '''
+
         self.model(self.x, self.fx, self.F, self.hx, self.H)
 
         # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-        self.Pp += self.F * self.P * self.F.transpose() + self.Q
+        self.Pp = self.Pp + self.F * self.P * self.F.transpose() + self.Q
 
         # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-        #self.G = np.dot(self.Pp, self.Ht.T) 
-        #transpose(ekf.H, ekf.Ht, m, n)
-        #mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m)
-        #mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n)
-        #mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m)
-        #accum(ekf.tmp3, ekf.R, m, m)
-        #if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1
-        #mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m)
+        self.G = self.Pp * self.H.transpose() * (self.H * self.Pp * self.H + self.R).invert()
 
-        # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k
-        #sub(z, ekf.hx, ekf.tmp5, m)
-        #mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m)
-        #add(ekf.fx, ekf.tmp2, ekf.x, n)
+        # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
+        self.x = self.x + self.G * (z - self.hx)
 
         # P_k = (I - G_k H_k) P_k
-        #mulmat(ekf.G, ekf.H, ekf.tmp1, n, m, n)
-        #negate(ekf.tmp1, n, n)
-        #mat_addeye(ekf.tmp1, n)
-        #mulmat(ekf.tmp1, ekf.Pp, ekf.P, n, n, n)
+        self.P = (self.I - self.G * self.H) * self.Pp
 
  
