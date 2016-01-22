@@ -79,6 +79,18 @@ class Vector(Matrix):
 
         Matrix.__init__(self, n, 1)
 
+    @staticmethod
+    def fromTuple(t):
+
+        v = Vector(len(t))
+
+        for k in range(len(t)):
+            v[k] = t[k]
+
+        return v
+
+
+
 class EKF(object):
 
     def __init__(self, n, m):
@@ -128,7 +140,7 @@ class EKF(object):
         '''
         Returns the state element at index i.
         '''
-        return self.x[i]
+        return self.x[i][0]
 
     def setX(self, i, value):
         '''
@@ -155,9 +167,8 @@ class EKF(object):
         self.G = self.Pp * self.H.transpose() * (self.H * self.Pp * self.H + self.R).invert()
 
         # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-        self.x = self.x + self.G * (z - self.hx)
+        self.x = self.x + self.G * (Vector.fromTuple(z) - self.hx)
 
         # P_k = (I - G_k H_k) P_k
         self.P = (self.I - self.G * self.H) * self.Pp
-
  
