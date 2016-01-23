@@ -55,9 +55,9 @@ class KF(object):
 
         # Update
 
-        temp2 = self.H * self.P_Pre
+        temp3 = self.H * self.P_Pre * self.H.transpose() + self.R
 
-        temp3 = temp2 * self.H.transpose() + self.R
+        temp2 = self.H * self.P_Pre
 
         temp4 = temp3.invert() * temp2
 
