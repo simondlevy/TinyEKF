@@ -52,17 +52,17 @@ class TrackerEKF(EKF):
 
     def getF(self):
 
-        # So state-transition Jacobean is identity matrix
+        # So state-transition Jacobian is identity matrix
         return np.eye(2)
 
     def h(self, x):
 
-        # Obervation function returns is identity
+        # Obervation function is identity
         return x
 
     def getH(self):
 
-        # So observatin Jacobean is identity matrix
+        # So observatin Jacobian is identity matrix
         return np.eye(2)
 
 class MouseInfo(object):

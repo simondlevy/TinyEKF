@@ -19,7 +19,9 @@ class EKF(object):
 
     def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
         '''
-        Creates a KF object with n states and m observables.
+        Creates a KF object with n states, m observables, and specified values for 
+        prediction noise covariance pval, process noise covariance qval, and 
+        measurement noise covariance rval.
         '''
 
         # No previous prediction noise covariance
@@ -29,18 +31,21 @@ class EKF(object):
         self.x = Vector(n)
         self.P_post = Matrix.eye(n) * pval
 
-        # Get state transition and measurement Jacobeans from implementing class
+        # Get state transition and measurement Jacobians from implementing class
         self.F = Matrix.fromData(self.getF())
         self.H = Matrix.fromData(self.getH())
 
+        # Set up covariance matrices for process noise and measurement noise
         self.Q = Matrix.eye(n) * qval
         self.R = Matrix.eye(m) * rval
  
+        # Identity matrix will be usefel later
         self.I = Matrix.eye(n)
 
     def step(self, z):
         '''
         Runs one step of the EKF on observations z, where z is a tuple of length M.
+        Returns a NumPy array representing the updated state.
         '''
 
         # Predict ----------------------------------------------------
