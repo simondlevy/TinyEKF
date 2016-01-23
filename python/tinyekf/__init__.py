@@ -28,7 +28,7 @@ class EKF(object):
         self.P_pre = None
 
         # Current state is zero, with diagonal noise covariance matrix
-        self.x = Vector(n)
+        self.x = _Vector(n)
         self.P_post = _Matrix.eye(n) * pval
 
         # Get state transition and measurement Jacobians from implementing class
@@ -51,7 +51,7 @@ class EKF(object):
         # Predict ----------------------------------------------------
 
         # $\hat{x}_k = f(\hat{x}_{k-1})$
-        self.x = Vector.fromData(self.f(self.x.data))
+        self.x = _Vector.fromData(self.f(self.x.data))
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
@@ -64,7 +64,7 @@ class EKF(object):
         G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
-        self.x += G * (Vector.fromTuple(z) - Vector.fromData(self.h(self.x.data)))
+        self.x += G * (_Vector.fromTuple(z) - _Vector.fromData(self.h(self.x.data)))
 
         # $P_k = (I - G_k H_k) P_k$
         self.P_post = (self.I - G * self.H) * self.P_pre
@@ -163,7 +163,7 @@ class _Matrix(object):
 
         return a
 
-class Vector(_Matrix):
+class _Vector(_Matrix):
 
     def __init__(self, n=0):
 
@@ -172,7 +172,7 @@ class Vector(_Matrix):
     @staticmethod
     def fromTuple(t):
 
-        v = Vector(len(t))
+        v = _Vector(len(t))
 
         for k in range(len(t)):
             v[k] = t[k]
@@ -183,7 +183,7 @@ class Vector(_Matrix):
     @staticmethod
     def fromData(data):
 
-        v = Vector()
+        v = _Vector()
 
         v.data = data
 
