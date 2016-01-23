@@ -27,7 +27,7 @@ class KF(object):
         self.F = Matrix.eye(n)
 
         self.Q = Matrix.eye(n)
-        self.H = Matrix(m, n)
+        self.H = Matrix.eye(m, n)
         self.R = Matrix.eye(m) * rval
 
         self.P_Pre = None
@@ -131,11 +131,14 @@ class Matrix(object):
         return new
 
     @staticmethod
-    def eye(siz):
+    def eye(n, m=0):
 
         I = Matrix()
 
-        I.data = np.eye(siz)
+        if m == 0:
+            m = n
+
+        I.data = np.eye(n, m)
 
         return I
 
