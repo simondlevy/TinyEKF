@@ -57,9 +57,7 @@ class KF(object):
 
         temp2 = self.H * self.P_Pre
 
-        temp4 = (self.H * self.P_Pre * self.H.transpose() + self.R).invert() * temp2
-
-        G = temp4.transpose()
+        G = ((self.H * self.P_Pre * self.H.transpose() + self.R).invert() * temp2).transpose()
 
         temp5 = Vector.fromTuple(z) - self.H * self.x_Pre
         
