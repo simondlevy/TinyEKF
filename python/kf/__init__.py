@@ -59,9 +59,7 @@ class KF(object):
 
         G = ((self.H * self.P_Pre * self.H.transpose() + self.R).invert() * temp2).transpose()
 
-        temp5 = Vector.fromTuple(z) - self.H * self.x_Pre
-        
-        self.x_Post = self.x_Pre + G * temp5
+        self.x_Post = self.x_Pre + G * (Vector.fromTuple(z) - self.H * self.x_Pre)
 
         self.P_Post = self.P_Pre - G * temp2
 
