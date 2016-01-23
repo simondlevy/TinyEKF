@@ -26,16 +26,12 @@ class KF(object):
 
         self.F = Matrix.eye(n)
 
-        self.Q = Matrix.eye(n)
+        self.Q = Matrix.eye(n) * qval
         self.H = Matrix.eye(m, n)
         self.R = Matrix.eye(m) * rval
 
         self.P_Pre = None
-        self.P_Post = Matrix(n,n)
-
-        for j in range(n):
-            self.Q[j,j] = qval
-            self.P_Post[j,j] = pval
+        self.P_Post = Matrix.eye(n) * pval
 
     def step(self, z):
 
