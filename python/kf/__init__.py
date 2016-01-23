@@ -42,7 +42,7 @@ class KF(object):
         # Predict ----------------------------------------------------
 
         # $\hat{x}_k = f(\hat{x}_{k-1})$
-        self.x = self.f(self.x)
+        self.x = Vector.fromData(self.f(self.x.data))
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
@@ -64,7 +64,11 @@ class KF(object):
 
     def f(self, x):
 
-        return x.copy()
+        return np.copy(x)
+
+    def h(self, x):
+
+        return x[0:2]
 
 # Linear Algebra support =============================================
 
@@ -76,7 +80,7 @@ class Matrix(object):
 
     def __str__(self):
 
-        return str(self.data)
+        return str(self.data) + " " + str(self.data.shape)
 
     def __mul__(self, other):
 
@@ -151,9 +155,9 @@ class Matrix(object):
 
 class Vector(Matrix):
 
-    def __init__(self, n):
+    def __init__(self, n=0):
 
-        Matrix.__init__(self, n, 1)
+        self.data = np.zeros((n,1)) if n>0 else None
 
     @staticmethod
     def fromTuple(t):
@@ -164,6 +168,17 @@ class Vector(Matrix):
             v[k] = t[k]
 
         return v
+
+
+    @staticmethod
+    def fromData(data):
+
+        v = Vector()
+
+        v.data = data
+
+        return v
+
 
 
 
