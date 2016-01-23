@@ -30,7 +30,7 @@ class KF(object):
         self.H = Matrix(m, n)
         self.R = Matrix.eye(m)
 
-        self.P_Pre = Matrix(n,n)
+        self.P_Pre = None
         self.P_Post = Matrix(n,n)
         self.G = Matrix(n, m)
 
