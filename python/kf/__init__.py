@@ -28,7 +28,7 @@ class KF(object):
 
         self.Q = Matrix.eye(n)
         self.H = Matrix(m, n)
-        self.R = Matrix.eye(m)
+        self.R = Matrix.eye(m) * rval
 
         self.P_Pre = None
         self.P_Post = Matrix(n,n)
@@ -38,7 +38,6 @@ class KF(object):
             self.P_Post[j,j] = pval
 
         for j in range(m):
-            self.R[j,j] = rval
             self.H[j,j] = 1
 
     def step(self, z):
@@ -82,7 +81,7 @@ class Matrix(object):
 
         new = Matrix()
 
-        if type(other).__name__ == 'int':
+        if type(other).__name__ in ['float', 'int']:
             new.data = np.copy(self.data)
             new.data *= other
         else:
