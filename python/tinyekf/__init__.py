@@ -31,7 +31,7 @@ class EKF(object):
 
         # Get state transition and measurement Jacobeans from implementing class
         self.F = Matrix.fromData(self.getF())
-        self.H = Matrix.eye(m, n)
+        self.H = Matrix.fromData(self.getH())
 
         self.Q = Matrix.eye(n) * qval
         self.R = Matrix.eye(m) * rval

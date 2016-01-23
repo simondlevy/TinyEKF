@@ -60,6 +60,11 @@ class TrackerEKF(EKF):
         # Obervation function returns is identity
         return x
 
+    def getH(self):
+
+        # So observatin Jacobean is identity matrix
+        return np.eye(2)
+
 class MouseInfo(object):
     '''
     A class to store X,Y points
