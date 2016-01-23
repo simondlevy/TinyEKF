@@ -35,6 +35,8 @@ class KF(object):
         self.Q = Matrix.eye(n) * qval
         self.H = Matrix.eye(m, n)
         self.R = Matrix.eye(m) * rval
+ 
+        self.I = Matrix.eye(n)
 
     def step(self, z):
         '''
@@ -60,7 +62,8 @@ class KF(object):
         self.x += G * (Vector.fromTuple(z) - Vector.fromData(self.h(self.x.data)))
 
         # $P_k = (I - G_k H_k) P_k$
-        self.P_post = self.P_pre - G * (self.H * self.P_pre)
+        #self.P_post = self.P_pre - G * (self.H * self.P_pre)
+        self.P_post = (self.I - G * self.H) * self.P_pre
 
         return self.x.asarray()
 
