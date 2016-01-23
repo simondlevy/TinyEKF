@@ -26,7 +26,7 @@ class KF(object):
         self.x_Pre = None
         self.P_Pre = None
 
-        self.x_Post = Matrix(n, 1)
+        self.x_Post = Vector(n)
 
         self.F = Matrix.eye(n)
 
