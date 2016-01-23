@@ -29,18 +29,18 @@ class EKF(object):
 
         # Current state is zero, with diagonal noise covariance matrix
         self.x = Vector(n)
-        self.P_post = Matrix.eye(n) * pval
+        self.P_post = _Matrix.eye(n) * pval
 
         # Get state transition and measurement Jacobians from implementing class
-        self.F = Matrix.fromData(self.getF())
-        self.H = Matrix.fromData(self.getH())
+        self.F = _Matrix.fromData(self.getF())
+        self.H = _Matrix.fromData(self.getH())
 
         # Set up covariance matrices for process noise and measurement noise
-        self.Q = Matrix.eye(n) * qval
-        self.R = Matrix.eye(m) * rval
+        self.Q = _Matrix.eye(n) * qval
+        self.R = _Matrix.eye(m) * rval
  
         # Identity matrix will be usefel later
-        self.I = Matrix.eye(n)
+        self.I = _Matrix.eye(n)
 
     def step(self, z):
         '''
@@ -73,7 +73,7 @@ class EKF(object):
 
 # Linear Algebra support =============================================
 
-class Matrix(object):
+class _Matrix(object):
 
     def __init__(self, r=0, c=0):
 
@@ -85,7 +85,7 @@ class Matrix(object):
 
     def __mul__(self, other):
 
-        new = Matrix()
+        new = _Matrix()
 
         if type(other).__name__ in ['float', 'int']:
             new.data = np.copy(self.data)
@@ -97,13 +97,13 @@ class Matrix(object):
 
     def __add__(self, other):
 
-        new = Matrix()
+        new = _Matrix()
         new.data = self.data + other.data
         return new
 
     def __sub__(self, other):
 
-        new = Matrix()
+        new = _Matrix()
         new.data = self.data - other.data
         return new
 
@@ -121,19 +121,19 @@ class Matrix(object):
 
     def copy(self):
 
-        new = Matrix()
+        new = _Matrix()
         new.data = np.copy(self.data)
         return new
 
     def transpose(self):
 
-        new = Matrix()
+        new = _Matrix()
         new.data = self.data.T
         return new
 
     def invert(self):
 
-        new = Matrix()
+        new = _Matrix()
         try:
             new.data = np.linalg.inv(self.data)
         except Exception as e:
@@ -145,7 +145,7 @@ class Matrix(object):
     @staticmethod
     def eye(n, m=0):
 
-        I = Matrix()
+        I = _Matrix()
 
         if m == 0:
             m = n
@@ -157,13 +157,13 @@ class Matrix(object):
     @staticmethod
     def fromData(data):
 
-        a = Matrix()
+        a = _Matrix()
 
         a.data = data
 
         return a
 
-class Vector(Matrix):
+class Vector(_Matrix):
 
     def __init__(self, n=0):
 
