@@ -103,15 +103,15 @@ class TrackerFrame(tk.Frame):
             else:
                 self.mouse_lines.append(self.canvas.create_line(self.mousex_prev, self.mousey_prev, self.mousex, self.mousey, 
                     fill=MOUSE_COLOR, width=LINE_WIDTH))
-                self.ekf_lines.append(self.canvas.create_line(self.ekfx, self.ekfy, ekfx, ekfy, 
+                self.ekf_lines.append(self.canvas.create_line(self.ekfx_prev, self.ekfy_prev, ekfx, ekfy, 
                     fill=EKF_COLOR, width=LINE_WIDTH))
 
 
         self.mousex_prev = self.mousex
         self.mousey_prev = self.mousey
 
-        self.ekfx = ekfx
-        self.ekfy = ekfy
+        self.ekfx_prev = ekfx
+        self.ekfy_prev = ekfy
 
         time.sleep(.01)
                 
