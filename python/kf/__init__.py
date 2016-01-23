@@ -21,7 +21,11 @@ class KF(object):
         '''
         Creates a KF object with n states and m observables.
         '''
+
+        # No previous state or prediction noise covariance
         self.x_Pre = None
+        self.P_Pre = None
+
         self.x_Post = Matrix(n, 1)
 
         self.F = Matrix.eye(n)
@@ -30,7 +34,6 @@ class KF(object):
         self.H = Matrix.eye(m, n)
         self.R = Matrix.eye(m) * rval
 
-        self.P_Pre = None
         self.P_Post = Matrix.eye(n) * pval
 
     def step(self, z):
