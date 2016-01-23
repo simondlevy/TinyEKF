@@ -17,12 +17,13 @@ import numpy as np
 
 class KF(object):
 
-    def __init__(self, n, m):
+    def __init__(self, n, m, qval=1e-4):
         '''
         Creates a KF object with n xs and m observables.
         '''
         self.x_Pre = Matrix(n, 1)
         self.x_Post = Matrix(n, 1)
+
         self.F = Matrix.eye(n)
 
         self.Q = Matrix.eye(n)
@@ -34,7 +35,7 @@ class KF(object):
         self.G = Matrix(n, m)
 
         for j in range(n):
-            self.Q[j,j] = 1e-4
+            self.Q[j,j] = qval
             self.P_Post[j,j] = 0.1
 
         for j in range(m):
