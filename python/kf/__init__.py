@@ -57,7 +57,7 @@ class KF(object):
 
         self.P_Post = self.P_Pre - G * (self.H * self.P_Pre)
 
-        print(self.x_Post)
+        return self.x_Post.asarray()
 
     def getX(self, i):
         '''
@@ -108,6 +108,10 @@ class Matrix(object):
     def __getitem__(self, key):
 
         return self.data[key]
+
+    def asarray(self):
+
+        return np.asarray(self.data[:,0])
 
     def copyTo(self, other):
 
