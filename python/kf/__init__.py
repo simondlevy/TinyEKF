@@ -42,7 +42,7 @@ class KF(object):
         # Predict ----------------------------------------------------
 
         # $\hat{x}_k = f(\hat{x}_{k-1})$
-        self.x = self.F * self.x
+        self.x = self.f(self.x)
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
