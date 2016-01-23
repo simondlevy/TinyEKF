@@ -30,6 +30,7 @@ LINE_WIDTH         = 3
 import tkinter as tk
 import time
 from kf import KF
+from threading import Thread
 
 class TrackerFrame(tk.Frame):
 
@@ -58,13 +59,22 @@ class TrackerFrame(tk.Frame):
  
         self.ekf = KF(4, 2)
 
+        #thread = threading.Thread(target=self.update, args = (plotter,))
+        thread = Thread(target=self.update)
+        thread.daemon = True
+        thread.start()
+
+    def update(self):
+
+        print(self.ekf)
+
     def reset_lines(self):
 
             self.mouse_lines = []
             self.ekf_lines = []
 
-            self.mousex = -1
-            self.mousey = -1
+            self.mousex_prev = -1
+            self.mousey_prev = -1
 
     def out_of_bounds(self, coord, dimname):
 
@@ -79,20 +89,20 @@ class TrackerFrame(tk.Frame):
         ekfx = int(estimate[0])
         ekfy = int(estimate[1])
 
-        if self.mousex != -1:
+        if self.mousex_prev != -1:
             if self.out_of_bounds(mousex, 'width') or self.out_of_bounds(mousey, 'height'):
                 [self.canvas.delete(line) for line in self.mouse_lines]
                 [self.canvas.delete(line) for line in self.ekf_lines]
                 self.reset_lines()
             else:
-                self.mouse_lines.append(self.canvas.create_line(self.mousex, self.mousey, mousex, mousey, 
+                self.mouse_lines.append(self.canvas.create_line(self.mousex_prev, self.mousey_prev, mousex, mousey, 
                     fill=MOUSE_COLOR, width=LINE_WIDTH))
                 self.ekf_lines.append(self.canvas.create_line(self.ekfx, self.ekfy, ekfx, ekfy, 
                     fill=EKF_COLOR, width=LINE_WIDTH))
 
 
-        self.mousex = mousex
-        self.mousey = mousey
+        self.mousex_prev = mousex
+        self.mousey_prev = mousey
 
         self.ekfx = ekfx
         self.ekfy = ekfy
