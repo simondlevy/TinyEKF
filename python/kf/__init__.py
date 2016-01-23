@@ -37,9 +37,6 @@ class KF(object):
             self.Q[j,j] = qval
             self.P_Post[j,j] = pval
 
-        for j in range(m):
-            self.H[j,j] = 1
-
     def step(self, z):
 
         # Predict
