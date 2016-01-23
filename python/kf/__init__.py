@@ -32,7 +32,6 @@ class KF(object):
 
         self.P_Pre = None
         self.P_Post = Matrix(n,n)
-        self.G = Matrix(n, m)
 
         for j in range(n):
             self.Q[j,j] = qval
