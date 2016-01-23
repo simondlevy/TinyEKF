@@ -24,9 +24,11 @@ DISPLAY_BORDER     = 4
 CANVAS_MARGIN      = 20
 DISPLAY_BACKGROUND = 'black'
 MOUSE_COLOR        = 'green'
+EKF_COLOR          = 'red'
 LINE_WIDTH         = 3
 
 import tkinter as tk
+import time
 from tinyekf import EKF
 
 class TrackerEKF(EKF):
@@ -80,15 +82,19 @@ class TrackerFrame(tk.Frame):
  
         self.ekf = TrackerEKF()
 
-        self.ekf.setQ(0, 0, .0001)
-        self.ekf.setR(0, 0, .0001)
+        self.ekf.setQ(0, 0, .00001)
+        self.ekf.setQ(1, 1, .00001)
+
+        self.ekf.setR(0, 0, .00001)
+        self.ekf.setR(1, 1, .00001)
 
     def reset_lines(self):
 
-            self.lines = []
+            self.mouse_lines = []
+            self.ekf_lines = []
 
-            self.x = -1
-            self.y = -1
+            self.mousex = -1
+            self.mousey = -1
 
     def out_of_bounds(self, coord, dimname):
 
@@ -96,20 +102,32 @@ class TrackerFrame(tk.Frame):
  
     def handle_motion(self, event):
 
-        x, y = event.x, event.y
+        mousex, mousey = event.x, event.y
 
-        if self.x != -1:
-            if self.out_of_bounds(x, 'width') or self.out_of_bounds(y, 'height'):
-                [self.canvas.delete(line) for line in self.lines]
+        self.ekf.step((mousex, mousey))
+
+        ekfx, ekfy = int(self.ekf.getX(0)), int(self.ekf.getX(1))
+
+        if self.mousex != -1:
+            if self.out_of_bounds(mousex, 'width') or self.out_of_bounds(mousey, 'height'):
+                [self.canvas.delete(line) for line in self.mouse_lines]
+                [self.canvas.delete(line) for line in self.ekf_lines]
                 self.reset_lines()
             else:
-                self.lines.append(self.canvas.create_line(self.x, self.y, x, y, fill=MOUSE_COLOR, width=LINE_WIDTH))
+                self.mouse_lines.append(self.canvas.create_line(self.mousex, self.mousey, mousex, mousey, 
+                    fill=MOUSE_COLOR, width=LINE_WIDTH))
+                self.ekf_lines.append(self.canvas.create_line(self.ekfx, self.ekfy, ekfx, ekfy, 
+                    fill=EKF_COLOR, width=LINE_WIDTH))
 
-        self.x = x
-        self.y = y
 
-        self.ekf.step((x, y))
-                 
+        self.mousex = mousex
+        self.mousey = mousey
+
+        self.ekfx = ekfx
+        self.ekfy = ekfy
+
+        time.sleep(.1)
+                
     def handle_key(self, event):
 
         # Make sure the frame is receiving input!

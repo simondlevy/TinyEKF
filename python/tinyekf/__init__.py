@@ -60,7 +60,12 @@ class Matrix(object):
     def invert(self):
 
         new = Matrix()
-        new.data = np.linalg.inv(self.data)
+        try:
+            new.data = np.linalg.inv(self.data)
+        except Exception as e:
+            print(self.data)
+            print(e)
+            exit(0)
         return new
 
     @staticmethod
@@ -164,11 +169,10 @@ class EKF(object):
         self.Pp = self.Pp + self.F * self.P * self.F.transpose() + self.Q
 
         # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-        self.G = self.Pp * self.H.transpose() * (self.H * self.Pp * self.H + self.R).invert()
+        self.G = self.Pp * self.H.transpose() * (self.H * self.Pp * self.H.transpose() + self.R).invert()
 
         # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
         self.x = self.x + self.G * (Vector.fromTuple(z) - self.hx)
 
         # P_k = (I - G_k H_k) P_k
         self.P = (self.I - self.G * self.H) * self.Pp
- 
