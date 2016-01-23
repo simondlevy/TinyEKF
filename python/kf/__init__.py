@@ -21,21 +21,21 @@ class KF(object):
         '''
         Creates a KF object with n xs and m observables.
         '''
-        self.xPre = Matrix(n, 1)
-        self.xPost = Matrix(n, 1)
+        self.x_Pre = Matrix(n, 1)
+        self.x_Post = Matrix(n, 1)
         self.F = Matrix.eye(n)
 
         self.Q = Matrix.eye(n)
         self.H = Matrix(m, n)
         self.R = Matrix.eye(m)
 
-        self.errorCovPre = Matrix(n,n)
-        self.errorCovPost = Matrix(n,n)
+        self.P_Pre = Matrix(n,n)
+        self.P_Post = Matrix(n,n)
         self.G = Matrix(n, m)
 
         for j in range(n):
             self.Q[j,j] = 1e-4
-            self.errorCovPost[j,j] = 0.1
+            self.P_Post[j,j] = 0.1
 
         for j in range(m):
             self.R[j,j] = 1e-1
@@ -45,18 +45,18 @@ class KF(object):
 
         # Predict
 
-        self.xPre = self.F * self.xPost
+        self.x_Pre = self.F * self.x_Post
 
-        temp1 = self.F * self.errorCovPost
+        temp1 = self.F * self.P_Post
 
-        self.errorCovPre = temp1 * self.F + self.Q
+        self.P_Pre = temp1 * self.F + self.Q
 
-        self.xPre.copyTo(self.xPost)
-        self.errorCovPre.copyTo(self.errorCovPost)
+        self.x_Pre.copyTo(self.x_Post)
+        self.P_Pre.copyTo(self.P_Post)
 
         # Update
 
-        temp2 = self.H * self.errorCovPre
+        temp2 = self.H * self.P_Pre
 
         temp3 = temp2 * self.H.transpose() + self.R
 
@@ -64,17 +64,17 @@ class KF(object):
 
         G = temp4.transpose()
 
-        temp5 = Vector.fromTuple(z) - self.H * self.xPre
+        temp5 = Vector.fromTuple(z) - self.H * self.x_Pre
         
-        self.xPost = self.xPre + G * temp5
+        self.x_Post = self.x_Pre + G * temp5
 
-        self.errorCovPost = self.errorCovPre - G * temp2
+        self.P_Post = self.P_Pre - G * temp2
 
     def getX(self, i):
         '''
         Returns the x element at index i.
         '''
-        return self.xPost[i][0]
+        return self.x_Post[i][0]
 
 class Matrix(object):
 
