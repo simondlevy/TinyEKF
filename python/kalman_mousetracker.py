@@ -43,7 +43,7 @@ class TrackerEKF(KF):
     def __init__(self):
 
         # Four states, two measurements (X,Y)
-        KF.__init__(self, 4, 2)
+        KF.__init__(self, 2, 2)
 
     def f(self, x):
 
