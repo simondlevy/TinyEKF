@@ -17,7 +17,7 @@ import numpy as np
 
 class KF(object):
 
-    def __init__(self, n, m, qval=1e-4):
+    def __init__(self, n, m, qval=1e-4, pval=0.1):
         '''
         Creates a KF object with n xs and m observables.
         '''
@@ -39,7 +39,8 @@ class KF(object):
             self.P_Post[j,j] = 0.1
 
         for j in range(m):
-            self.R[j,j] = 1e-1
+            self.R[j,j] = 0.1
+
             self.H[j,j] = 1
 
     def step(self, z):
