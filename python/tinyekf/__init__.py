@@ -1,5 +1,5 @@
 '''
-    Linear KalmanFilter in Python
+    Extended Kalman Filter in Python
 
     Copyright (C) 2016 Simon D. Levy
 
@@ -14,8 +14,14 @@
 '''
 
 import numpy as np
+from abc import ABCMeta, abstractmethod
 
 class EKF(object):
+    '''
+    A abstrat class for the Extended Kalman Filter, based on the tutorial in
+    http://home.wlu.edu/~levys/kalman_tutorial.
+    '''
+    __metaclass__ = ABCMeta
 
     def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
         '''
@@ -70,6 +76,36 @@ class EKF(object):
         self.P_post = (self.I - G * self.H) * self.P_pre
 
         return self.x.asarray()
+
+    @abstractmethod
+    def f(self, x):
+        '''
+        Your implementing class should define this method for the state transition function f(x).
+        '''
+        raise NotImplementedError()    
+
+    @abstractmethod
+    def getF(self, x):
+        '''
+        Your implementing class should define this method for returning the Jacobian F of the 
+        state transition function.
+        '''
+        raise NotImplementedError()    
+
+    @abstractmethod
+    def h(self, x):
+        '''
+        Your implementing class should define this method for the observation function h(x).
+        '''
+        raise NotImplementedError()    
+
+    @abstractmethod
+    def getH(self, x):
+        '''
+        Your implementing class should define this method for returning the Jacobian H of the 
+        observation function.
+        '''
+        raise NotImplementedError()    
 
 # Linear Algebra support =============================================
 
