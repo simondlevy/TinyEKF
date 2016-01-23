@@ -25,7 +25,7 @@ class KF(object):
         self.statePost = Matrix(n, 1)
         self.F = Matrix.eye(n)
 
-        self.processNoiseCov = Matrix.eye(n)
+        self.Q = Matrix.eye(n)
         self.measurementMatrix = Matrix(m, n)
         self.measurementNoiseCov = Matrix.eye(m)
 
@@ -34,7 +34,7 @@ class KF(object):
         self.gain = Matrix(n, m)
 
         for j in range(n):
-            self.processNoiseCov[j,j] = 1e-4
+            self.Q[j,j] = 1e-4
             self.errorCovPost[j,j] = 0.1
 
         for j in range(m):
@@ -49,7 +49,7 @@ class KF(object):
 
         temp1 = self.F * self.errorCovPost
 
-        self.errorCovPre = temp1 * self.F + self.processNoiseCov
+        self.errorCovPre = temp1 * self.F + self.Q
 
         self.statePre.copyTo(self.statePost)
         self.errorCovPre.copyTo(self.errorCovPost)
