@@ -40,7 +40,7 @@ class KF(object):
 
     def step(self, z):
 
-        # Predict
+        # Predict ----------------------------------------------------
 
         self.x_pre = self.F * self.x_post
 
@@ -49,9 +49,10 @@ class KF(object):
         self.x_pre.copyTo(self.x_post)
         self.P_pre.copyTo(self.P_post)
 
-        # Update
+        # Update -----------------------------------------------------
 
-        G = ((self.H * self.P_pre * self.H.transpose() + self.R).invert() * (self.H * self.P_pre)).transpose()
+        # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+        G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
 
         self.x_post = self.x_pre + G * (Vector.fromTuple(z) - self.H * self.x_pre)
 
