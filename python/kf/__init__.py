@@ -26,15 +26,17 @@ class KF(object):
         self.x_Pre = None
         self.P_Pre = None
 
+        # Current state is zero, with diagonal noise covariance matrix
         self.x_Post = Vector(n)
+        self.P_Post = Matrix.eye(n) * pval
 
+        # State transition function is identity
         self.F = Matrix.eye(n)
 
         self.Q = Matrix.eye(n) * qval
         self.H = Matrix.eye(m, n)
         self.R = Matrix.eye(m) * rval
 
-        self.P_Post = Matrix.eye(n) * pval
 
     def step(self, z):
 
