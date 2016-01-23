@@ -19,7 +19,7 @@ class KF(object):
 
     def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
         '''
-        Creates a KF object with n xs and m observables.
+        Creates a KF object with n states and m observables.
         '''
         self.x_Pre = None
         self.x_Post = Matrix(n, 1)
@@ -66,6 +66,8 @@ class KF(object):
         '''
         return self.x_Post[i][0]
 
+# Linear Algebra support =============================================
+
 class Matrix(object):
 
     def __init__(self, r=0, c=0):
@@ -79,7 +81,13 @@ class Matrix(object):
     def __mul__(self, other):
 
         new = Matrix()
-        new.data = np.dot(self.data, other.data)
+
+        if type(other).__name__ == 'int':
+            new.data = np.copy(self.data)
+            new.data *= other
+        else:
+            new.data = np.dot(self.data, other.data)
+
         return new
 
     def __add__(self, other):
