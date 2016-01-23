@@ -27,7 +27,7 @@ class KF(object):
 
         self.Q = Matrix.eye(n)
         self.measurementMatrix = Matrix(m, n)
-        self.measurementNoiseCov = Matrix.eye(m)
+        self.R = Matrix.eye(m)
 
         self.errorCovPre = Matrix(n,n)
         self.errorCovPost = Matrix(n,n)
@@ -38,7 +38,7 @@ class KF(object):
             self.errorCovPost[j,j] = 0.1
 
         for j in range(m):
-            self.measurementNoiseCov[j,j] = 1e-1
+            self.R[j,j] = 1e-1
             self.measurementMatrix[j,j] = 1
 
     def step(self, z):
@@ -58,7 +58,7 @@ class KF(object):
 
         temp2 = self.measurementMatrix * self.errorCovPre
 
-        temp3 = temp2 * self.measurementMatrix.transpose() + self.measurementNoiseCov
+        temp3 = temp2 * self.measurementMatrix.transpose() + self.R
 
         temp4 = temp3.invert() * temp2
 
