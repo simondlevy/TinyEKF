@@ -47,7 +47,7 @@ class KF(object):
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
 
-        self.P_pre.copyTo(self.P_post)
+        self.P_post = self.P_pre.copy()
 
         # Update -----------------------------------------------------
 
@@ -61,6 +61,10 @@ class KF(object):
         self.P_post = self.P_pre - G * (self.H * self.P_pre)
 
         return self.x.asarray()
+
+    def f(self, x):
+
+        return x.copy()
 
 # Linear Algebra support =============================================
 
@@ -110,9 +114,11 @@ class Matrix(object):
 
         return np.asarray(self.data[:,0])
 
-    def copyTo(self, other):
+    def copy(self):
 
-        other.data = np.copy(self.data)
+        new = Matrix()
+        new.data = np.copy(self.data)
+        return new
 
     def transpose(self):
 
