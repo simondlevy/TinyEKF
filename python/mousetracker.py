@@ -76,6 +76,12 @@ class TrackerFrame(tk.Frame):
             self.mouse_lines = []
             self.ekf_lines = []
 
+            self.ekfx = -1
+            self.ekfy = -1
+
+            self.ekfx_prev = -1
+            self.ekfy_prev = -1
+
             self.mousex= -1
             self.mousey= -1
 
@@ -92,8 +98,8 @@ class TrackerFrame(tk.Frame):
 
         estimate = self.ekf.step((self.mousex, self.mousey))
 
-        ekfx = int(estimate[0])
-        ekfy = int(estimate[1])
+        self.ekfx = int(estimate[0])
+        self.ekfy = int(estimate[1])
 
         if self.mousex_prev != -1:
             if self.out_of_bounds(self.mousex, 'width') or self.out_of_bounds(self.mousey, 'height'):
@@ -103,15 +109,15 @@ class TrackerFrame(tk.Frame):
             else:
                 self.mouse_lines.append(self.canvas.create_line(self.mousex_prev, self.mousey_prev, self.mousex, self.mousey, 
                     fill=MOUSE_COLOR, width=LINE_WIDTH))
-                self.ekf_lines.append(self.canvas.create_line(self.ekfx_prev, self.ekfy_prev, ekfx, ekfy, 
+                self.ekf_lines.append(self.canvas.create_line(self.ekfx_prev, self.ekfy_prev, self.ekfx, self.ekfy, 
                     fill=EKF_COLOR, width=LINE_WIDTH))
 
 
         self.mousex_prev = self.mousex
         self.mousey_prev = self.mousey
 
-        self.ekfx_prev = ekfx
-        self.ekfy_prev = ekfy
+        self.ekfx_prev = self.ekfx
+        self.ekfy_prev = self.ekfy
 
         time.sleep(.01)
                 
