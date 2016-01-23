@@ -130,7 +130,8 @@ if __name__ == '__main__':
         measured_points.append(measured)
 
         # Update the Kalman filter with the mouse point, getting the estimate
-        estimate = kalfilt.step((mouse_info.x, mouse_info.y))
+        kalfilt.step((mouse_info.x, mouse_info.y))
+        estimate = (kalfilt.getX(0), kalfilt.getX(1))
 
         # Add the estimate to the trajectory
         estimated = [int (c) for c in estimate]
