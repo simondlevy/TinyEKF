@@ -57,6 +57,8 @@ class KF(object):
 
         self.P_Post = self.P_Pre - G * (self.H * self.P_Pre)
 
+        print(self.x_Post)
+
     def getX(self, i):
         '''
         Returns the x element at index i.
