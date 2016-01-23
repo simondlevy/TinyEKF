@@ -21,7 +21,7 @@ class KF(object):
         '''
         Creates a KF object with n xs and m observables.
         '''
-        self.x_Pre = Matrix(n, 1)
+        self.x_Pre = None
         self.x_Post = Matrix(n, 1)
 
         self.F = Matrix.eye(n)
