@@ -74,9 +74,10 @@ class TrackerFrame(tk.Frame):
 
         mousex, mousey = event.x, event.y
 
-        self.ekf.step((mousex, mousey))
+        estimate = self.ekf.step((mousex, mousey))
 
-        ekfx, ekfy = int(self.ekf.getX(0)), int(self.ekf.getX(1))
+        ekfx = int(estimate[0])
+        ekfy = int(estimate[1])
 
         if self.mousex != -1:
             if self.out_of_bounds(mousex, 'width') or self.out_of_bounds(mousey, 'height'):

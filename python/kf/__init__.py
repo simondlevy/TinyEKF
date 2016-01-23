@@ -59,12 +59,6 @@ class KF(object):
 
         return self.x_Post.asarray()
 
-    def getX(self, i):
-        '''
-        Returns the x element at index i.
-        '''
-        return self.x_Post[i][0]
-
 # Linear Algebra support =============================================
 
 class Matrix(object):
