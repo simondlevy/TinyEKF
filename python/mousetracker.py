@@ -107,7 +107,7 @@ class TrackerFrame(tk.Frame):
         self.ekfx = ekfx
         self.ekfy = ekfy
 
-        time.sleep(.1)
+        #time.sleep(.1)
                 
     def handle_key(self, event):
 
