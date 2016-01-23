@@ -57,8 +57,7 @@ class KF(object):
         G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
-        #self.x = self.x + G * (Vector.fromTuple(z) - Vector.fromData(self.h(self.x.data)))
-        self.x = self.x + G * (Vector.fromTuple(z) - Vector.fromData(self.h(self.x.data)))
+        self.x += G * (Vector.fromTuple(z) - Vector.fromData(self.h(self.x.data)))
 
         # $P_k = (I - G_k H_k) P_k$
         self.P_post = self.P_pre - G * (self.H * self.P_pre)
