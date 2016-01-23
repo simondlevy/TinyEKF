@@ -50,6 +50,11 @@ class TrackerEKF(EKF):
         # State-transition function is identity
         return np.copy(x)
 
+    def getF(self):
+
+        # So state-transition Jacobean is identity matrix
+        return np.eye(2)
+
     def h(self, x):
 
         # Obervation function returns is identity

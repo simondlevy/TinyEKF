@@ -29,8 +29,8 @@ class EKF(object):
         self.x = Vector(n)
         self.P_post = Matrix.eye(n) * pval
 
-        # State transition function is identity
-        self.F = Matrix.eye(n)
+        # Get state transition and measurement Jacobeans from implementing class
+        self.F = Matrix.fromData(self.getF())
         self.H = Matrix.eye(m, n)
 
         self.Q = Matrix.eye(n) * qval
@@ -148,6 +148,15 @@ class Matrix(object):
         I.data = np.eye(n, m)
 
         return I
+
+    @staticmethod
+    def fromData(data):
+
+        a = Matrix()
+
+        a.data = data
+
+        return a
 
 class Vector(Matrix):
 
