@@ -66,7 +66,9 @@ class TrackerFrame(tk.Frame):
 
     def update(self):
 
-        print(self.ekf)
+        while True:
+
+            print(self.mousex, self.mousey)
 
     def reset_lines(self):
 
