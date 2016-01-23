@@ -131,12 +131,11 @@ class Matrix(object):
         return new
 
     @staticmethod
-    def eye(n):
+    def eye(siz):
 
-        I = Matrix(n,n)
+        I = Matrix()
 
-        for k in range(n):
-            I[k,k] = 1
+        I.data = np.eye(siz)
 
         return I
 
