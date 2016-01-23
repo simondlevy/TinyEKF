@@ -59,14 +59,15 @@ class TrackerFrame(tk.Frame):
  
         self.ekf = KF(4, 2)
 
-        #thread = threading.Thread(target=self.update, args = (plotter,))
+        self.running = True
+
         thread = Thread(target=self.update)
         thread.daemon = True
         thread.start()
 
     def update(self):
 
-        while True:
+        while self.running:
 
             print(self.mousex, self.mousey)
 
@@ -119,6 +120,7 @@ class TrackerFrame(tk.Frame):
         # Make sure the frame is receiving input!
         self.focus_force()
         if event.keysym == 'Escape':
+            self.running = False
             exit(0)
 
 if __name__ == '__main__':
