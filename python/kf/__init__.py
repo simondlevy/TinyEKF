@@ -31,7 +31,7 @@ class KF(object):
 
         self.errorCovPre = Matrix(n,n)
         self.errorCovPost = Matrix(n,n)
-        self.gain = Matrix(n, m)
+        self.G = Matrix(n, m)
 
         for j in range(n):
             self.Q[j,j] = 1e-4
@@ -62,13 +62,13 @@ class KF(object):
 
         temp4 = temp3.invert() * temp2
 
-        gain = temp4.transpose()
+        G = temp4.transpose()
 
         temp5 = Vector.fromTuple(z) - self.measurementMatrix * self.statePre
         
-        self.statePost = self.statePre + gain * temp5
+        self.statePost = self.statePre + G * temp5
 
-        self.errorCovPost = self.errorCovPre - gain * temp2
+        self.errorCovPost = self.errorCovPre - G * temp2
 
     def getX(self, i):
         '''
