@@ -36,17 +36,23 @@ from sys import exit
 from kf import KF
 
 class TrackerEKF(KF):
+    '''
+    An EKF for mouse tracking
+    '''
 
     def __init__(self):
 
+        # Four states, two measurements (X,Y)
         KF.__init__(self, 4, 2)
 
     def f(self, x):
 
+        # State-transition function is identity
         return np.copy(x)
 
     def h(self, x):
 
+        # Obervation function returns first half of state (X,Y)
         return x[0:2]
 
 class MouseInfo(object):
