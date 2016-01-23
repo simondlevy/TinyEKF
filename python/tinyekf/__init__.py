@@ -25,7 +25,7 @@ class EKF(object):
 
         self.x = Vector(n)    # state vector 
 
-        self.P = Matrix(n,n)  # prediction error covariance 
+        self.P_post = Matrix(n,n)  # prediction error covariance 
 
         self.Q = Matrix(n,n)  # process noise covariance 
         self.H = Matrix(m,n)  # Jacobian of measurement model 
@@ -33,7 +33,7 @@ class EKF(object):
 
         self.F = Matrix(n,n)  # Jacobian of process model 
 
-        self.Pp = Matrix(n,n) # P, post-prediction, pre-update 
+        self.P_pre = Matrix(n,n) # P, post-prediction, pre-update 
 
         self.fx = Vector(n)   # output of user defined f() state-transition function 
         self.hx = Vector(m)   # output of user defined h() measurement function 
@@ -67,16 +67,16 @@ class EKF(object):
         self.model(self.x, self.fx, self.F, self.hx, self.H)
 
         # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-        self.Pp = self.Pp + self.F * self.P * self.F.transpose() + self.Q
+        self.P_pre = self.P_pre + self.F * self.P_post * self.F.transpose() + self.Q
 
         # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-        G = self.Pp * self.H.transpose() * (self.H * self.Pp * self.H.transpose() + self.R).invert()
+        G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
 
         # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
         self.x = self.x + G * (Vector.fromTuple(z) - self.hx)
 
         # P_k = (I - G_k H_k) P_k
-        self.P = (self.I - G * self.H) * self.Pp
+        self.P_post = (self.I - G * self.H) * self.P_pre
 
 # Linear Algebra support =============================================
 

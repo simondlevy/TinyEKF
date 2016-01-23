@@ -44,7 +44,8 @@ class KF(object):
 
         self.x_pre = self.F * self.x_post
 
-        self.P_pre = self.F * self.P_post * self.F + self.Q
+        # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+        self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
 
         self.x_pre.copyTo(self.x_post)
         self.P_pre.copyTo(self.P_post)
