@@ -23,7 +23,7 @@ class KF(object):
         '''
         self.statePre = Matrix(n, 1)
         self.statePost = Matrix(n, 1)
-        self.transitionMatrix = Matrix.eye(n)
+        self.F = Matrix.eye(n)
 
         self.processNoiseCov = Matrix.eye(n)
         self.measurementMatrix = Matrix(m, n)
@@ -45,11 +45,11 @@ class KF(object):
 
         # Predict
 
-        self.statePre = self.transitionMatrix * self.statePost
+        self.statePre = self.F * self.statePost
 
-        temp1 = self.transitionMatrix * self.errorCovPost
+        temp1 = self.F * self.errorCovPost
 
-        self.errorCovPre = temp1 * self.transitionMatrix + self.processNoiseCov
+        self.errorCovPre = temp1 * self.F + self.processNoiseCov
 
         self.statePre.copyTo(self.statePost)
         self.errorCovPre.copyTo(self.errorCovPost)
