@@ -52,8 +52,8 @@ class TrackerEKF(KF):
 
     def h(self, x):
 
-        # Obervation function returns first half of state (X,Y)
-        return x[:2]
+        # Obervation function returns is identity
+        return x
 
 class MouseInfo(object):
     '''
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         measured_points.append(measured)
 
         # Update the Kalman filter with the mouse point, getting the estimate.
-        estimate = kalfilt.step((mouse_info.x, mouse_info.y))[:2]
+        estimate = kalfilt.step((mouse_info.x, mouse_info.y))
 
         # Add the estimate to the trajectory
         estimated = [int (c) for c in estimate]
