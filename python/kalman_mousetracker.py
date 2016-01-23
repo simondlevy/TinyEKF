@@ -35,6 +35,20 @@ from sys import exit
 
 from kf import KF
 
+class TrackerEKF(KF):
+
+    def __init__(self):
+
+        KF.__init__(self, 4, 2)
+
+    def f(self, x):
+
+        return np.copy(x)
+
+    def h(self, x):
+
+        return x[0:2]
+
 class MouseInfo(object):
     '''
     A class to store X,Y points
@@ -116,8 +130,8 @@ if __name__ == '__main__':
     measured_points = []
     kalman_points = []
 
-    # Create a new Kalman filter with four state values and two measurement values
-    kalfilt = KF(4, 2)
+    # Create a new Kalman filter for mouse tracking
+    kalfilt = TrackerEKF()
 
     # Loop till user hits escape
     while True:

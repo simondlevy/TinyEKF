@@ -62,14 +62,6 @@ class KF(object):
 
         return self.x.asarray()
 
-    def f(self, x):
-
-        return np.copy(x)
-
-    def h(self, x):
-
-        return x[0:2]
-
 # Linear Algebra support =============================================
 
 class Matrix(object):
