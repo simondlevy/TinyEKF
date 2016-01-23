@@ -33,9 +33,9 @@ import cv2
 import numpy as np
 from sys import exit
 
-from kf import KF
+from tinyekf import EKF
 
-class TrackerEKF(KF):
+class TrackerEKF(EKF):
     '''
     An EKF for mouse tracking
     '''
@@ -43,7 +43,7 @@ class TrackerEKF(KF):
     def __init__(self):
 
         # Four states, two measurements (X,Y)
-        KF.__init__(self, 2, 2)
+        EKF.__init__(self, 2, 2)
 
     def f(self, x):
 

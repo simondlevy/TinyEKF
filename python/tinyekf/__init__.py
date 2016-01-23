@@ -1,5 +1,5 @@
 '''
-    TinyEKF in Python
+    Linear KalmanFilter in Python
 
     Copyright (C) 2016 Simon D. Levy
 
@@ -15,68 +15,56 @@
 
 import numpy as np
 
-
 class EKF(object):
 
     def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
         '''
-        Creates an EKF object with n states and m observables.
+        Creates a KF object with n states and m observables.
         '''
 
-        self.x = Vector(n)    # state vector 
+        # No previous prediction noise covariance
+        self.P_pre = None
 
-        self.P_post = Matrix(n,n)  # prediction error covariance 
+        # Current state is zero, with diagonal noise covariance matrix
+        self.x = Vector(n)
+        self.P_post = Matrix.eye(n) * pval
 
-        self.Q = Matrix(n,n)  # process noise covariance 
-        self.H = Matrix(m,n)  # Jacobian of measurement model 
-        self.R = Matrix(m,m)  # measurement error covariance 
+        # State transition function is identity
+        self.F = Matrix.eye(n)
+        self.H = Matrix.eye(m, n)
 
-        self.F = Matrix(n,n)  # Jacobian of process model 
-
-        self.P_pre = Matrix(n,n) # P, post-prediction, pre-update 
-
-        self.fx = Vector(n)   # output of user defined f() state-transition function 
-        self.hx = Vector(m)   # output of user defined h() measurement function 
-
+        self.Q = Matrix.eye(n) * qval
+        self.R = Matrix.eye(m) * rval
+ 
         self.I = Matrix.eye(n)
-
-        for j in range(n):
-            self.Q[j,j] = qval
-            self.P_Post[j,j] = pval
-
-        for j in range(m):
-            self.R[j,j] = rval
-            self.H[j,j] = 1
-
-    def getX(self, i):
-        '''
-        Returns the state element at index i.
-        '''
-        return self.x[i][0]
 
     def step(self, z):
         '''
-        Performs one step of the prediction and update based on observations in tuple z.
-        Calls subclass model() method with following output arguments:
-         fx gets output of state-transition function $f(x_{0 .. n-1})$
-         F gets $n \times n$ Jacobian of $f(x)$
-         hx gets output of observation function $h(x_{0 .. n-1})$
-         H gets $m \times n$ Jacobian of $h(x)$
+        Runs one step of the EKF on observations z, where z is a tuple of length M.
         '''
 
-        self.model(self.x, self.fx, self.F, self.hx, self.H)
+        # Predict ----------------------------------------------------
 
-        # P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-        self.P_pre = self.P_pre + self.F * self.P_post * self.F.transpose() + self.Q
+        # $\hat{x}_k = f(\hat{x}_{k-1})$
+        self.x = Vector.fromData(self.f(self.x.data))
 
-        # G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+        # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
+        self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
+
+        self.P_post = self.P_pre.copy()
+
+        # Update -----------------------------------------------------
+
+        # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
         G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
 
-        # \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-        self.x = self.x + G * (Vector.fromTuple(z) - self.hx)
+        # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
+        self.x += G * (Vector.fromTuple(z) - Vector.fromData(self.h(self.x.data)))
 
-        # P_k = (I - G_k H_k) P_k
+        # $P_k = (I - G_k H_k) P_k$
         self.P_post = (self.I - G * self.H) * self.P_pre
+
+        return self.x.asarray()
 
 # Linear Algebra support =============================================
 
@@ -88,12 +76,18 @@ class Matrix(object):
 
     def __str__(self):
 
-        return str(self.data)
+        return str(self.data) + " " + str(self.data.shape)
 
     def __mul__(self, other):
 
         new = Matrix()
-        new.data = np.dot(self.data, other.data)
+
+        if type(other).__name__ in ['float', 'int']:
+            new.data = np.copy(self.data)
+            new.data *= other
+        else:
+            new.data = np.dot(self.data, other.data)
+
         return new
 
     def __add__(self, other):
@@ -116,9 +110,15 @@ class Matrix(object):
 
         return self.data[key]
 
-    def copyTo(self, other):
+    def asarray(self):
 
-        other.data = np.copy(self.data)
+        return np.asarray(self.data[:,0])
+
+    def copy(self):
+
+        new = Matrix()
+        new.data = np.copy(self.data)
+        return new
 
     def transpose(self):
 
@@ -138,20 +138,22 @@ class Matrix(object):
         return new
 
     @staticmethod
-    def eye(n):
+    def eye(n, m=0):
 
-        I = Matrix(n,n)
+        I = Matrix()
 
-        for k in range(n):
-            I[k,k] = 1
+        if m == 0:
+            m = n
+
+        I.data = np.eye(n, m)
 
         return I
 
 class Vector(Matrix):
 
-    def __init__(self, n):
+    def __init__(self, n=0):
 
-        Matrix.__init__(self, n, 1)
+        self.data = np.zeros((n,1)) if n>0 else None
 
     @staticmethod
     def fromTuple(t):
@@ -162,6 +164,17 @@ class Vector(Matrix):
             v[k] = t[k]
 
         return v
+
+
+    @staticmethod
+    def fromData(data):
+
+        v = Vector()
+
+        v.data = data
+
+        return v
+
 
 
 
