@@ -29,31 +29,7 @@ LINE_WIDTH         = 3
 
 import tkinter as tk
 import time
-from tinyekf import EKF
-
-class TrackerEKF(EKF):
-
-    def __init__(self):
-
-        EKF.__init__(self, 2, 2)
-
-    def model(self, x, fx, F, hx, H):
-
-        # Process model is f(x) = x
-        fx[0] = x[0]
-        fx[1] = x[1]
-
-        # So process model Jacobian is identity matrix
-        F[0][0] = 1
-        F[1][1] = 1
-
-        # Measurement function
-        hx[0] = x[0]
-        hx[1] = x[1]
-
-        # Jacobian of measurement function
-        H[0][0] = 1
-        H[1][1] = 1
+from kf import KF
 
 class TrackerFrame(tk.Frame):
 
@@ -80,13 +56,7 @@ class TrackerFrame(tk.Frame):
 
         self.focus_set()
  
-        self.ekf = TrackerEKF()
-
-        self.ekf.setQ(0, 0, .00001)
-        self.ekf.setQ(1, 1, .00001)
-
-        self.ekf.setR(0, 0, .00001)
-        self.ekf.setR(1, 1, .00001)
+        self.ekf = KF(4, 2)
 
     def reset_lines(self):
 

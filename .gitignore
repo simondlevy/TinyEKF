@@ -1,3 +1,4 @@
+python/*/__pycache__
 examples/ekf.csv
 cpp/ekf.csv
 Documentation
