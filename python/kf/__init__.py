@@ -48,9 +48,7 @@ class KF(object):
 
         self.x_Pre = self.F * self.x_Post
 
-        temp1 = self.F * self.P_Post
-
-        self.P_Pre = temp1 * self.F + self.Q
+        self.P_Pre = self.F * self.P_Post * self.F + self.Q
 
         self.x_Pre.copyTo(self.x_Post)
         self.P_Pre.copyTo(self.P_Post)
