@@ -55,13 +55,11 @@ class KF(object):
 
         # Update
 
-        temp2 = self.H * self.P_Pre
-
-        G = ((self.H * self.P_Pre * self.H.transpose() + self.R).invert() * temp2).transpose()
+        G = ((self.H * self.P_Pre * self.H.transpose() + self.R).invert() * (self.H * self.P_Pre)).transpose()
 
         self.x_Post = self.x_Pre + G * (Vector.fromTuple(z) - self.H * self.x_Pre)
 
-        self.P_Post = self.P_Pre - G * temp2
+        self.P_Post = self.P_Pre - G * (self.H * self.P_Pre)
 
     def getX(self, i):
         '''
