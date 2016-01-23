@@ -19,10 +19,10 @@ class KF(object):
 
     def __init__(self, n, m):
         '''
-        Creates a KF object with n states and m observables.
+        Creates a KF object with n xs and m observables.
         '''
-        self.statePre = Matrix(n, 1)
-        self.statePost = Matrix(n, 1)
+        self.xPre = Matrix(n, 1)
+        self.xPost = Matrix(n, 1)
         self.F = Matrix.eye(n)
 
         self.Q = Matrix.eye(n)
@@ -45,13 +45,13 @@ class KF(object):
 
         # Predict
 
-        self.statePre = self.F * self.statePost
+        self.xPre = self.F * self.xPost
 
         temp1 = self.F * self.errorCovPost
 
         self.errorCovPre = temp1 * self.F + self.Q
 
-        self.statePre.copyTo(self.statePost)
+        self.xPre.copyTo(self.xPost)
         self.errorCovPre.copyTo(self.errorCovPost)
 
         # Update
@@ -64,17 +64,17 @@ class KF(object):
 
         G = temp4.transpose()
 
-        temp5 = Vector.fromTuple(z) - self.H * self.statePre
+        temp5 = Vector.fromTuple(z) - self.H * self.xPre
         
-        self.statePost = self.statePre + G * temp5
+        self.xPost = self.xPre + G * temp5
 
         self.errorCovPost = self.errorCovPre - G * temp2
 
     def getX(self, i):
         '''
-        Returns the state element at index i.
+        Returns the x element at index i.
         '''
-        return self.statePost[i][0]
+        return self.xPost[i][0]
 
 class Matrix(object):
 
