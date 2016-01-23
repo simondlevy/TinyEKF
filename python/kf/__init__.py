@@ -23,12 +23,12 @@ class KF(object):
         '''
 
         # No previous state or prediction noise covariance
-        self.x_Pre = None
-        self.P_Pre = None
+        self.x_pre = None
+        self.P_pre = None
 
         # Current state is zero, with diagonal noise covariance matrix
-        self.x_Post = Vector(n)
-        self.P_Post = Matrix.eye(n) * pval
+        self.x_post = Vector(n)
+        self.P_post = Matrix.eye(n) * pval
 
         # State transition function is identity
         self.F = Matrix.eye(n)
@@ -42,22 +42,22 @@ class KF(object):
 
         # Predict
 
-        self.x_Pre = self.F * self.x_Post
+        self.x_pre = self.F * self.x_post
 
-        self.P_Pre = self.F * self.P_Post * self.F + self.Q
+        self.P_pre = self.F * self.P_post * self.F + self.Q
 
-        self.x_Pre.copyTo(self.x_Post)
-        self.P_Pre.copyTo(self.P_Post)
+        self.x_pre.copyTo(self.x_post)
+        self.P_pre.copyTo(self.P_post)
 
         # Update
 
-        G = ((self.H * self.P_Pre * self.H.transpose() + self.R).invert() * (self.H * self.P_Pre)).transpose()
+        G = ((self.H * self.P_pre * self.H.transpose() + self.R).invert() * (self.H * self.P_pre)).transpose()
 
-        self.x_Post = self.x_Pre + G * (Vector.fromTuple(z) - self.H * self.x_Pre)
+        self.x_post = self.x_pre + G * (Vector.fromTuple(z) - self.H * self.x_pre)
 
-        self.P_Post = self.P_Pre - G * (self.H * self.P_Pre)
+        self.P_post = self.P_pre - G * (self.H * self.P_pre)
 
-        return self.x_Post.asarray()
+        return self.x_post.asarray()
 
 # Linear Algebra support =============================================
 
