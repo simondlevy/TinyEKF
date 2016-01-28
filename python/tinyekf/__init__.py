@@ -80,30 +80,33 @@ class EKF(object):
     @abstractmethod
     def f(self, x):
         '''
-        Your implementing class should define this method for the state transition function f(x).
+        Your implementing class should define this method for the state transition function f(x),
+        returning a NumPy array of n elements.  Typically this is just the identity function np.copy(x).
         '''
         raise NotImplementedError()    
 
     @abstractmethod
     def getF(self, x):
         '''
-        Your implementing class should define this method for returning the Jacobian F of the 
-        state transition function.
+        Your implementing class should define this method for returning the n x n Jacobian matrix F of the 
+        state transition function as a NumPy array.  Typically this is just the identity matrix np.eye(n).
         '''
         raise NotImplementedError()    
 
     @abstractmethod
     def h(self, x):
         '''
-        Your implementing class should define this method for the observation function h(x).
+        Your implementing class should define this method for the observation function h(x), returning
+        a NumPy array of m elements. For example, your function might include a component that
+        turns barometric pressure into altitude in meters.
         '''
         raise NotImplementedError()    
 
     @abstractmethod
     def getH(self, x):
         '''
-        Your implementing class should define this method for returning the Jacobian H of the 
-        observation function.
+        Your implementing class should define this method for returning the m x n Jacobian matirx H of the 
+        observation function as a NumPy array.
         '''
         raise NotImplementedError()    
 
