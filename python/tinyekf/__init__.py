@@ -37,10 +37,6 @@ class EKF(object):
         self.x = _Vector(n)
         self.P_post = _Matrix.eye(n) * pval
 
-        # Get state transition and measurement Jacobians from implementing class
-        self.F = _Matrix.fromData(self.getF(self.x))
-        self.H = _Matrix.fromData(self.getH(self.x))
-
         # Set up covariance matrices for process noise and measurement noise
         self.Q = _Matrix.eye(n) * qval
         self.R = _Matrix.eye(m) * rval
@@ -54,26 +50,30 @@ class EKF(object):
         Returns a NumPy array representing the updated state.
         '''
 
+        # Get state transition and measurement Jacobians from implementing class
+        F = _Matrix.fromData(self.getF(self.x))
+        H = _Matrix.fromData(self.getH(self.x))
+
         # Predict ----------------------------------------------------
 
         # $\hat{x}_k = f(\hat{x}_{k-1})$
         self.x = _Vector.fromData(self.f(self.x.data))
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
-        self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
+        self.P_pre = F * self.P_post * F.transpose() + self.Q
 
         self.P_post = self.P_pre.copy()
 
         # Update -----------------------------------------------------
 
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
-        G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
+        G = self.P_pre * H.transpose() * (H * self.P_pre * H.transpose() + self.R).invert()
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
         self.x += G * (_Vector.fromTuple(z) - _Vector.fromData(self.h(self.x.data)))
 
         # $P_k = (I - G_k H_k) P_k$
-        self.P_post = (self.I - G * self.H) * self.P_pre
+        self.P_post = (self.I - G * H) * self.P_pre
 
         return self.x.asarray()
 

@@ -1,3 +1,5 @@
+build
+python/*/*.pyc
 python/*/__pycache__
 examples/ekf.csv
 cpp/ekf.csv
