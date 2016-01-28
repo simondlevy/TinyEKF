@@ -65,16 +65,20 @@ class EKF(object):
 
         # Update -----------------------------------------------------
 
-        # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
-        G = self.P_pre * H.T * np.linalg.inv(H * self.P_pre * H.T + self.R)
 
+        # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
+        G = np.dot(self.P_pre * H.T, np.linalg.inv(H * self.P_pre * H.T + self.R))
+
+        #print(np.array(z) - self.h(self.x))
+        #print(G)
+        #print(np.dot(G, np.array(z) - self.h(self.x)))
+        #print(self.x)
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
-        self.x += np.dot(G, (np.array(z) - self.h(self.x)))
-
+        self.x += np.dot(G, np.array(z) - self.h(self.x))
 
         # $P_k = (I - G_k H_k) P_k$
-        self.P_post = (self.I - G * H) * self.P_pre
+        self.P_post = (self.I - np.dot(G, H)) * self.P_pre
 
         return self.x
 
