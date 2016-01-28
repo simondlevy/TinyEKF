@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 '''
-kalman_mousetracker.py - OpenCV mouse-tracking demo using 2D Kalman filter 
+kalman_mousetracker.py - OpenCV mouse-tracking demo using TinyEKF
 
 Adapted from
 
    http://www.morethantechnical.com/2011/06/17/simple-kalman-filter-for-tracking-using-opencv-2-2-w-code/
 
-Copyright (C) 2014 Simon D. Levy
+Copyright (C) 2016 Simon D. Levy
 
 This code is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
