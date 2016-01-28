@@ -50,7 +50,7 @@ class TrackerEKF(EKF):
         # State-transition function is identity
         return np.copy(x)
 
-    def getF(self):
+    def getF(self, x):
 
         # So state-transition Jacobian is identity matrix
         return np.eye(2)
@@ -60,7 +60,7 @@ class TrackerEKF(EKF):
         # Observation function is identity
         return x
 
-    def getH(self):
+    def getH(self, x):
 
         # So observation Jacobian is identity matrix
         return np.eye(2)

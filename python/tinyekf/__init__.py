@@ -38,8 +38,8 @@ class EKF(object):
         self.P_post = _Matrix.eye(n) * pval
 
         # Get state transition and measurement Jacobians from implementing class
-        self.F = _Matrix.fromData(self.getF())
-        self.H = _Matrix.fromData(self.getH())
+        self.F = _Matrix.fromData(self.getF(self.x))
+        self.H = _Matrix.fromData(self.getH(self.x))
 
         # Set up covariance matrices for process noise and measurement noise
         self.Q = _Matrix.eye(n) * qval
