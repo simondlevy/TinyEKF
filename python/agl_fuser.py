@@ -83,8 +83,8 @@ class AGLPlotter(RealtimePlotter):
 
         self.xcurr = 0
         self.fused = 0
-        self.baro = 0
-        self.sonar = 0
+        self.baro  = 26436   # Pascals
+        self.sonar = sonar(1000000) # Centimeters
  
         self.ekf = AGL_EKF()
 
@@ -92,8 +92,6 @@ class AGLPlotter(RealtimePlotter):
 
         while True:
 
-            self.baro  = 26436   # Pascals
-            self.sonar = sonar(1000000) # Centimeters
             self.fused = self.ekf.step((self.baro, self.sonar))[0]
             plotter.xcurr += 1
             sleep(.001)
