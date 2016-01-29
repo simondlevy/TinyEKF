@@ -19,7 +19,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
 
-SONARMIN =  900000 # Centimeters
+GROUNDTRUTH = 1000000
+
+SONARMIN = 900000 # Centimeters
 SONARMAX = 1100000 
 BAROMIN  = 26000   # Pascals
 BAROMAX  = 27000
@@ -30,10 +32,16 @@ from realtime_plot import RealtimePlotter
 from time import sleep
 import threading
 
-# ground-truth AGL to sonar output: see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
+# ground-truth AGL to sonar measurement, empirically determined:
+# see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
 def sonar(groundtruth):
 
     return 0.933 * groundtruth - 2.894
+
+# cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
+def baro(groundtruth):
+
+    return 101325 * pow((1 - 2.25577e-7 * groundtruth), 5.25588)
 
 class AGL_EKF(EKF):
 
@@ -53,12 +61,7 @@ class AGL_EKF(EKF):
 
     def h(self, x):
 
-        # cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-        p = 101325 * pow((1 - 2.25577e-7 * x[0]), 5.25588)
-
-        s = sonar(x[0])
-
-        return np.array([p, s])
+        return np.array([baro(x[0]), sonar(x[0])])
 
     def getH(self, x):
 
@@ -74,17 +77,20 @@ class AGLPlotter(RealtimePlotter):
 
     def __init__(self):
 
-        RealtimePlotter.__init__(self, [(SONARMIN,SONARMAX), (BAROMIN,BAROMAX)], 
+        sonarmin = int(0.9 * GROUNDTRUTH)
+        sonarmax = int(1.1 * GROUNDTRUTH)
+
+        RealtimePlotter.__init__(self, [(sonarmin,sonarmax), (BAROMIN,BAROMAX)], 
                 window_name='Altitude Sensor Fusion',
-                yticks = [range(SONARMIN,SONARMAX,int((SONARMAX-SONARMIN)/10)), range(BAROMIN,BAROMAX,100)],
+                yticks = [range(sonarmin,sonarmax,int((sonarmax-sonarmin)/10.)), range(BAROMIN,BAROMAX,100)],
                 styles = [('r','b'), 'g'], 
                 legends = [('Sonar', 'Fused'), None],
                 ylabels=['AGL (cm)', 'Baro (mb)'])
 
         self.xcurr = 0
         self.fused = 0
-        self.baro  = 26436   # Pascals
-        self.sonar = sonar(1000000) # Centimeters
+        self.baro  = baro(GROUNDTRUTH)  
+        self.sonar = sonar(GROUNDTRUTH)
  
         self.ekf = AGL_EKF()
 
