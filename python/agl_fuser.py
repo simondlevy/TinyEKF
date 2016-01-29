@@ -19,9 +19,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
 
-SONARMIN = 0
-SONARMAX = 200
-BAROMAX = 10
+SONARMIN = 30000
+SONARMAX = 40000
+BAROMIN  = 96000
+BAROMAX  = 97000
  
 import numpy as np
 from tinyekf import EKF
@@ -50,7 +51,7 @@ class AGL_EKF(EKF):
     def h(self, x):
 
         # cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-        p = 101325 * pow((1 - 2.25577e-7 * x[0]), 5.25588) 
+        p = 101325 * pow((1 - 2.25577e-7 * x[0]), 5.25588)
 
         # measured sonar cm to ground-truth: see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
         s = 0.933 * x[0] - 2.894
@@ -71,9 +72,9 @@ class AGLPlotter(RealtimePlotter):
 
     def __init__(self):
 
-        RealtimePlotter.__init__(self, [(SONARMIN,+SONARMAX), (-BAROMAX,+BAROMAX)], 
+        RealtimePlotter.__init__(self, [(SONARMIN,SONARMAX), (BAROMIN,BAROMAX)], 
                 window_name='Altitude Sensor Fusion',
-                yticks = [range(SONARMIN,+SONARMAX,50), range(-BAROMAX,+BAROMAX,1)],
+                yticks = [range(SONARMIN,SONARMAX,1000), range(BAROMIN,BAROMAX,100)],
                 styles = [('r','b'), 'g'], 
                 legends = [('Sonar', 'Fused'), None],
                 ylabels=['AGL (cm)', 'Baro (mb)'])
@@ -89,9 +90,9 @@ class AGLPlotter(RealtimePlotter):
 
         while True:
 
-            baro  = 0
-            sonar = 0
-            print(self.ekf.step((baro, sonar)))
+            self.baro  = 96659 # Pascals
+            self.sonar = 33000 # Centimeters
+            self.fused = self.ekf.step((self.baro, self.sonar))[0]
             plotter.xcurr += 1
             sleep(.001)
 
