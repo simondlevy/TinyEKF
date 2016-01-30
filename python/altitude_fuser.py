@@ -104,7 +104,6 @@ class AGLPlotter(RealtimePlotter):
 
         self.xcurr = 0
         self.fused = 0
-
         self.count = 0
 
         self.ekf = AGL_EKF()
