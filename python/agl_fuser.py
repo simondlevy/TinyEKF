@@ -2,6 +2,10 @@
 '''
 agl_fuser.py - Sonar / Barometer fusion example using TinyEKF.  
 
+We model a single state variable, altitude above sea level (ASL) in centimeters.
+This is obtained by fusing the barometer pressure in Pascals and sonar above-ground level
+(AGL) in centimters.
+
 Also requires RealtimePlotter: https://github.com/simondlevy/RealtimePlotter
 
 Copyright (C) 2016 Simon D. Levy
@@ -19,29 +23,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
 
-GROUNDTRUTH = 1000000
+# above seal-level altitude in centimeters
+BASELINE_ASL_CM = 33000
 
-SONARMIN = 900000 # Centimeters
-SONARMAX = 1100000 
-BAROMIN  = 26000   # Pascals
-BAROMAX  = 27000
- 
+RANGE_CM = 300
+
 import numpy as np
 from tinyekf import EKF
 from realtime_plot import RealtimePlotter
 from time import sleep
 import threading
+from math import sin, pi
+
+LOOPSIZE = 1000
 
 # ground-truth AGL to sonar measurement, empirically determined:
 # see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
-def sonar(groundtruth):
+def sonarfun(groundtruthAGL):
 
-    return 0.933 * groundtruth - 2.894
+    return 0.933 * groundtruthAGL - 2.894
 
 # cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-def baro(groundtruth):
+def barofun(groundtruthASL):
 
-    return 101325 * pow((1 - 2.25577e-7 * groundtruth), 5.25588)
+    return 101325 * pow((1 - 2.25577e-7 * groundtruthASL), 5.25588)
 
 class AGL_EKF(EKF):
 
@@ -61,36 +66,50 @@ class AGL_EKF(EKF):
 
     def h(self, x):
 
-        return np.array([baro(x[0]), sonar(x[0])])
+        # Mock-up sonar AGL by using altitude of floor as a baseline
+        s = sonarfun(x[0] - BASELINE_ASL_CM)
+
+        # Since state is ASL, we can apply the baro-response function directly to it
+        b = barofun(x[0])
+
+        return np.array([b, s])
 
     def getH(self, x):
 
+        # First derivative of nonlinear baro-measurement function
         # Used http://www.wolframalpha.com
         dpdx = -0.120131 * pow((1 - 2.2577e-7 * x[0]), 4.25588)
 
+        # Sonar response is linear, so derivative is constant
         dsdx = 0.933
 
         return np.array([[dpdx], [dsdx]])
-
 
 class AGLPlotter(RealtimePlotter):
 
     def __init__(self):
 
-        sonarmin = int(0.9 * GROUNDTRUTH)
-        sonarmax = int(1.1 * GROUNDTRUTH)
+        baromin = int(barofun(BASELINE_ASL_CM + RANGE_CM))
+        baromax = int(barofun(BASELINE_ASL_CM - RANGE_CM))
 
-        RealtimePlotter.__init__(self, [(sonarmin,sonarmax), (BAROMIN,BAROMAX)], 
+        RealtimePlotter.__init__(self, [(BASELINE_ASL_CM,BASELINE_ASL_CM+RANGE_CM), (baromin,baromax), (0,RANGE_CM)], 
                 window_name='Altitude Sensor Fusion',
-                yticks = [range(sonarmin,sonarmax,int((sonarmax-sonarmin)/10.)), range(BAROMIN,BAROMAX,100)],
-                styles = [('r','b'), 'g'], 
-                legends = [('Sonar', 'Fused'), None],
-                ylabels=['AGL (cm)', 'Baro (mb)'])
+                yticks = [
+                    range(int(BASELINE_ASL_CM-RANGE_CM/2), BASELINE_ASL_CM+RANGE_CM, 50),  # Fused
+                    range(baromin,baromax,int((baromax-baromin)/10.)),    # Baro
+                    range(-20, RANGE_CM, 20)                             # Sonar
+                    ],
+                styles = ['r','b', 'g'], 
+                ylabels=['Fused ASL (cm)', 'Baro (Pa)', 'Sonar AGL (cm)'])
 
         self.xcurr = 0
         self.fused = 0
-        self.baro  = baro(GROUNDTRUTH)  
-        self.sonar = sonar(GROUNDTRUTH)
+
+        self.count = 0
+
+        # Simulate a noisy observation of baro and sonar
+        self.baro  = barofun(BASELINE_ASL_CM) 
+        self.sonar = sonarfun(0)
  
         self.ekf = AGL_EKF()
 
@@ -98,13 +117,23 @@ class AGLPlotter(RealtimePlotter):
 
         while True:
 
+            # Model up-and-down motion with a sine wave
+            self.count = (self.count + 1) % LOOPSIZE
+
+
+            # Run the EKF on the current baro and sonar measurements, getting back
+            # an updated state estimate made by fusing them.
+            # Fused state comes back as an array, so grab first element
             self.fused = self.ekf.step((self.baro, self.sonar))[0]
+
             plotter.xcurr += 1
             sleep(.001)
 
     def getValues(self):
 
-        return self.sonar, self.fused, self.baro
+        print(sin(self.count/float(LOOPSIZE) * 2 * pi))
+
+        return self.fused, self.baro, self.sonar
 
 if __name__ == '__main__':
 
