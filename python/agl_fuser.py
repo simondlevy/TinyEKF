@@ -27,6 +27,7 @@ along with this code. If not, see <http://www.gnu.org/licenses/>.
 BASELINE_ASL_CM = 33000
 
 RANGE_CM = 300
+LOOPSIZE = 5000
 
 import numpy as np
 from tinyekf import EKF
@@ -35,7 +36,6 @@ from time import sleep
 import threading
 from math import sin, pi
 
-LOOPSIZE = 1000
 
 # ground-truth AGL to sonar measurement, empirically determined:
 # see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
@@ -107,10 +107,6 @@ class AGLPlotter(RealtimePlotter):
 
         self.count = 0
 
-        # Simulate a noisy observation of baro and sonar
-        self.baro  = barofun(BASELINE_ASL_CM) 
-        self.sonar = sonarfun(0)
- 
         self.ekf = AGL_EKF()
 
     def update(self):
@@ -119,8 +115,12 @@ class AGLPlotter(RealtimePlotter):
 
             # Model up-and-down motion with a sine wave
             self.count = (self.count + 1) % LOOPSIZE
+            climb = 50 * (sin(self.count/float(LOOPSIZE) * 2 * pi) + 1)
 
-
+            # Simulate a noisy observation of baro and sonar
+            self.baro  = barofun(BASELINE_ASL_CM+climb) 
+            self.sonar = sonarfun(climb)
+     
             # Run the EKF on the current baro and sonar measurements, getting back
             # an updated state estimate made by fusing them.
             # Fused state comes back as an array, so grab first element
@@ -130,8 +130,6 @@ class AGLPlotter(RealtimePlotter):
             sleep(.001)
 
     def getValues(self):
-
-        print(sin(self.count/float(LOOPSIZE) * 2 * pi))
 
         return self.fused, self.baro, self.sonar
 
