@@ -24,8 +24,10 @@ along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 # for plotting
+BARO_BASELINE = 97420
+BARO_RANGE    = 20
+
 BASELINE_ASL_CM = 33000
-RANGE_CM = 300
 
 import numpy as np
 from tinyekf import EKF
@@ -33,6 +35,23 @@ from realtime_plot import RealtimePlotter
 from time import sleep
 import threading
 from math import sin, pi
+
+# ground-truth AGL to sonar measurement, empirically determined:
+# see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
+def sonarfun( agl):
+
+    return 0.933 * agl - 2.894
+
+# Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
+def barofun( asl):
+
+    return 101325 * pow((1 - 2.25577e-7 * asl), 5.25588)
+
+# Convert Pascals to cm ASL
+def baroinv( pa):
+
+    return (1.0 - pow(pa/ 101325.0, 0.190295)) * 4433000.0
+
 
 class ASL_EKF(EKF):
 
@@ -58,10 +77,10 @@ class ASL_EKF(EKF):
         asl = x[0]
 
         # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline
-        s = self.sonarfun(asl - self.getBaselineASL())
+        s = sonarfun(asl - self.getBaselineASL())
 
         # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-        b = self.barofun(asl)
+        b = barofun(asl)
 
         return np.array([b, s])
 
@@ -76,17 +95,6 @@ class ASL_EKF(EKF):
 
         return np.array([[dpdx], [dsdx]])
 
-    # ground-truth AGL to sonar measurement, empirically determined:
-    # see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
-    def sonarfun(self, agl):
-
-        return 0.933 * agl - 2.894
-
-    # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-    def barofun(self, asl):
-
-        return 101325 * pow((1 - 2.25577e-7 * asl), 5.25588)
-
 
 class ASL_Plotter(RealtimePlotter):
 
@@ -94,15 +102,19 @@ class ASL_Plotter(RealtimePlotter):
 
         self.ekf = ekf
 
-        baromin = int(self.ekf.barofun(BASELINE_ASL_CM + RANGE_CM))
-        baromax = int(self.ekf.barofun(BASELINE_ASL_CM - RANGE_CM))
+        baromin = BARO_BASELINE - BARO_RANGE
+        baromax = BARO_BASELINE + BARO_RANGE
 
-        RealtimePlotter.__init__(self, [(BASELINE_ASL_CM,BASELINE_ASL_CM+RANGE_CM), (baromin,baromax), (0,RANGE_CM)], 
+        max_asl_cm      = int(baroinv(BARO_BASELINE-BARO_RANGE))
+        min_asl_cm      = int(baroinv(BARO_BASELINE+BARO_RANGE))
+        range_cm        = max_asl_cm - min_asl_cm
+
+        RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (0,range_cm)], 
                 window_name='Altitude Sensor Fusion',
                 yticks = [
-                    range(int(BASELINE_ASL_CM-RANGE_CM/2), BASELINE_ASL_CM+RANGE_CM, 50),  # Fused
+                    range(min_asl_cm, max_asl_cm, 50),  # Fused
                     range(baromin,baromax,int((baromax-baromin)/10.)),    # Baro
-                    range(-20, RANGE_CM, 20)                             # Sonar
+                    range(-20, range_cm, 20)                             # Sonar
                     ],
                 styles = ['r','b', 'g'], 
                 ylabels=['Fused ASL (cm)', 'Baro (Pa)', 'Sonar ASL (cm)'])
@@ -138,7 +150,7 @@ class _Sim_ASL_EKF(ASL_EKF):
 
     def getBaselineASL(self):
 
-        return BASELINE_ASL_CM
+        return baroinv(BARO_BASELINE)
 
 class _Sim_ASLPlotter(ASL_Plotter):
 
@@ -155,11 +167,11 @@ class _Sim_ASLPlotter(ASL_Plotter):
         self.count = (self.count + 1) % LOOPSIZE
         climb = 50 * (sin(self.count/float(LOOPSIZE) * 2 * pi) + 1)
 
-        baro  = self.ekf.barofun(BASELINE_ASL_CM+climb) 
+        baro  = barofun(BASELINE_ASL_CM+climb) 
 
         # Add noise to simulated sonar at random intervals
         climb += 50 if np.random.rand()>0.9 else 0
-        sonar = self.ekf.sonarfun(climb)
+        sonar = sonarfun(climb)
 
         return baro, sonar
 
