@@ -27,8 +27,6 @@ along with this code. If not, see <http://www.gnu.org/licenses/>.
 BARO_BASELINE = 97420
 BARO_RANGE    = 20
 
-BASELINE_ASL_CM = 33000
-
 import numpy as np
 from tinyekf import EKF
 from realtime_plot import RealtimePlotter
@@ -109,7 +107,7 @@ class ASL_Plotter(RealtimePlotter):
         min_asl_cm      = int(baroinv(BARO_BASELINE+BARO_RANGE))
         range_cm        = max_asl_cm - min_asl_cm
 
-        RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (0,range_cm)], 
+        RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (-20,range_cm)], 
                 window_name='Altitude Sensor Fusion',
                 yticks = [
                     range(min_asl_cm, max_asl_cm, 50),  # Fused
@@ -165,13 +163,12 @@ class _Sim_ASLPlotter(ASL_Plotter):
 
         # Model up-and-down motion with a sine wave
         self.count = (self.count + 1) % LOOPSIZE
-        climb = 50 * (sin(self.count/float(LOOPSIZE) * 2 * pi) + 1)
+        sine = sin(self.count/float(LOOPSIZE) * 2 * pi)
 
-        baro  = barofun(BASELINE_ASL_CM+climb) 
+        baro  = BARO_BASELINE + sine * BARO_RANGE
 
         # Add noise to simulated sonar at random intervals
-        climb += 50 if np.random.rand()>0.9 else 0
-        sonar = sonarfun(climb)
+        sonar = sonarfun(50*(1-sine)) + (50 if np.random.rand()>0.9 else 0)
 
         return baro, sonar
 
