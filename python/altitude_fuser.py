@@ -74,8 +74,8 @@ class ASL_EKF(EKF):
         # State value is ASL
         asl = x[0]
 
-        # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline
-        s = sonarfun(asl - self.getBaselineASL())
+        # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline from baro
+        s = sonarfun(asl - baroinv(self.getBaroBaseline()))
 
         # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
         b = barofun(asl)
@@ -146,9 +146,9 @@ class _Sim_ASL_EKF(ASL_EKF):
 
         ASL_EKF.__init__(self)
 
-    def getBaselineASL(self):
+    def getBaroBaseline(self):
 
-        return baroinv(BARO_BASELINE)
+        return BARO_BASELINE
 
 class _Sim_ASLPlotter(ASL_Plotter):
 
