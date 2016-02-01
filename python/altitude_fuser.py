@@ -103,8 +103,8 @@ class ASL_Plotter(RealtimePlotter):
         baromin = BARO_BASELINE - BARO_RANGE
         baromax = BARO_BASELINE + BARO_RANGE
 
-        max_asl_cm      = int(baroinv(BARO_BASELINE-BARO_RANGE))
-        min_asl_cm      = int(baroinv(BARO_BASELINE+BARO_RANGE))
+        max_asl_cm      = int(baroinv(baromin))
+        min_asl_cm      = int(baroinv(baromax))
         range_cm        = max_asl_cm - min_asl_cm
 
         RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (-20,range_cm)], 
