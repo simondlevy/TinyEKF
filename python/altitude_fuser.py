@@ -88,7 +88,7 @@ class ASL_EKF(EKF):
         return 101325 * pow((1 - 2.25577e-7 * asl), 5.25588)
 
 
-class ASLPlotter(RealtimePlotter):
+class ASL_Plotter(RealtimePlotter):
 
     def __init__(self, ekf):
 
@@ -130,7 +130,7 @@ class ASLPlotter(RealtimePlotter):
 
 # Simulation ===============================================================================
 
-class _SimASL_EKF(ASL_EKF):
+class _Sim_ASL_EKF(ASL_EKF):
 
     def __init__(self):
 
@@ -140,11 +140,11 @@ class _SimASL_EKF(ASL_EKF):
 
         return BASELINE_ASL_CM
 
-class _SimASLPlotter(ASLPlotter):
+class _Sim_ASLPlotter(ASL_Plotter):
 
     def __init__(self):
 
-        ASLPlotter.__init__(self, _SimASL_EKF())
+        ASL_Plotter.__init__(self, _Sim_ASL_EKF())
         self.count = 0
 
     def getSensors(self):
@@ -165,7 +165,7 @@ class _SimASLPlotter(ASLPlotter):
 
 if __name__ == '__main__':
 
-    plotter = _SimASLPlotter()
+    plotter = _Sim_ASLPlotter()
 
     thread = threading.Thread(target=plotter.update)
     thread.daemon = True
