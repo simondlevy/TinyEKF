@@ -24,8 +24,8 @@ along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 # for plotting
-BARO_BASELINE = 97420
 BARO_RANGE    = 20
+SONAR_RANGE   = 200
 
 import numpy as np
 from tinyekf import EKF
@@ -100,19 +100,20 @@ class ASL_Plotter(RealtimePlotter):
 
         self.ekf = ekf
 
-        baromin = BARO_BASELINE - BARO_RANGE
-        baromax = BARO_BASELINE + BARO_RANGE
+        baroBaseline = ekf.getBaroBaseline()
+
+        baromin = baroBaseline - BARO_RANGE
+        baromax = baroBaseline + BARO_RANGE
 
         max_asl_cm      = int(baroinv(baromin))
         min_asl_cm      = int(baroinv(baromax))
-        range_cm        = max_asl_cm - min_asl_cm
 
-        RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (-20,range_cm)], 
+        RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (0,SONAR_RANGE)], 
                 window_name='Altitude Sensor Fusion',
                 yticks = [
                     range(min_asl_cm, max_asl_cm, 50),  # Fused
                     range(baromin,baromax,int((baromax-baromin)/10.)),    # Baro
-                    range(-20, range_cm, 20)                             # Sonar
+                    range(0, SONAR_RANGE, 20)                             # Sonar
                     ],
                 styles = ['r','b', 'g'], 
                 ylabels=['Fused ASL (cm)', 'Baro (Pa)', 'Sonar ASL (cm)'])
@@ -139,6 +140,8 @@ class ASL_Plotter(RealtimePlotter):
         return self.fused, self.baro, self.sonar
 
 # Simulation ===============================================================================
+
+BARO_BASELINE = 97420
 
 class _Sim_ASL_EKF(ASL_EKF):
 
