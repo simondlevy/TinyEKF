@@ -41,12 +41,12 @@ def sonarfun( agl):
     return 0.933 * agl - 2.894
 
 # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-def barofun( asl):
+def asl2baro( asl):
 
     return 101325 * pow((1 - 2.25577e-7 * asl), 5.25588)
 
 # Convert Pascals to cm ASL
-def baroinv( pa):
+def baro2asl( pa):
 
     return (1.0 - pow(pa/ 101325.0, 0.190295)) * 4433000.0
 
@@ -75,10 +75,10 @@ class ASL_EKF(EKF):
         asl = x[0]
 
         # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline from baro
-        s = sonarfun(asl - baroinv(self.getBaroBaseline()))
+        s = sonarfun(asl - baro2asl(self.getBaroBaseline()))
 
         # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-        b = barofun(asl)
+        b = asl2baro(asl)
 
         return np.array([b, s])
 
@@ -105,8 +105,8 @@ class ASL_Plotter(RealtimePlotter):
         baromin = baroBaseline - BARO_RANGE
         baromax = baroBaseline + BARO_RANGE
 
-        max_asl_cm      = int(baroinv(baromin))
-        min_asl_cm      = int(baroinv(baromax))
+        max_asl_cm      = int(baro2asl(baromin))
+        min_asl_cm      = int(baro2asl(baromax))
 
         RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (0,SONAR_RANGE)], 
                 window_name='Altitude Sensor Fusion',
