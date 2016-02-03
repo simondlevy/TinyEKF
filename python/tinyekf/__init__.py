@@ -8,7 +8,7 @@
     published by the Free Software Foundation, either version 3 of the 
     License, or (at your option) any later version.
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY without even the implied warranty of
+    but WITHOUT ANY WARANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 '''
@@ -31,22 +31,22 @@ class EKF(object):
         '''
 
         # No previous prediction noise covariance
-        self.PP_pre = None
+        self.P_pre = None
 
         # Current state is zero, with diagonal noise covariance matrix
-        self.xx = np.zeros((n,1))
-        self.PP_post = np.eye(n) * pval
+        self.x = np.zeros((n,1))
+        self.P_post = np.eye(n) * pval
 
         # Get state transition and measurement Jacobians from implementing class
-        self.FF = self.getF(self.xx)
-        self.HH = self.getH(self.xx)
+        self.F = self.getF(self.x)
+        self.H = self.getH(self.x)
 
         # Set up covariance matrices for process noise and measurement noise
-        self.QQ = np.eye(n) * qval
-        self.RR = np.eye(m) * rval
+        self.Q = np.eye(n) * qval
+        self.R = np.eye(m) * rval
  
         # Identity matrix will be usefel later
-        self.II = np.eye(n)
+        self.I = np.eye(n)
 
     def step(self, z):
         '''
@@ -57,27 +57,26 @@ class EKF(object):
         # Predict ----------------------------------------------------
 
         # $\hat{x}_k = f(\hat{x}_{k-1})$
-        self.xx = self.f(self.xx)
+        self.x = self.f(self.x)
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
-        self.PP_pre = self.FF * self.PP_post * self.FF.T + self.QQ
+        self.P_pre = self.F * self.P_post * self.F.T + self.Q
 
-        self.PP_post = np.copy(self.PP_pre)
+        self.P_post = np.copy(self.P_pre)
 
         # Update -----------------------------------------------------
 
-
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
-        GG = np.dot(self.PP_pre * self.HH.T, np.linalg.inv(self.HH * self.PP_pre * self.HH.T + self.RR))
+        G = np.dot(self.P_pre * self.H.T, np.linalg.inv(self.H * self.P_pre * self.H.T + self.R))
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
-        self.xx += np.dot(GG, (np.array(z) - self.h(self.xx).T).T)
+        self.x += np.dot(G, (np.array(z) - self.h(self.x).T).T)
 
         # $P_k = (I - G_k H_k) P_k$
-        self.PP_post = np.dot(self.II - np.dot(GG, self.HH), self.PP_pre)
+        self.P_post = np.dot(self.I - np.dot(G, self.H), self.P_pre)
 
         #return self.x.asarray()
-        return self.xx
+        return self.x
 
     @abstractmethod
     def f(self, x):
@@ -111,126 +110,4 @@ class EKF(object):
         observation function as a NumPy array.
         '''
         raise NotImplementedError()    
-
-# Linear Algebra support =============================================
-
-class _Matrix(object):
-
-    def __init__(self, r=0, c=0):
-
-        self.data = np.zeros((r,c)) if r>0 and c>0 else None
-
-    def __str__(self):
-
-        return str(self.data)
-
-    def __mul__(self, other):
-
-        new = _Matrix()
-
-        if type(other).__name__ in ['float', 'int']:
-            new.data = np.copy(self.data)
-            new.data *= other
-        else:
-            new.data = np.dot(self.data, other.data)
-
-        return new
-
-    def __add__(self, other):
-
-        new = _Matrix()
-        new.data = self.data + other.data
-        return new
-
-    def __sub__(self, other):
-
-        new = _Matrix()
-        new.data = self.data - other.data
-        return new
-
-    def __setitem__(self, key, value):
-
-        self.data[key] = value
-
-    def __getitem__(self, key):
-
-        return self.data[key]
-
-    def asarray(self):
-
-        return np.asarray(self.data[:,0])
-
-    def copy(self):
-
-        new = _Matrix()
-        new.data = np.copy(self.data)
-        return new
-
-    def transpose(self):
-
-        new = _Matrix()
-        new.data = self.data.T
-        return new
-
-    def invert(self):
-
-        new = _Matrix()
-        try:
-            new.data = np.linalg.inv(self.data)
-        except Exception as e:
-            print(self.data)
-            print(e)
-            exit(0)
-        return new
-
-    @staticmethod
-    def eye(n, m=0):
-
-        I = _Matrix()
-
-        if m == 0:
-            m = n
-
-        I.data = np.eye(n, m)
-
-        return I
-
-    @staticmethod
-    def fromData(data):
-
-        a = _Matrix()
-
-        a.data = data
-
-        return a
-
-class _Vector(_Matrix):
-
-    def __init__(self, n=0):
-
-        self.data = np.zeros((n,1)) if n>0 else None
-
-    @staticmethod
-    def fromTuple(t):
-
-        v = _Vector(len(t))
-
-        for k in range(len(t)):
-            v[k] = t[k]
-
-        return v
-
-
-    @staticmethod
-    def fromData(data):
-
-        v = _Vector()
-
-        v.data = data
-
-        return v
-
-
-
-
 
