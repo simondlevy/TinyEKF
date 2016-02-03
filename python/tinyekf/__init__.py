@@ -62,8 +62,6 @@ class EKF(object):
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         self.P_pre = self.F * self.P_post * self.F.T + self.Q
 
-        self.P_post = np.copy(self.P_pre)
-
         # Update -----------------------------------------------------
 
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
