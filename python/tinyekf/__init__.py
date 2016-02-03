@@ -31,22 +31,22 @@ class EKF(object):
         '''
 
         # No previous prediction noise covariance
-        self.P_pre = None
+        self.PP_pre = None
 
         # Current state is zero, with diagonal noise covariance matrix
-        self.x = _Vector(n)
-        self.P_post = _Matrix.eye(n) * pval
+        self.xx = np.zeros((n,1))
+        self.PP_post = np.eye(n) * pval
 
         # Get state transition and measurement Jacobians from implementing class
-        self.F = _Matrix.fromData(self.getF(self.x))
-        self.H = _Matrix.fromData(self.getH(self.x))
+        self.FF = self.getF(self.xx)
+        self.HH = self.getH(self.xx)
 
         # Set up covariance matrices for process noise and measurement noise
-        self.Q = _Matrix.eye(n) * qval
-        self.R = _Matrix.eye(m) * rval
+        self.QQ = np.eye(n) * qval
+        self.RR = np.eye(m) * rval
  
         # Identity matrix will be usefel later
-        self.I = _Matrix.eye(n)
+        self.II = np.eye(n)
 
     def step(self, z):
         '''
@@ -57,25 +57,27 @@ class EKF(object):
         # Predict ----------------------------------------------------
 
         # $\hat{x}_k = f(\hat{x}_{k-1})$
-        self.x = _Vector.fromData(self.f(self.x.data))
+        self.xx = self.f(self.xx)
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
-        self.P_pre = self.F * self.P_post * self.F.transpose() + self.Q
+        self.PP_pre = self.FF * self.PP_post * self.FF.T + self.QQ
 
-        self.P_post = self.P_pre.copy()
+        self.PP_post = np.copy(self.PP_pre)
 
         # Update -----------------------------------------------------
 
+
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
-        G = self.P_pre * self.H.transpose() * (self.H * self.P_pre * self.H.transpose() + self.R).invert()
+        GG = np.dot(self.PP_pre * self.HH.T, np.linalg.inv(self.HH * self.PP_pre * self.HH.T + self.RR))
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
-        self.x += G * (_Vector.fromTuple(z) - _Vector.fromData(self.h(self.x.data)))
+        self.xx += np.dot(GG, (np.array(z) - self.h(self.xx).T).T)
 
         # $P_k = (I - G_k H_k) P_k$
-        self.P_post = (self.I - G * self.H) * self.P_pre
+        self.PP_post = np.dot(self.II - np.dot(GG, self.HH), self.PP_pre)
 
-        return self.x.asarray()
+        #return self.x.asarray()
+        return self.xx
 
     @abstractmethod
     def f(self, x):
@@ -120,7 +122,7 @@ class _Matrix(object):
 
     def __str__(self):
 
-        return str(self.data) + " " + str(self.data.shape)
+        return str(self.data)
 
     def __mul__(self, other):
 
