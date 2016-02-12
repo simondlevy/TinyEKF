@@ -104,9 +104,9 @@ class ASL_Plotter(RealtimePlotter):
     Implementing class should define getSensors(self), returning baro and sonar readings.
     '''
 
-    def __init__(self, ekf):
+    def __init__(self):
 
-        self.ekf = ekf
+        self.ekf = ASL_EKF()
 
         baromin = BARO_BASELINE - BARO_RANGE
         baromax = BARO_BASELINE + BARO_RANGE
@@ -152,7 +152,7 @@ class _Sim_ASLPlotter(ASL_Plotter):
 
     def __init__(self):
 
-        ASL_Plotter.__init__(self, ASL_EKF())
+        ASL_Plotter.__init__(self)
         self.count = 0
 
     def getSensors(self):
