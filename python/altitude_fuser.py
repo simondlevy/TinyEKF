@@ -52,6 +52,10 @@ def baro2asl( pa):
 
 
 class ASL_EKF(EKF):
+    '''
+    An abstract class for fusing baro and sonar.  
+    Implementing class should define getBaroBaseline(self).
+    '''
 
     def __init__(self):
 
@@ -95,6 +99,10 @@ class ASL_EKF(EKF):
 
 
 class ASL_Plotter(RealtimePlotter):
+    '''
+    An abstract class plotting Above Sea Level altitude.
+    Implementing class should define getSensors(self), returning baro and sonar readings.
+    '''
 
     def __init__(self, ekf):
 
@@ -132,7 +140,7 @@ class ASL_Plotter(RealtimePlotter):
             # Fused state comes back as an array, so grab first element
             self.fused = self.ekf.step((self.baro, self.sonar))[0]
 
-            plotter.xcurr += 1
+            self.xcurr += 1
             sleep(.001)
 
     def getValues(self):

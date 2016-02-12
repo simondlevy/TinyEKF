@@ -73,7 +73,7 @@ class EKF(object):
         # $P_k = (I - G_k H_k) P_k$
         self.P_post = np.dot(self.I - np.dot(G, self.H), self.P_pre)
 
-        #return self.x.asarray()
+        # return self.x.asarray()
         return self.x
 
     @abstractmethod
