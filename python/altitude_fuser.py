@@ -148,17 +148,11 @@ class ASL_Plotter(RealtimePlotter):
 # Simulation ===============================================================================
 
 
-class _Sim_ASL_EKF(ASL_EKF):
-
-    def __init__(self):
-
-        ASL_EKF.__init__(self)
-
 class _Sim_ASLPlotter(ASL_Plotter):
 
     def __init__(self):
 
-        ASL_Plotter.__init__(self, _Sim_ASL_EKF())
+        ASL_Plotter.__init__(self, ASL_EKF())
         self.count = 0
 
     def getSensors(self):
