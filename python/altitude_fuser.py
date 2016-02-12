@@ -108,6 +108,9 @@ class ASL_Plotter(RealtimePlotter):
 
         self.ekf = ASL_EKF()
 
+        self.baro = 0
+        self.sonar = 0
+
         baromin = BARO_BASELINE - BARO_RANGE
         baromax = BARO_BASELINE + BARO_RANGE
 
