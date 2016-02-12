@@ -26,6 +26,7 @@ along with this code. If not, see <http://www.gnu.org/licenses/>.
 # for plotting
 BARO_RANGE    = 20
 SONAR_RANGE   = 200
+BARO_BASELINE = 97420
 
 import numpy as np
 from tinyekf import EKF
@@ -54,7 +55,6 @@ def baro2asl( pa):
 class ASL_EKF(EKF):
     '''
     An abstract class for fusing baro and sonar.  
-    Implementing class should define getBaroBaseline(self).
     '''
 
     def __init__(self):
@@ -79,7 +79,7 @@ class ASL_EKF(EKF):
         asl = x[0]
 
         # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline from baro
-        s = sonarfun(asl - baro2asl(self.getBaroBaseline()))
+        s = sonarfun(asl - baro2asl(BARO_BASELINE))
 
         # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
         b = asl2baro(asl)
@@ -108,10 +108,8 @@ class ASL_Plotter(RealtimePlotter):
 
         self.ekf = ekf
 
-        baroBaseline = ekf.getBaroBaseline()
-
-        baromin = baroBaseline - BARO_RANGE
-        baromax = baroBaseline + BARO_RANGE
+        baromin = BARO_BASELINE - BARO_RANGE
+        baromax = BARO_BASELINE + BARO_RANGE
 
         max_asl_cm      = int(baro2asl(baromin))
         min_asl_cm      = int(baro2asl(baromax))
@@ -134,7 +132,7 @@ class ASL_Plotter(RealtimePlotter):
         while True:
 
             self.baro, self.sonar = self.getSensors()
-    
+
             # Run the EKF on the current baro and sonar measurements, getting back
             # an updated state estimate made by fusing them.
             # Fused state comes back as an array, so grab first element
@@ -149,17 +147,12 @@ class ASL_Plotter(RealtimePlotter):
 
 # Simulation ===============================================================================
 
-BARO_BASELINE = 97420
 
 class _Sim_ASL_EKF(ASL_EKF):
 
     def __init__(self):
 
         ASL_EKF.__init__(self)
-
-    def getBaroBaseline(self):
-
-        return BARO_BASELINE
 
 class _Sim_ASLPlotter(ASL_Plotter):
 
