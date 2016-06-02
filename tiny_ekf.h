@@ -27,10 +27,10 @@
   * <tt>ekf</tt> should be a pointer to a structure defined as follows, where <tt>N</tt> and </tt>M</tt> are 
   * constants:
   * <pre>
-        int n;          // number of state values 
-        int m;          // number of observables 
+        int n;           // number of state values 
+        int m;           // number of observables 
 
-        double x[N];    // state vector
+        double x[N];     // state vector
 
         double P[N][N];  // prediction error covariance
         double Q[N][N];  // process noise covariance 
@@ -46,7 +46,7 @@
         double Pp[N][N]; // P, post-prediction, pre-update
 
         double fx[N];   // output of user defined f() state-transition function
-        double hx[N];   // output of user defined h() measurement function
+        double hx[M];   // output of user defined h() measurement function
 
       &nbsp; // temporary storage
         double tmp1[N][N];

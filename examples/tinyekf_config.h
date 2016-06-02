@@ -27,10 +27,10 @@
 
 typedef struct {
 
-    int n;          /* number of state values */
-    int m;          /* number of observables */
+    int n;           /* number of state values */
+    int m;           /* number of observables */
 
-    double x[N];    /* state vector */
+    double x[N];     /* state vector */
 
     double P[N][N];  /* prediction error covariance */
     double Q[N][N];  /* process noise covariance */
@@ -46,7 +46,7 @@ typedef struct {
     double Pp[N][N]; /* P, post-prediction, pre-update */
 
     double fx[N];   /* output of user defined f() state-transition function */
-    double hx[N];   /* output of user defined h() measurement function */
+    double hx[M];   /* output of user defined h() measurement function */
 
     /* temporary storage */
     double tmp1[N][N];
