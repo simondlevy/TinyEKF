@@ -49,7 +49,8 @@ typedef struct {
     double hx[Mobs];   /* output of user defined h() measurement function */
 
     /* temporary storage */
-    double tmp1[Nsta][Nsta];
+    double tmp0[Nsta][Nsta];
+    double tmp1[Nsta][Mobs];
     double tmp2[Mobs][Nsta];
     double tmp3[Mobs][Mobs];
     double tmp4[Mobs][Mobs];

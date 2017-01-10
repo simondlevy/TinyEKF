@@ -226,6 +226,7 @@ typedef struct {
     double * hx;  /* output of user defined h() measurement function */
 
     /* temporary storage */
+    double * tmp0;
     double * tmp1;
     double * tmp2;
     double * tmp3;
@@ -265,8 +266,10 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     dptr += n;
     ekf->hx = dptr;
     dptr += m;
-    ekf->tmp1 = dptr;
+    ekf->tmp0 = dptr;
     dptr += n*n;
+    ekf->tmp1 = dptr;
+    dptr += n*m;
     ekf->tmp2 = dptr;
     dptr += m*n;
     ekf->tmp3 = dptr;
@@ -310,9 +313,9 @@ int ekf_step(void * v, double * z)
     unpack(v, &ekf, n, m); 
  
     /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-    mulmat(ekf.F, ekf.P, ekf.tmp1, n, n, n);
+    mulmat(ekf.F, ekf.P, ekf.tmp0, n, n, n);
     transpose(ekf.F, ekf.Ft, n, n);
-    mulmat(ekf.tmp1, ekf.Ft, ekf.Pp, n, n, n);
+    mulmat(ekf.tmp0, ekf.Ft, ekf.Pp, n, n, n);
     accum(ekf.Pp, ekf.Q, n, n);
 
     /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
@@ -330,10 +333,10 @@ int ekf_step(void * v, double * z)
     add(ekf.fx, ekf.tmp2, ekf.x, n);
 
     /* P_k = (I - G_k H_k) P_k */
-    mulmat(ekf.G, ekf.H, ekf.tmp1, n, m, n);
-    negate(ekf.tmp1, n, n);
-    mat_addeye(ekf.tmp1, n);
-    mulmat(ekf.tmp1, ekf.Pp, ekf.P, n, n, n);
+    mulmat(ekf.G, ekf.H, ekf.tmp0, n, m, n);
+    negate(ekf.tmp0, n, n);
+    mat_addeye(ekf.tmp0, n);
+    mulmat(ekf.tmp0, ekf.Pp, ekf.P, n, n, n);
 
     /* success */
     return 0;

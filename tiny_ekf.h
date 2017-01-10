@@ -49,7 +49,8 @@
         double hx[M];   // output of user defined h() measurement function
 
       &nbsp; // temporary storage
-        double tmp1[N][N];
+        double tmp0[N][N];
+        double tmp1[N][Msta];
         double tmp2[M][N];
         double tmp3[M][M];
         double tmp4[M][M];
