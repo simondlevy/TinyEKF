@@ -94,7 +94,7 @@ void loop() {
 
     if (timeElapsed > 1000) {
         Serial.print("N = M = ");
-        Serial.print(N);
+        Serial.print(Nsta);
         Serial.print(" : ");
         Serial.print(count);
         Serial.println(" updates per second");

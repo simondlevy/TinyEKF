@@ -18,8 +18,8 @@
 
 
 // These must be defined before including TinyEKF.h
-#define N 2     // Two state values: pressure, temperature
-#define M 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
+#define Nsta 2     // Two state values: pressure, temperature
+#define Mobs 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
 
 #define LM35_PIN 0
 
@@ -45,7 +45,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(double fx[N], double F[N][N], double hx[M], double H[M][N])
+        void model(double fx[Nsta], double F[Nsta][Nsta], double hx[Mobs], double H[Mobs][Nsta])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];
