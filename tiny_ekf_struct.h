@@ -25,29 +25,29 @@ typedef struct {
     int n;          /* number of state values */
     int m;          /* number of observables */
 
-    double x[N];    /* state vector */
+    double x[Nsta];    /* state vector */
 
-    double P[N][N];  /* prediction error covariance */
-    double Q[N][N];  /* process noise covariance */
-    double R[M][M];  /* measurement error covariance */
+    double P[Nsta][Nsta];  /* prediction error covariance */
+    double Q[Nsta][Nsta];  /* process noise covariance */
+    double R[Mobs][Mobs];  /* measurement error covariance */
 
-    double G[N][M];  /* Kalman gain; a.k.a. K */
+    double G[Nsta][Mobs];  /* Kalman gain; a.k.a. K */
 
-    double F[N][N];  /* Jacobian of process model */
-    double H[M][N];  /* Jacobian of measurement model */
+    double F[Nsta][Nsta];  /* Jacobian of process model */
+    double H[Mobs][Nsta];  /* Jacobian of measurement model */
 
-    double Ht[N][M]; /* transpose of measurement Jacobian */
-    double Ft[N][N]; /* transpose of process Jacobian */
-    double Pp[N][N]; /* P, post-prediction, pre-update */
+    double Ht[Nsta][Mobs]; /* transpose of measurement Jacobian */
+    double Ft[Nsta][Nsta]; /* transpose of process Jacobian */
+    double Pp[Nsta][Nsta]; /* P, post-prediction, pre-update */
 
-    double fx[N];   /* output of user defined f() state-transition function */
-    double hx[M];   /* output of user defined h() measurement function */
+    double fx[Nsta];   /* output of user defined f() state-transition function */
+    double hx[Mobs];   /* output of user defined h() measurement function */
 
     /* temporary storage */
-    double tmp1[N][M];
-    double tmp2[M][N];
-    double tmp3[M][M];
-    double tmp4[M][M];
-    double tmp5[M]; 
+    double tmp1[Nsta][Nsta];
+    double tmp2[Mobs][Nsta];
+    double tmp3[Mobs][Mobs];
+    double tmp4[Mobs][Mobs];
+    double tmp5[Mobs]; 
 
 } ekf_t;        

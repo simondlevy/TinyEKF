@@ -266,7 +266,7 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     ekf->hx = dptr;
     dptr += m;
     ekf->tmp1 = dptr;
-    dptr += n*m;
+    dptr += n*n;
     ekf->tmp2 = dptr;
     dptr += m*n;
     ekf->tmp3 = dptr;

@@ -173,7 +173,7 @@ int main(int argc, char ** argv)
 {    
     // Do generic EKF initialization
     ekf_t ekf;
-    ekf_init(&ekf, N, M);
+    ekf_init(&ekf, Nsta, Mobs);
 
     // Do local initialization
     init(&ekf);
