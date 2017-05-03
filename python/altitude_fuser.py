@@ -95,7 +95,7 @@ class ASL_EKF(EKF):
         # Sonar response is linear, so derivative is constant
         dsdx = 0.933
 
-        return np.array([[dpdx], [dsdx]])
+        return np.array([dpdx, [dsdx]])
 
 
 class ASL_Plotter(RealtimePlotter):
