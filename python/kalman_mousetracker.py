@@ -100,8 +100,8 @@ def drawCross(img, center, r, g, b):
     ctrx = center[0]
     ctry = center[1]
 
-    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, cv2.CV_AA)
-    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, cv2.CV_AA)
+    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, cv2.LINE_AA)
+    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, cv2.LINE_AA)
 
 
 def drawLines(img, points, r, g, b):
