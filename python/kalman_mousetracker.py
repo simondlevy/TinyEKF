@@ -35,7 +35,7 @@ from sys import exit
 
 from tinyekf import EKF
 
-LINE_AA = cv2.LINE_AA if cv2.__version__ == '3' else cv2.CV_AA
+LINE_AA = cv2.LINE_AA if cv2.__version__[0] == '3' else cv2.CV_AA
 
 class TrackerEKF(EKF):
     '''
