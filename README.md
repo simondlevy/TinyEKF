@@ -1,4 +1,4 @@
-# TinyEKF: Lightweight C/C++ Extended Kalman Filter with Arduino Sensor Fusion Example and Python prototyping
+# TinyEKF: Lightweight C/C++ Extended Kalman Filter with Python for prototyping
 
 TinyEKF is a simple C/C++ implementation of the [Extended Kalman Filter](http://home.wlu.edu/~levys/kalman_tutorial/) 
 that is general enough to use on different projects.  In order to make it
