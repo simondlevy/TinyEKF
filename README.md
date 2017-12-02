@@ -10,7 +10,7 @@ prototype your EKF before implementing it in C/C++. The **extrasc/c** folder
 contains a "pure C" example from the literature.
 
 Arduino users can simply install or drag the whole TinyEKF folder into their Arduino libraries folder. 
-The TinyEKF folder contains a little sensor fusion example using a 
+The **examples/SensorFusion** folder contains a little sensor fusion example using a 
 [BMP180 barometer](https://www.sparkfun.com/products/11824) and 
 [LM35 temperature sensor](http://www.robotshop.com/en/dfrobot-lm35-linear-temperature-sensor.html).
 I have run this example on an Arduino Uno and a Teensy 3.2. The BMP180, being an I^2C sensor, should be connected
