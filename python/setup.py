@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 Python distutils setup file for installing TinyEKF.
 

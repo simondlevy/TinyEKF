@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 kalman_mousetracker.py - OpenCV mouse-tracking demo using TinyEKF
@@ -34,28 +34,18 @@ class TrackerEKF(EKF):
 
     def __init__(self):
 
-        # Four states, two measurements (X,Y)
+        # Two state values (mouse coordinates), two measurement values (mouse coordinates)
         EKF.__init__(self, 2, 2)
 
     def f(self, x):
 
         # State-transition function is identity
-        return np.copy(x)
-
-    def getF(self, x):
-
-        # So state-transition Jacobian is identity matrix
-        return np.eye(2)
+        return np.copy(x), np.eye(2)
 
     def h(self, x):
 
         # Observation function is identity
-        return x
-
-    def getH(self, x):
-
-        # So observation Jacobian is identity matrix
-        return np.eye(2)
+        return x, np.eye(2)
 
 class MouseInfo(object):
     '''

@@ -56,12 +56,8 @@ class ASL_EKF(EKF):
     def f(self, x):
 
         # State-transition function is identity
-        return np.copy(x)
+        return np.copy(x), np.eye(1)
 
-    def getF(self, x):
-
-        # So state-transition Jacobian is identity matrix
-        return np.eye(1)
 
     def h(self, x):
 
@@ -74,9 +70,7 @@ class ASL_EKF(EKF):
         # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
         b = asl2baro(asl)
 
-        return np.array([b, s])
-
-    def getH(self, x):
+        h = np.array([b, s])
 
         # First derivative of nonlinear baro-measurement function
         # Used http://www.wolframalpha.com
@@ -85,7 +79,9 @@ class ASL_EKF(EKF):
         # Sonar response is linear, so derivative is constant
         dsdx = 0.933
 
-        return np.array([[dpdx], [dsdx]])
+        H = np.array([[dpdx], [dsdx]])
+
+        return h, H
 
 
 class ASL_Plotter(RealtimePlotter):
