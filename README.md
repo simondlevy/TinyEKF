@@ -1,6 +1,6 @@
 # TinyEKF: Lightweight C/C++ Extended Kalman Filter with Python for prototyping
 
-<img src="fusion.png">
+<img src="fusion.png" width=500>
 
 TinyEKF is a simple C/C++ implementation of the [Extended Kalman Filter](http://home.wlu.edu/~levys/kalman_tutorial/) 
 that is general enough to use on different projects.  In order to make it
