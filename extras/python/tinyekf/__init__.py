@@ -74,7 +74,7 @@ class EKF(object):
         Your state-transition fucntion should return a NumPy array of n elements representing the
         new state, and a nXn NumPy array of elements representing the the Jacobian of the function
         with respect to the new state.  Typically this is just the identity
-        function np.copy(x), so the Jacobianis just np.eye(len(x)).  '''
+        function np.copy(x), so the Jacobian is just np.eye(len(x)).  '''
         raise NotImplementedError()    
 
     @abstractmethod
