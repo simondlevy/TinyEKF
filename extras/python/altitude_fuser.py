@@ -10,17 +10,7 @@ Also requires RealtimePlotter: https://github.com/simondlevy/RealtimePlotter
 
 Copyright (C) 2016 Simon D. Levy
 
-This code is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-This code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this code. If not, see <http://www.gnu.org/licenses/>.
+MIT License
 '''
 
 # for plotting
@@ -66,12 +56,8 @@ class ASL_EKF(EKF):
     def f(self, x):
 
         # State-transition function is identity
-        return np.copy(x)
+        return np.copy(x), np.eye(1)
 
-    def getF(self, x):
-
-        # So state-transition Jacobian is identity matrix
-        return np.eye(1)
 
     def h(self, x):
 
@@ -84,9 +70,7 @@ class ASL_EKF(EKF):
         # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
         b = asl2baro(asl)
 
-        return np.array([b, s])
-
-    def getH(self, x):
+        h = np.array([b, s])
 
         # First derivative of nonlinear baro-measurement function
         # Used http://www.wolframalpha.com
@@ -95,7 +79,9 @@ class ASL_EKF(EKF):
         # Sonar response is linear, so derivative is constant
         dsdx = 0.933
 
-        return np.array([[dpdx], [dsdx]])
+        H = np.array([[dpdx], [dsdx]])
+
+        return h, H
 
 
 class ASL_Plotter(RealtimePlotter):

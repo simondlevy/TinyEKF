@@ -3,18 +3,7 @@
  *
  * Copyright (C) 2015 Simon D. Levy
  *
- * This code is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This code is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
+ * MIT License
  */
 
 #include <stdio.h>
@@ -52,7 +41,7 @@ class TinyEKF {
          * Initializes a TinyEKF object.
          */
         TinyEKF() { 
-            ekf_init(&this->ekf, N, M); 
+            ekf_init(&this->ekf, Nsta, Mobs); 
             this->x = this->ekf.x; 
         }
 
@@ -68,7 +57,7 @@ class TinyEKF {
          * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
          * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
          */
-        virtual void model(double fx[N], double F[N][N], double hx[M], double H[M][N]) = 0;
+        virtual void model(double fx[Nsta], double F[Nsta][Nsta], double hx[Mobs], double H[Mobs][Nsta]) = 0;
 
         /**
          * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>

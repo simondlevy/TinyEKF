@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 kalman_mousetracker.py - OpenCV mouse-tracking demo using TinyEKF
@@ -9,17 +9,7 @@ Adapted from
 
 Copyright (C) 2016 Simon D. Levy
 
-This code is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-This code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this code. If not, see <http://www.gnu.org/licenses/>.
+MIT License
 '''
 
 # This delay will affect the Kalman update rate
@@ -35,6 +25,8 @@ from sys import exit
 
 from tinyekf import EKF
 
+LINE_AA = cv2.LINE_AA if cv2.__version__[0] == '3' else cv2.CV_AA
+
 class TrackerEKF(EKF):
     '''
     An EKF for mouse tracking
@@ -42,28 +34,18 @@ class TrackerEKF(EKF):
 
     def __init__(self):
 
-        # Four states, two measurements (X,Y)
+        # Two state values (mouse coordinates), two measurement values (mouse coordinates)
         EKF.__init__(self, 2, 2)
 
     def f(self, x):
 
         # State-transition function is identity
-        return np.copy(x)
-
-    def getF(self, x):
-
-        # So state-transition Jacobian is identity matrix
-        return np.eye(2)
+        return np.copy(x), np.eye(2)
 
     def h(self, x):
 
         # Observation function is identity
-        return x
-
-    def getH(self, x):
-
-        # So observation Jacobian is identity matrix
-        return np.eye(2)
+        return x, np.eye(2)
 
 class MouseInfo(object):
     '''
@@ -100,8 +82,8 @@ def drawCross(img, center, r, g, b):
     ctrx = center[0]
     ctry = center[1]
 
-    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, cv2.CV_AA)
-    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, cv2.CV_AA)
+    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, LINE_AA)
+    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, LINE_AA)
 
 
 def drawLines(img, points, r, g, b):

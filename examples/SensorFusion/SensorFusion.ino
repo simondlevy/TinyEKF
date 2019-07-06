@@ -2,24 +2,13 @@
  *
  * Copyright (C) 2015 Simon D. Levy
  *
- * This code is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This code is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this code.  If not, see <http:#www.gnu.org/licenses/>.
+ * MIT License
  */
 
 
 // These must be defined before including TinyEKF.h
-#define N 2     // Two state values: pressure, temperature
-#define M 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
+#define Nsta 2     // Two state values: pressure, temperature
+#define Mobs 3     // Three measurements: baro pressure, baro temperature, LM35 temperature
 
 #define LM35_PIN 0
 
@@ -45,7 +34,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(double fx[N], double F[N][N], double hx[M], double H[M][N])
+        void model(double fx[Nsta], double F[Nsta][Nsta], double hx[Mobs], double H[Mobs][Nsta])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];
@@ -55,7 +44,11 @@ class Fuser : public TinyEKF {
             F[0][0] = 1;
             F[1][1] = 1;
 
-            // Measurement function
+            // Measurement function simplifies the relationship between state and sensor readings for convenience.
+            // A more realistic measurement function would distinguish between state value and measured value; e.g.:
+            //   hx[0] = pow(this->x[0], 1.03);
+            //   hx[1] = 1.005 * this->x[1];
+            //   hx[2] = .9987 * this->x[1] + .001;
             hx[0] = this->x[0]; // Barometric pressure from previous state
             hx[1] = this->x[1]; // Baro temperature from previous state
             hx[2] = this->x[1]; // LM35 temperature from previous state
