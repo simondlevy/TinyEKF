@@ -4,7 +4,7 @@ altitude_fuser.py - Sonar / Barometer fusion example using TinyEKF.
 
 We model a single state variable, altitude above sea level (ASL) in centimeters.
 This is obtained by fusing the barometer pressure in Pascals and sonar above-ground level
-(ASL) in centimters.
+(ASL) in centimeters.
 
 Also requires RealtimePlotter: https://github.com/simondlevy/RealtimePlotter
 
