@@ -2,7 +2,7 @@
 
 <img src="fusion.png" width=500>
 
-TinyEKF is a simple C/C++ implementation of the [Extended Kalman Filter](http://home.wlu.edu/~levys/kalman_tutorial/) 
+TinyEKF is a simple C/C++ implementation of the [Extended Kalman Filter](https://simondlevy.github.io/ekf-tutorial/) 
 that is general enough to use on different projects.  In order to make it
 practical for running on Arduino, STM32, and other microcontrollers, it uses
 static (compile-time) memory allocation (no "new" or "malloc").  The
