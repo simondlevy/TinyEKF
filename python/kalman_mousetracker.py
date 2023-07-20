@@ -25,8 +25,6 @@ from sys import exit
 
 from tinyekf import EKF
 
-LINE_AA = cv2.LINE_AA if cv2.__version__[0] == '3' else cv2.CV_AA
-
 class TrackerEKF(EKF):
     '''
     An EKF for mouse tracking
@@ -82,8 +80,8 @@ def drawCross(img, center, r, g, b):
     ctrx = center[0]
     ctry = center[1]
 
-    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, LINE_AA)
-    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, LINE_AA)
+    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, cv2.LINE_AA)
+    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, cv2.LINE_AA)
 
 
 def drawLines(img, points, r, g, b):
