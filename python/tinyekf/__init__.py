@@ -7,14 +7,12 @@ MIT License
 '''
 
 import numpy as np
-from abc import ABCMeta, abstractmethod
 
 class EKF(object):
     '''
-    A abstrat class for the Extended Kalman Filter, based on the tutorial in
+    A simple class for the Extended Kalman Filter, based on the tutorial in
     http://home.wlu.edu/~levys/kalman_tutorial.
     '''
-    __metaclass__ = ABCMeta
 
     def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
         '''
@@ -67,23 +65,25 @@ class EKF(object):
         # return self.x.asarray()
         return self.x
 
-    @abstractmethod
     def f(self, x):
         '''
-        Your implementing class should define this method for the state-transition function f(x).
-        Your state-transition fucntion should return a NumPy array of n elements representing the
-        new state, and a nXn NumPy array of elements representing the the Jacobian of the function
-        with respect to the new state.  Typically this is just the identity
-        function np.copy(x), so the Jacobian is just np.eye(len(x)).  '''
-        raise NotImplementedError()    
+        Your implementing class should override this method for the
+        state-transition function f(x).  Your state-transition function should
+        return a NumPy array of n elements representing the new state, and a
+        nXn NumPy array of elements representing the the Jacobian of the
+        function with respect to the new state.  By default this is just the
+        identity function np.copy(x), so the Jacobian is just np.eye(len(x)).
+        '''
+        return np.copy(x), np.eye(len(x))
 
-    @abstractmethod
     def h(self, x):
         '''
-        Your implementing class should define this method for the observation function h(x), returning
-        a NumPy array of m elements, and a NumPy array of m x n elements representing the Jacobian matrix
-        H of the observation function with respect to the observation. For
-        example, your function might include a component that turns barometric
-        pressure into altitude in meters.
+        Your implementing class should override this method for the observation
+        function h(x), returning a NumPy array of m elements, and a NumPy array
+        of m x n elements representing the Jacobian matrix H of the observation
+        function with respect to the observation. For example, your function
+        might include a component that turns barometric pressure into altitude
+        in meters.By default this function is just the identity function
+        np.copy(x), so the Jacobian is just np.eye(len(x)).
         '''
-        raise NotImplementedError()    
+        return np.copy(x), np.eye(len(x))
