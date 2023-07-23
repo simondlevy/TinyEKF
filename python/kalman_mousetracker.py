@@ -12,18 +12,18 @@ Copyright (C) 2016 Simon D. Levy
 MIT License
 '''
 
+import cv2
+import numpy as np
+from sys import exit
+
+from tinyekf import EKF
+
 # This delay will affect the Kalman update rate
 DELAY_MSEC = 100
 
 # Arbitrary display params
 WINDOW_NAME = 'Kalman Mousetracker [ESC to quit]'
 WINDOW_SIZE = 500
-
-import cv2
-import numpy as np
-from sys import exit
-
-from tinyekf import EKF
 
 
 class MouseInfo(object):
@@ -38,6 +38,7 @@ class MouseInfo(object):
     def __str__(self):
 
         return '%4d %4d' % (self.x, self.y)
+
 
 def mouseCallback(event, x, y, flags, mouse_info):
     '''
@@ -61,13 +62,15 @@ def drawCross(img, center, r, g, b):
     ctrx = center[0]
     ctry = center[1]
 
-    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t, cv2.LINE_AA)
-    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t, cv2.LINE_AA)
+    cv2.line(img, (ctrx - d, ctry - d), (ctrx + d, ctry + d), color, t,
+             cv2.LINE_AA)
+    cv2.line(img, (ctrx + d, ctry - d), (ctrx - d, ctry + d), color, t,
+             cv2.LINE_AA)
 
 
 def drawLines(img, points, r, g, b):
     '''
-    Draws lines 
+    Draws lines
     '''
 
     cv2.polylines(img, [np.int32(points)], isClosed=False, color=(r, g, b))
@@ -78,17 +81,17 @@ def newImage():
     Returns a new image
     '''
 
-    return np.zeros((500,500,3), np.uint8) 
+    return np.zeros((500, 500, 3), dtype=np.uint8)
 
 
 if __name__ == '__main__':
-
 
     # Create a new image in a named window
     img = newImage()
     cv2.namedWindow(WINDOW_NAME)
 
-    # Create an X,Y mouse info object and set the window's mouse callback to modify it
+    # Create an X,Y mouse info object and set the window's mouse callback to
+    # modify it
     mouse_info = MouseInfo()
     cv2.setMouseCallback(WINDOW_NAME, mouseCallback, mouse_info)
 
@@ -101,7 +104,6 @@ if __name__ == '__main__':
         cv2.imshow(WINDOW_NAME, img)
         if cv2.waitKey(1) == 27:
             exit(0)
-
 
     # These will get the trajectories for mouse location and Kalman estiamte
     measured_points = []
@@ -124,7 +126,7 @@ if __name__ == '__main__':
         estimate = kalfilt.step((mouse_info.x, mouse_info.y))
 
         # Add the estimate to the trajectory
-        estimated = [int (c) for c in estimate]
+        estimated = [int(c) for c in estimate]
         kalman_points.append(estimated)
 
         # Display the trajectories and current points
