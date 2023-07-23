@@ -25,25 +25,6 @@ from sys import exit
 
 from tinyekf import EKF
 
-class TrackerEKF(EKF):
-    '''
-    An EKF for mouse tracking
-    '''
-
-    def __init__(self):
-
-        # Two state values (mouse coordinates), two measurement values (mouse coordinates)
-        EKF.__init__(self, 2, 2)
-
-    def f(self, x):
-
-        # State-transition function is identity
-        return np.copy(x), np.eye(2)
-
-    def h(self, x):
-
-        # Observation function is identity
-        return x, np.eye(2)
 
 class MouseInfo(object):
     '''
@@ -127,7 +108,7 @@ if __name__ == '__main__':
     kalman_points = []
 
     # Create a new Kalman filter for mouse tracking
-    kalfilt = TrackerEKF()
+    kalfilt = EKF(2, 2)
 
     # Loop till user hits escape
     while True:
