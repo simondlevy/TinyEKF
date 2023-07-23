@@ -8,6 +8,7 @@ MIT License
 
 import numpy as np
 
+
 class EKF(object):
     '''
     A simple class for the Extended Kalman Filter, based on the tutorial in
@@ -16,9 +17,9 @@ class EKF(object):
 
     def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
         '''
-        Creates a KF object with n states, m observables, and specified values for 
-        prediction noise covariance pval, process noise covariance qval, and 
-        measurement noise covariance rval.
+        Creates a KF object with n states, m observables, and specified values
+        for prediction noise covariance pval, process noise covariance qval,
+        and measurement noise covariance rval.
         '''
 
         # No previous prediction noise covariance
@@ -31,14 +32,14 @@ class EKF(object):
         # Set up covariance matrices for process noise and measurement noise
         self.Q = np.eye(n) * qval
         self.R = np.eye(m) * rval
- 
+
         # Identity matrix will be usefel later
-        self.I = np.eye(n)
+        self.eye = np.eye(n)
 
     def step(self, z):
         '''
-        Runs one step of the EKF on observations z, where z is a tuple of length M.
-        Returns a NumPy array representing the updated state.
+        Runs one step of the EKF on observations z, where z is a tuple of
+        length M.  Returns a NumPy array representing the updated state.
         '''
 
         # Predict ----------------------------------------------------
@@ -54,13 +55,14 @@ class EKF(object):
         h, H = self.h(self.x)
 
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
-        G = np.dot(self.P_pre.dot(H.T), np.linalg.inv(H.dot(self.P_pre).dot(H.T) + self.R))
+        G = np.dot(self.P_pre.dot(H.T),
+                   np.linalg.inv(H.dot(self.P_pre).dot(H.T) + self.R))
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
         self.x += np.dot(G, (np.array(z) - h.T).T)
 
         # $P_k = (I - G_k H_k) P_k$
-        self.P_post = np.dot(self.I - np.dot(G, H), self.P_pre)
+        self.P_post = np.dot(self.eye - np.dot(G, H), self.P_pre)
 
         # return self.x.asarray()
         return self.x
