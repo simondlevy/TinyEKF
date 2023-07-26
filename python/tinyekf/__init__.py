@@ -15,11 +15,12 @@ class EKF(object):
     http://home.wlu.edu/~levys/kalman_tutorial.
     '''
 
-    def __init__(self, n, m, pval=0.1, qval=1e-4, rval=0.1):
+    def __init__(self, n, m, P=1e-1, Q=1e-4, R=1e-1):
         '''
         Creates a KF object with n states, m observables, and specified values
-        for prediction noise covariance pval, process noise covariance qval,
-        and measurement noise covariance rval.
+        for prediction noise covariance P, process noise covariance Q,
+        and measurement noise covariance R.  You can also pass in your own
+        covariance matrix for each of these parameters.
         '''
 
         # No previous prediction noise covariance
@@ -27,11 +28,11 @@ class EKF(object):
 
         # Current state is zero, with diagonal noise covariance matrix
         self.x = np.zeros(n)
-        self.P_post = np.eye(n) * pval
 
-        # Set up covariance matrices for process noise and measurement noise
-        self.Q = np.eye(n) * qval
-        self.R = np.eye(m) * rval
+        # Set up covariance matrices
+        self.P_post = self._covar(n, P)
+        self.Q = self._covar(n, Q)
+        self.R = self._covar(m, R)
 
         # Identity matrix will be usefel later
         self.eye = np.eye(n)
@@ -89,3 +90,7 @@ class EKF(object):
         np.copy(x), so the Jacobian is just np.eye(len(x)).
         '''
         return np.copy(x), np.eye(len(x))
+
+    def _covar(self, siz, arg):
+
+        return arg * np.eye(siz) if np.shape(arg) == () else arg
