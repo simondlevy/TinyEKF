@@ -15,7 +15,7 @@ class EKF(object):
     http://home.wlu.edu/~levys/kalman_tutorial.
     '''
 
-    def __init__(self, n, m, P=1e-1, Q=1e-4, R=1e-1):
+    def __init__(self, n, m, P=1, Q=1, R=1):
         '''
         Creates a KF object with n states, m observables, and specified values
         for prediction noise covariance P, process noise covariance Q,

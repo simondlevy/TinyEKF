@@ -56,7 +56,7 @@ class ASL_EKF(EKF):
         # One state (ASL), two measurements (baro, sonar), with
         # larger-than-usual measurement covariance noise to help with sonar
         # blips.
-        EKF.__init__(self, 1, 2, R=.5)
+        EKF.__init__(self, 1, 2, P=1e-1, Q=1e-4, R=5e-1)
 
     def f(self, x):
 

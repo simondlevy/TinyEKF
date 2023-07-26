@@ -5,7 +5,8 @@ kalman_mousetracker.py - OpenCV mouse-tracking demo using TinyEKF
 
 Adapted from
 
-   http://www.morethantechnical.com/2011/06/17/simple-kalman-filter-for-tracking-using-opencv-2-2-w-code/
+   http://www.morethantechnical.com/2011/06/17/
+     simple-kalman-filter-for-tracking-using-opencv-2-2-w-code/
 
 Copyright (C) 2016 Simon D. Levy
 
@@ -110,7 +111,7 @@ if __name__ == '__main__':
     kalman_points = []
 
     # Create a new Kalman filter for mouse tracking
-    kalfilt = EKF(2, 2)
+    kalfilt = EKF(2, 2, P=1e-1, Q=1e-4, R=1e-1)
 
     # Loop till user hits escape
     while True:
