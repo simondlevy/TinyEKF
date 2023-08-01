@@ -49,7 +49,7 @@ class EKF(object):
         self.x, F = self.f(self.x)
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
-        self.P_pre = F * self.P_post * F.T + self.Q
+        self.P_pre = np.dot(F, self.P_post).dot(F.T) + self.Q
 
         # Update -----------------------------------------------------
 
