@@ -27,6 +27,8 @@ class TinyEkf(object):
 
         self.n = len(diag)
 
+        self.x = np.zeros(self.n)
+
         self.p = np.eye(self.n)
  
         np.fill_diagonal(self.p, diag)
@@ -68,9 +70,13 @@ class TinyEkf(object):
 
                 self._cleanupCovariance()
 
-        xnew = xold
+                if shouldAddProcessNoise:
 
-        F = np.zeros((self.n, self.n))
+                    self.lastProcessNoiseUpdateMsec = nowMsec
+
+                    self.x = xnew
+
+        xnew = xold
 
         return xnew, F
 
