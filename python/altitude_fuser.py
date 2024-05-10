@@ -6,8 +6,6 @@ We model a single state variable, altitude above sea level (ASL) in
 centimeters.  This is obtained by fusing the barometer pressure in Pascals and
 sonar above-ground level (ASL) in centimters.
 
-Also requires RealtimePlotter: https://github.com/simondlevy/RealtimePlotter
-
 Copyright (C) 2016 Simon D. Levy
 
 MIT License
@@ -15,7 +13,6 @@ MIT License
 
 import numpy as np
 from tinyekf import EKF
-from realtime_plot import RealtimePlotter
 from time import sleep
 import threading
 from math import sin, pi
@@ -89,83 +86,22 @@ class ASL_EKF(EKF):
 
         return h, H
 
-
-class ASL_Plotter(RealtimePlotter):
-    '''
-    An abstract class plotting Above Sea Level altitude.  Implementing class
-    should define getSensors(self), returning baro and sonar readings.
-    '''
-
-    def __init__(self):
-
-        self.ekf = ASL_EKF()
-
-        self.baro = 0
-        self.sonar = 0
-
-        baromin = BARO_BASELINE - BARO_RANGE
-        baromax = BARO_BASELINE + BARO_RANGE
-
-        max_asl_cm = int(baro2asl(baromin))
-        min_asl_cm = int(baro2asl(baromax))
-
-        RealtimePlotter.__init__(
-                self,
-                [(min_asl_cm, max_asl_cm),
-                 (baromin, baromax), (0, SONAR_RANGE)],
-                window_name='Altitude Sensor Fusion',
-                yticks=[
-
-                    # Fused
-                    range(min_asl_cm, max_asl_cm, 50),
-
-                    # Baro
-                    range(baromin, baromax, int((baromax-baromin) / 10)),
-
-                    # Sonar
-                    range(0, SONAR_RANGE, 20)
-                    ],
-                styles=['r', 'b', 'g'],
-                ylabels=['Fused ASL (cm)', 'Baro (Pa)', 'Sonar ASL (cm)'])
-
-        self.xcurr = 0
-        self.fused = 0
-
-    def update(self):
-
-        while True:
-
-            self.baro, self.sonar = self.getSensors()
-
-            # Run the EKF on the current baro and sonar measurements, getting
-            # back an updated state estimate made by fusing them.  Fused state
-            # comes back as an array, so grab first element
-            self.fused = self.ekf.step((self.baro, self.sonar))[0]
-
-            self.xcurr += 1
-            sleep(.001)
-
-    def getValues(self):
-
-        return self.fused, self.baro, self.sonar
-
 # Simulation ==================================================================
 
 
-class _Sim_ASLPlotter(ASL_Plotter):
+if __name__ == '__main__':        
 
-    def __init__(self):
+    ekf = ASL_EKF()
 
-        ASL_Plotter.__init__(self)
-        self.count = 0
+    LOOPSIZE = 5000
 
-    def getSensors(self):
+    count = 0
 
-        LOOPSIZE = 5000
+    while True:
 
         # Model up-and-down motion with a sine wave
-        self.count = (self.count + 1) % LOOPSIZE
-        sine = sin(self.count/float(LOOPSIZE) * 2 * pi)
+        count = (count + 1) % LOOPSIZE
+        sine = sin(count/LOOPSIZE * 2 * pi)
 
         baro = BARO_BASELINE + sine * BARO_RANGE
 
@@ -173,15 +109,4 @@ class _Sim_ASLPlotter(ASL_Plotter):
         sonar = (sonarfun(50 * (1 - sine)) +
                  (50 if np.random.rand() > 0.9 else 0))
 
-        return baro, sonar
-
-
-if __name__ == '__main__':
-
-    plotter = _Sim_ASLPlotter()
-
-    thread = threading.Thread(target=plotter.update)
-    thread.daemon = True
-
-    thread.start()
-    plotter.start()
+        print(baro, sonar, ekf.step((baro, sonar))[0])
