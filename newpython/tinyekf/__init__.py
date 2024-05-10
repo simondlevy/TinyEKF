@@ -74,9 +74,7 @@ class TinyEkf(object):
 
     def _multiplyCovariance(self, a):
 
-        at = a.transpose()
-        ap = np.dot(a, self.p)
-        self.p = np.dot(ap, at)
+        self.p = np.dot(np.dot(a, self.p), a.transpose())
 
     @abstractmethod
     def get_prediction(self, xold, shouldAddProcessNoise):
