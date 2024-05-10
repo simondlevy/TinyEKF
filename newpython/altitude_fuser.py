@@ -54,6 +54,10 @@ class AslEkf(TinyEkf):
         #TinyEkf.__init__(self, 1, 2, P=1e-1, Q=1e-4, R=5e-1)
         TinyEkf.__init__(self, np.ones(1))
 
+    def get_prediction(self, xold, shouldAddProcessNoise):
+
+        return xold, np.eye(1)
+
     def f(self, x):
 
         # State-transition function is identity

@@ -7,7 +7,7 @@ MIT License
 '''
 
 import numpy as np
-
+from abc import ABC, abstractmethod
 
 class TinyEkf(object):
     '''
@@ -60,10 +60,18 @@ class TinyEkf(object):
                 shouldAddProcessNoise = (
                         nowMsec - self.lastProcessNoiseUpdateMsec > 0)
 
+                dt = (nowMsec - self.lastPredictionMsec) / 1000
+
+                xnew, F = self.get_prediction(xold, shouldAddProcessNoise)
 
         xnew = xold
 
         F = np.zeros((self.n, self.n))
 
         return xnew, F
+
+    @abstractmethod
+    def get_prediction(self, xold, shouldAddProcessNoise):
+
+        pass
 
