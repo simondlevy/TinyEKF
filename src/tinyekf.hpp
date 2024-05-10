@@ -32,8 +32,6 @@ class TinyEkf {
 
         bool _isUpdated;
 
-        uint32_t _lastPredictionMsec;
-
         uint32_t _lastProcessNoiseUpdateMsec;
 
         uint32_t _predictionIntervalMsec;
@@ -199,7 +197,6 @@ class TinyEkf {
             _predictionIntervalMsec = predictionIntervalMsec;
 
             _lastProcessNoiseUpdateMsec = nowMsec;
-            _lastPredictionMsec = nowMsec;
             _isUpdated = false;
 
             _min_covariance = min_covariance;
@@ -223,6 +220,8 @@ class TinyEkf {
 
         void predict(const uint32_t nowMsec)
         {
+            static uint32_t _lastPredictionMsec;
+
             _isUpdated = true;
 
             float xnew[EKF_N] = {};
