@@ -32,8 +32,6 @@ class TinyEkf {
 
         bool _isUpdated;
 
-        uint32_t _lastProcessNoiseUpdateMsec;
-
         uint32_t _predictionIntervalMsec;
 
         void multiplyCovariance(const matrix_t & a)
@@ -196,7 +194,6 @@ class TinyEkf {
         {
             _predictionIntervalMsec = predictionIntervalMsec;
 
-            _lastProcessNoiseUpdateMsec = nowMsec;
             _isUpdated = false;
 
             _min_covariance = min_covariance;
@@ -221,6 +218,7 @@ class TinyEkf {
         void predict(const uint32_t nowMsec)
         {
             static uint32_t _lastPredictionMsec;
+            static uint32_t _lastProcessNoiseUpdateMsec;
 
             _isUpdated = true;
 
