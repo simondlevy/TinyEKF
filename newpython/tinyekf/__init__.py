@@ -64,11 +64,19 @@ class TinyEkf(object):
 
                 xnew, F = self.get_prediction(xold, shouldAddProcessNoise)
 
+                self._multiplyCovariance(F)
+
         xnew = xold
 
         F = np.zeros((self.n, self.n))
 
         return xnew, F
+
+    def _multiplyCovariance(self, a):
+
+        at = a.transpose()
+        ap = np.dot(a, self.p)
+        self.p = np.dot(ap, at)
 
     @abstractmethod
     def get_prediction(self, xold, shouldAddProcessNoise):
