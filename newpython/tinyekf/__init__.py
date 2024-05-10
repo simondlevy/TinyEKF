@@ -54,6 +54,13 @@ class TinyEkf(object):
         if nowMsec > self.nextPredictionMsec:
             self.nextPredictionMsec = nowMsec + self.predictionIntervalMsec
 
+        if nowMsec >= self.nextPredictionMsec:
+
+                self.isUpdated = True;
+
+                print('updated')
+
+
         xnew = xold
 
         F = np.zeros((self.n, self.n))
