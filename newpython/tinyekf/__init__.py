@@ -73,6 +73,8 @@ class TinyEkf(ABC):
 
             if shouldAddProcessNoise:
 
+                self.p += self.get_process_noise()
+
                 self.lastProcessNoiseUpdateMsec = nowMsec
 
                 self.x = xnew
@@ -106,5 +108,9 @@ class TinyEkf(ABC):
 
     @abstractmethod
     def get_prediction(self, xold, shouldAddProcessNoise):
+
+        pass
+    @abstractmethod
+    def get_process_noise(self):
 
         pass

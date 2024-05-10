@@ -46,19 +46,27 @@ class AslEkf(TinyEkf):
     An abstract class for fusing baro and sonar.
     '''
 
+    Pdiag = 1e-1
+
+    Q = 1e-4
+
+    R = 5e-1
+
     def __init__(self):
 
         # One state (ASL), two measurements (baro, sonar), with
         # larger-than-usual measurement covariance noise to help with sonar
         # blips.
-        TinyEkf.__init__(self, 1e-1 * np.ones(1))
+        TinyEkf.__init__(self, self.Pdiag * np.ones(1))
 
-        self.Q = 1e-4
-        self.R = 5e-1
 
     def get_prediction(self, dt, xold, shouldAddProcessNoise):
 
         return xold, np.eye(1)
+
+    def get_process_noise(self):
+
+        return self.Q
 
     def h(self, x):
 
