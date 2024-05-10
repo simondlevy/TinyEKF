@@ -163,7 +163,7 @@ class TinyEkf {
         }
 
         // Outer product
-        static void multiply(const vector_t & x, const vector_t & y, matrix_t & a)
+        static void outer(const vector_t & x, const vector_t & y, matrix_t & a)
         {
             for (uint8_t i=0; i<EKF_N; i++) {
                 for (uint8_t j=0; j<EKF_N; j++) {
@@ -223,52 +223,45 @@ class TinyEkf {
 
         void predict(const uint32_t nowMsec)
         {
-            static uint32_t _nextPredictionMsec;
+            _isUpdated = true;
 
-            _nextPredictionMsec = nowMsec > _nextPredictionMsec ?
-                nowMsec + _predictionIntervalMsec :
-                _nextPredictionMsec;
+            float xnew[EKF_N] = {};
 
-            if (nowMsec >= _nextPredictionMsec) {
+            for (uint8_t i=0; i<EKF_N; ++i) {
+                xnew[i] = get(_x, i);
+            }
 
-                _isUpdated = true;
+            float Fdat[EKF_N][EKF_N] = {};
 
-                float xnew[EKF_N] = {};
+            const auto shouldAddProcessNoise = 
+                nowMsec - _lastProcessNoiseUpdateMsec > 0;
+
+            const float dt = (nowMsec - _lastPredictionMsec) / 1000.0f;
+
+            get_prediction(dt, shouldAddProcessNoise, _x.dat, xnew, Fdat);
+
+            matrix_t F = {};
+            makemat(Fdat, F);
+
+            // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$ -------------
+
+            multiplyCovariance(F);
+
+            cleanupCovariance();
+
+            _lastPredictionMsec = nowMsec;
+
+            if (shouldAddProcessNoise) {
+
+                _lastProcessNoiseUpdateMsec = nowMsec;
 
                 for (uint8_t i=0; i<EKF_N; ++i) {
-                    xnew[i] = get(_x, i);
+                    set(_x, i, xnew[i]);
                 }
 
-                float Fdat[EKF_N][EKF_N] = {};
-
-                const auto shouldAddProcessNoise = 
-                    nowMsec - _lastProcessNoiseUpdateMsec > 0;
-
-                const float dt = (nowMsec - _lastPredictionMsec) / 1000.0f;
-
-                get_prediction(dt, shouldAddProcessNoise, _x.dat, xnew, Fdat);
-
-                matrix_t F = {};
-                makemat(Fdat, F);
-
-                // # $P_k = F_{k-1} P_{k-1} F^T_{k-1}
-                multiplyCovariance(F);
-
-                cleanupCovariance();
-
-                _lastPredictionMsec = nowMsec;
-
-                // # $P_k += Q_{k-1}$
-                if (shouldAddProcessNoise) {
-
-                    _lastProcessNoiseUpdateMsec = nowMsec;
-
-                    for (uint8_t i=0; i<EKF_N; ++i) {
-                        set(_x, i, xnew[i]);
-                    }
-
-                }
             }
+
+            // -----------------------------------------------------------
         }
 
         void update(
@@ -291,18 +284,19 @@ class TinyEkf {
                 set(g, i, get(ph, i) / hphr);
             }
 
-            // Perform the state update
+            // $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
             for (uint8_t i=0; i<EKF_N; ++i) {
                 set(_x, i, get(_x, i) + get(g, i) * error);
             }
 
             matrix_t GH = {};
-            multiply(g, h, GH); 
+            outer(g, h, GH); 
 
             for (int i=0; i<EKF_N; i++) { 
                 set(GH, i, i, get(GH, i, i) - 1);
             }
 
+            // $P_k = (I - G_k H_k) P_k$
             multiplyCovariance(GH);
 
             // Add the measurement variance 
