@@ -16,12 +16,12 @@ class TinyEkf(object):
     '''
 
     def __init__(self, diag,
-            nowMsec=None,
-            predictionIntervalMsec=None,
-            lastProcessUpdateNoiseMsec=None,
-            lastPredictionMsec=None,
-            minCovariance=None,
-            maxCovariance=None):
+            nowMsec=0,
+            predictionIntervalMsec=0,
+            lastProcessUpdateNoiseMsec=0,
+            lastPredictionMsec=0,
+            minCovariance=-np.inf,
+            maxCovariance=+np.inf):
         '''
         '''
 
@@ -34,17 +34,16 @@ class TinyEkf(object):
         # Identity matrix will be usefel later
         self.eye = np.eye(self.n)
 
-        self.predictionIntervalMsec = predictionIntervalMsec;
-        self.lastProcessNoiseUpdateMsec = nowMsec;
-        self.lastPredictionMsec = nowMsec;
+        self.predictionIntervalMsec = predictionIntervalMsec
 
-        self._min_covariance = (-np.inf if minCovariance is None 
-                                else minCovariance)
+        self.lastProcessNoiseUpdateMsec = nowMsec
 
-        self._max_covariance = (+np.inf if maxCovariance is None 
-                                else maxCovariance)
+        self.lastPredictionMsec = nowMsec
 
-        self.isUpdated = False;
+        self._min_covariance = minCovariance
+        self._max_covariance = maxCovariance
+
+        self.isUpdated = False
         self.nextPredictionMsec = 0
 
     def predict(self, xold, nowMsec=0):
@@ -56,9 +55,10 @@ class TinyEkf(object):
 
         if nowMsec >= self.nextPredictionMsec:
 
-                self.isUpdated = True;
+                self.isUpdated = True
 
-                print('updated')
+                shouldAddProcessNoise = (
+                        nowMsec - self.lastProcessNoiseUpdateMsec > 0)
 
 
         xnew = xold
