@@ -14,7 +14,6 @@ MIT License
 import numpy as np
 import matplotlib.pyplot as plt
 from tinyekf import TinyEkf
-from math import sin, pi
 
 # for plotting
 BARO_RANGE = 20
@@ -52,7 +51,8 @@ class AslEkf(TinyEkf):
         # One state (ASL), two measurements (baro, sonar), with
         # larger-than-usual measurement covariance noise to help with sonar
         # blips.
-        TinyEkf.__init__(self, 1, 2, P=1e-1, Q=1e-4, R=5e-1)
+        #TinyEkf.__init__(self, 1, 2, P=1e-1, Q=1e-4, R=5e-1)
+        TinyEkf.__init__(self, np.ones(1))
 
     def f(self, x):
 
@@ -94,16 +94,21 @@ if __name__ == '__main__':
 
     LOOPSIZE = 100
 
+    count = 0
+
     N = 100
 
     baro = np.zeros(N)
     sonar = np.zeros(N)
     fused = np.zeros(N)
 
+    # Initialize state vector
+    x = np.zeros(1)
+
     for k in range(N):
 
         # Model up-and-down motion with a sine wave
-        sine = sin((k % LOOPSIZE)/LOOPSIZE * 2 * pi)
+        sine = np.sin((k % LOOPSIZE)/LOOPSIZE * 2 * np.pi)
 
         baro[k] = BARO_BASELINE + sine * BARO_RANGE
 
@@ -111,7 +116,11 @@ if __name__ == '__main__':
         sonar[k] = (sonarfun(50 * (1 - sine)) +
                     (50 if np.random.rand() > 0.9 else 0))
 
-        fused[k] = ekf.step((baro[k], sonar[k]))[0]
+        x, F = ekf.predict(x)
+
+        exit(0)
+
+        # fused[k] = ekf.step((baro[k], sonar[k]))[0]
 
     plt.subplot(3, 1, 1)
     plt.plot(fused, 'r')
