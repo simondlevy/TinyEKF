@@ -45,10 +45,14 @@ class TinyEkf(object):
                                 else maxCovariance)
 
         self.isUpdated = False;
+        self.nextPredictionMsec = 0
 
-    def predict(self, xold):
+    def predict(self, xold, nowMsec=0):
         '''
         '''
+
+        if nowMsec > self.nextPredictionMsec:
+            self.nextPredictionMsec = nowMsec + self.predictionIntervalMsec
 
         xnew = xold
 
