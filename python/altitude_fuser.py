@@ -12,9 +12,8 @@ MIT License
 '''
 
 import numpy as np
+import matplotlib.pyplot as plt
 from tinyekf import EKF
-from time import sleep
-import threading
 from math import sin, pi
 
 # for plotting
@@ -88,25 +87,43 @@ class ASL_EKF(EKF):
 
 # Simulation ==================================================================
 
-
 if __name__ == '__main__':        
 
     ekf = ASL_EKF()
 
-    LOOPSIZE = 5000
+    LOOPSIZE = 100
 
     count = 0
 
-    while True:
+    N = 100
+
+    baro = np.zeros(N)
+    sonar = np.zeros(N)
+    fused = np.zeros(N)
+ 
+    for k in range(N):
 
         # Model up-and-down motion with a sine wave
-        count = (count + 1) % LOOPSIZE
-        sine = sin(count/LOOPSIZE * 2 * pi)
+        sine = sin((k%LOOPSIZE)/LOOPSIZE * 2 * pi)
 
-        baro = BARO_BASELINE + sine * BARO_RANGE
+        baro[k] = BARO_BASELINE + sine * BARO_RANGE
 
         # Add noise to simulated sonar at random intervals
-        sonar = (sonarfun(50 * (1 - sine)) +
+        sonar[k] = (sonarfun(50 * (1 - sine)) +
                  (50 if np.random.rand() > 0.9 else 0))
 
-        print(baro, sonar, ekf.step((baro, sonar))[0])
+        fused[k] = ekf.step((baro[k], sonar[k]))[0]
+
+    plt.subplot(3,1,1)
+    plt.plot(fused, 'r')
+    plt.ylabel('Fused ASL (cm)')
+
+    plt.subplot(3,1,2)
+    plt.plot(baro, 'b')
+    plt.ylabel('Baro (Pa)')
+
+    plt.subplot(3,1,3)
+    plt.plot(sonar, 'g')
+    plt.ylabel('Sonar ASL (cm)')
+
+    plt.show()
