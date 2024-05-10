@@ -59,7 +59,7 @@ class AslEkf(TinyEkf):
         # blips.
         TinyEkf.__init__(self, self.Pdiag * np.ones(1))
 
-    def get_prediction(self, dt, xold, shouldAddProcessNoise):
+    def get_prediction(self, dt, xold, didAddProcessNoise):
 
         return xold, np.eye(1)
 
