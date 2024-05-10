@@ -177,7 +177,7 @@ class TinyEkf {
 
     protected:
 
-        static void do_init(float diag[EKF_N]);
+        static void initialize_covariance_diagonal(float diag[EKF_N]);
 
         static void get_prediction(
                 const float dt,
@@ -207,7 +207,7 @@ class TinyEkf {
 
             float diag[EKF_N] = {};
 
-            do_init(diag);
+            initialize_covariance_diagonal(diag);
 
             for (uint8_t i=0; i<EKF_N; ++i) {
 
