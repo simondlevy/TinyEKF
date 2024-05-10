@@ -51,17 +51,14 @@ class AslEkf(TinyEkf):
         # One state (ASL), two measurements (baro, sonar), with
         # larger-than-usual measurement covariance noise to help with sonar
         # blips.
-        #TinyEkf.__init__(self, 1, 2, P=1e-1, Q=1e-4, R=5e-1)
-        TinyEkf.__init__(self, np.ones(1))
+        TinyEkf.__init__(self, 1e-1 * np.ones(1))
 
-    def get_prediction(self, xold, shouldAddProcessNoise):
+        self.Q = 1e-4
+        self.R = 5e-1
+
+    def get_prediction(self, dt, xold, shouldAddProcessNoise):
 
         return xold, np.eye(1)
-
-    def f(self, x):
-
-        # State-transition function is identity
-        return np.copy(x), np.eye(1)
 
     def h(self, x):
 

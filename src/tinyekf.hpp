@@ -251,12 +251,14 @@ class TinyEkf {
                 matrix_t F = {};
                 makemat(Fdat, F);
 
+                // # $P_k = F_{k-1} P_{k-1} F^T_{k-1}
                 multiplyCovariance(F);
 
                 cleanupCovariance();
 
                 _lastPredictionMsec = nowMsec;
 
+                // # $P_k += Q_{k-1}$
                 if (shouldAddProcessNoise) {
 
                     _lastProcessNoiseUpdateMsec = nowMsec;
