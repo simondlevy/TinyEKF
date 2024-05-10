@@ -40,8 +40,8 @@ class TinyEkf(object):
 
         self.lastPredictionMsec = nowMsec
 
-        self._min_covariance = minCovariance
-        self._max_covariance = maxCovariance
+        self.min_covariance = minCovariance
+        self.max_covariance = maxCovariance
 
         self.isUpdated = False
         self.nextPredictionMsec = 0
@@ -66,6 +66,8 @@ class TinyEkf(object):
 
                 self._multiplyCovariance(F)
 
+                self._cleanupCovariance()
+
         xnew = xold
 
         F = np.zeros((self.n, self.n))
@@ -87,7 +89,7 @@ class TinyEkf(object):
 
                 self.p[i][j] = self.p[j][i] = (
                     self.max_covariance if pval > self.max_covariance
-                    else self.min_covariance if i==j and pval < selfmin_covariance
+                    else self.min_covariance if i==j and pval < self.min_covariance
                     else pval)
 
 
