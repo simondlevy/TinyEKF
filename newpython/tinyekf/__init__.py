@@ -76,6 +76,21 @@ class TinyEkf(object):
 
         self.p = np.dot(np.dot(a, self.p), a.transpose())
 
+    def _cleanupCovariance(self):
+
+        for i in range(self.n):
+
+            for j in range(self.n):
+
+
+                pval = (self.p[i][j] + self.p[j][i]) / 2
+
+                self.p[i][j] = self.p[j][i] = (
+                    self.max_covariance if pval > self.max_covariance
+                    else self.min_covariance if i==j and pval < selfmin_covariance
+                    else pval)
+
+
     @abstractmethod
     def get_prediction(self, xold, shouldAddProcessNoise):
 
