@@ -65,7 +65,7 @@ SFE_BMP180 baro;
 
 void setup() {
 
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Start reading from baro
     baro.begin();
