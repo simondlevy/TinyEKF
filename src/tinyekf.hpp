@@ -54,14 +54,10 @@ class TinyEkf {
             cleanupCovariance();
          }
 
-        void update(
-                const float h[EKF_N], 
-                const float error, 
-                const float stdMeasNoise)
+        void update(const float h[EKF_N], const float error, const float r)
         {
             float ph[EKF_N] = {};
             multiply(_p, h, ph);
-            const auto r = stdMeasNoise * stdMeasNoise;
             const auto hphr = r + dot(h, ph); // HPH' + R
 
             float g[EKF_N] = {};
