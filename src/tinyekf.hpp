@@ -17,12 +17,9 @@ class TinyEkf {
 
         void initialize(
                 const uint32_t nowMsec,
-                const uint32_t predictionIntervalMsec,
                 const float min_covariance, 
                 const float max_covariance)
         {
-            _predictionIntervalMsec = predictionIntervalMsec;
-
             _isUpdated = false;
 
             _min_covariance = min_covariance;
@@ -236,8 +233,6 @@ class TinyEkf {
         float _x[EKF_N];
 
         bool _isUpdated;
-
-        uint32_t _predictionIntervalMsec;
 
         void multiplyCovariance(const float a[EKF_N][EKF_N])
         {
