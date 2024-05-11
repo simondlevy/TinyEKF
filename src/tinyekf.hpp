@@ -14,17 +14,9 @@ class TinyEkf {
 
     private:
 
-        typedef struct {
+        typedef float vector_t[EKF_N];
 
-            float dat[EKF_N];
-
-        } vector_t;
-
-        typedef struct {
-
-            float dat[EKF_N][EKF_N];
-
-        } matrix_t;
+        typedef float matrix_t[EKF_N][EKF_N];
 
         matrix_t _p;
 
@@ -52,9 +44,9 @@ class TinyEkf {
 
                 for (int j=i; j<EKF_N; j++) {
 
-                    const auto pval = (_p.dat[i][j] + _p.dat[j][i]) / 2;
+                    const auto pval = (_p[i][j] + _p[j][i]) / 2;
 
-                    _p.dat[i][j] = _p.dat[j][i] = 
+                    _p[i][j] = _p[j][i] = 
                         pval > _max_covariance ?  _max_covariance :
                         (i==j && pval < _min_covariance) ?  _min_covariance :
                         pval;
@@ -65,7 +57,7 @@ class TinyEkf {
         static void makevec(const float dat[EKF_N], vector_t & x)
         {
             for (uint8_t i=0; i<EKF_N; ++i) {
-                x.dat[i] = dat[i];
+                x[i] = dat[i];
             }
         }
 
@@ -73,7 +65,7 @@ class TinyEkf {
         {
             for (uint8_t i=0; i<EKF_N; ++i) {
                 for (uint8_t j=0; j<EKF_N; ++j) {
-                    a.dat[i][j] = dat[i][j];
+                    a[i][j] = dat[i][j];
                 }
             }
         }
@@ -82,9 +74,9 @@ class TinyEkf {
         {
             for (uint8_t i=0; i<EKF_N; ++i) {
                 for (uint8_t j=0; j<EKF_N; ++j) {
-                    auto tmp = a.dat[i][j];
-                    at.dat[i][j] = a.dat[j][i];
-                    at.dat[j][i] = tmp;
+                    auto tmp = a[i][j];
+                    at[i][j] = a[j][i];
+                    at[j][i] = tmp;
                 }
             }
         }
@@ -94,55 +86,37 @@ class TinyEkf {
             float d = 0;
 
             for (uint8_t k=0; k<EKF_N; k++) {
-                d += x.dat[k] * y.dat[k];
+                d += x[k] * y[k];
             }
 
             return d;
         }
 
-        static float get(const matrix_t & a, const uint8_t i, const uint8_t j)
-        {
-            return a.dat[i][j];
-        }
-
-        static float get(const vector_t & x, const uint8_t i)
-        {
-            return x.dat[i];
-        }
-
-        static void set(vector_t & x, const uint8_t i, const float val)
-        {
-            x.dat[i] = val;
-        }
-
-        static void set(matrix_t & a, const uint8_t i, const uint8_t j, const float val)
-        {
-            a.dat[i][j] = val;
-        }
-
-        static float dot(
-                const matrix_t & a, 
-                const matrix_t & b, 
-                const uint8_t i, 
-                const uint8_t j)
-        {
-            float d = 0;
-
-            for (uint8_t k=0; k<EKF_N; k++) {
-                d += a.dat[i][k] * b.dat[k][j];
-            }
-
-            return d;
-        }
-
-        // Matrix * Matrix
-        static void multiply( const matrix_t a, const matrix_t b, matrix_t & c)
+        // Matrix + Matrix
+        static void add(const matrix_t a, const matrix_t b, matrix_t & c)
         {
             for (uint8_t i=0; i<EKF_N; i++) {
 
                 for (uint8_t j=0; j<EKF_N; j++) {
 
-                    c.dat[i][j] = dot(a, b, i, j);
+                    c[i][j] = a[i][j] + b[i][j];
+                }
+            }
+        }
+
+        // Matrix * Matrix
+        static void multiply(const matrix_t a, const matrix_t b, matrix_t & c)
+        {
+            for (uint8_t i=0; i<EKF_N; i++) {
+
+                for (uint8_t j=0; j<EKF_N; j++) {
+
+                    c[i][j] = 0;
+
+                    for (uint8_t k=0; k<EKF_N; k++) {
+
+                        c[i][j] += a[i][k] * b[k][j];
+                    }
                 }
             }
         }
@@ -151,9 +125,9 @@ class TinyEkf {
         static void multiply(const matrix_t & a, const vector_t & x, vector_t & y)
         {
             for (uint8_t i=0; i<EKF_N; i++) {
-                y.dat[i] = 0;
+                y[i] = 0;
                 for (uint8_t j=0; j<EKF_N; j++) {
-                    y.dat[i] += a.dat[i][j] * x.dat[j];
+                    y[i] += a[i][j] * x[j];
                 }
             }
         }
@@ -163,7 +137,7 @@ class TinyEkf {
         {
             for (uint8_t i=0; i<EKF_N; i++) {
                 for (uint8_t j=0; j<EKF_N; j++) {
-                    a.dat[i][j] = x.dat[i] * y.dat[j];
+                    a[i][j] = x[i] * y[j];
                 }
             }
         }
@@ -179,7 +153,8 @@ class TinyEkf {
                 const uint32_t nowMsec,
                 const float xold[EKF_N],
                 float xnew[EKF_N],
-                float F[EKF_N][EKF_N]);
+                float F[EKF_N][EKF_N],
+                float Q[EKF_N][EKF_N]);
 
         static bool did_finalize(float x[EKF_N], float A[EKF_N][EKF_N]);
 
@@ -206,10 +181,10 @@ class TinyEkf {
 
                 for (uint8_t j=0; j<EKF_N; ++j) {
 
-                    set(_p, i, j, i==j ? diag[i] : 0);
+                    _p[i][j] = i==j ? diag[i] : 0;
                 }
 
-                set(_x, i, 0);
+                _x[i] = 0;
             }
 
         }
@@ -218,19 +193,20 @@ class TinyEkf {
         {
             _isUpdated = true;
 
-            float xnew[EKF_N] = {};
-            float Fdat[EKF_N][EKF_N] = {};
-            get_prediction(nowMsec, _x.dat, xnew, Fdat);
+            vector_t xnew = {};
+            matrix_t F = {};
+            matrix_t Q = {};
+            get_prediction(nowMsec, _x, xnew, F, Q);
 
             // $\hat{x}_k = f(\hat{x}_{k-1})$
             for (uint8_t i=0; i<EKF_N; ++i) {
-                set(_x, i, xnew[i]);
+                _x[i] = xnew[i];
             }
 
             // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
-            matrix_t F = {};
-            makemat(Fdat, F);
             multiplyCovariance(F);
+            //add(_p, Q, _p);
+
             cleanupCovariance();
         }
 
@@ -251,19 +227,19 @@ class TinyEkf {
             // Compute the Kalman gain as a column vector
             vector_t g = {};
             for (uint8_t i=0; i<EKF_N; ++i) {
-                set(g, i, get(ph, i) / hphr);
+                g[i] = ph[i] / hphr;
             }
 
             // $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
             for (uint8_t i=0; i<EKF_N; ++i) {
-                set(_x, i, get(_x, i) + get(g, i) * error);
+                _x[i] += g[i] * error;
             }
 
             matrix_t GH = {};
             outer(g, h, GH); 
 
             for (int i=0; i<EKF_N; i++) { 
-                set(GH, i, i, get(GH, i, i) - 1);
+                GH[i][i] -= 1;
             }
 
             // $P_k = (I - G_k H_k) P_k$
@@ -272,8 +248,7 @@ class TinyEkf {
             // Add the measurement variance 
             for (int i=0; i<EKF_N; i++) {
                 for (int j=0; j<EKF_N; j++) {
-                    _p.dat[i][j] += j < i ? 0 : r * get(g, i) * get(g, j);
-                    set(_p, i, j, get(_p, i, j));
+                    _p[i][j] += j < i ? 0 : r * g[i] * g[j];
                 }
             }
 
@@ -290,7 +265,7 @@ class TinyEkf {
 
                 // Move attitude error into attitude if any of the angle errors are
                 // large enough
-                if (did_finalize(_x.dat, A.dat)) {
+                if (did_finalize(_x, A)) {
 
                     multiplyCovariance(A);
 
@@ -306,7 +281,7 @@ class TinyEkf {
             static float x[EKF_N];
 
             for (uint8_t i=0; i<EKF_N; ++i) {
-                x[i] = get(_x, i);
+                x[i] = _x[i];
             }
 
             return x;
