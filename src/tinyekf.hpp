@@ -54,7 +54,11 @@ class TinyEkf {
             cleanupCovariance();
          }
 
-        void update(const float h[EKF_N], const float error, const float r)
+        void update(
+                const float h[EKF_N], 
+                const float measured,
+                const float predicted,
+                const float r)
         {
             float ph[EKF_N] = {};
             multiply(_p, h, ph);
@@ -67,7 +71,7 @@ class TinyEkf {
 
             // $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
             for (uint8_t i=0; i<EKF_N; ++i) {
-                _x[i] += g[i] * error;
+                _x[i] += g[i] * (measured - predicted);
             }
 
             float GH[EKF_N][EKF_N] = {};
