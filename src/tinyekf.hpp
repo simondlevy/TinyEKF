@@ -16,6 +16,7 @@ class TinyEkf {
     public:
 
         void initialize(
+                const float pdiag[EKF_N],
                 const uint32_t nowMsec,
                 const float min_covariance, 
                 const float max_covariance)
@@ -25,15 +26,11 @@ class TinyEkf {
             _min_covariance = min_covariance;
             _max_covariance = max_covariance;
 
-            float diag[EKF_N] = {};
-
-            initialize_covariance_diagonal(diag);
-
             for (uint8_t i=0; i<EKF_N; ++i) {
 
                 for (uint8_t j=0; j<EKF_N; ++j) {
 
-                    _p[i][j] = i==j ? diag[i] : 0;
+                    _p[i][j] = i==j ? pdiag[i] : 0;
                 }
 
                 _x[i] = 0;
@@ -263,8 +260,6 @@ class TinyEkf {
         }
 
     protected:
-
-        static void initialize_covariance_diagonal(float diag[EKF_N]);
 
         static void get_prediction(
                 const uint32_t nowMsec,
