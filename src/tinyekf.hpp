@@ -33,7 +33,6 @@ class TinyEkf {
 
                 _x[i] = 0;
             }
-
         }
 
         // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
@@ -53,9 +52,17 @@ class TinyEkf {
          }
 
         void update(
+                const float h[EKF_M], 
+                const float z[EKF_N],
+                const float hx[EKF_N],
+                const float r)
+        {
+        }
+
+         void update(
                 const float h[EKF_N], 
-                const float measured,
-                const float predicted,
+                const float z,
+                const float hx,
                 const float r)
         {
             float ph[EKF_N] = {};
@@ -69,7 +76,7 @@ class TinyEkf {
 
             // $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
             for (uint8_t i=0; i<EKF_N; ++i) {
-                _x[i] += g[i] * (measured - predicted);
+                _x[i] += g[i] * (z - hx);
             }
 
             float GH[EKF_N][EKF_N] = {};
