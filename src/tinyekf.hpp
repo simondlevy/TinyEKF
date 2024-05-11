@@ -55,12 +55,10 @@ class TinyEkf {
          }
 
         void update(
-                const float hdat[EKF_N], 
+                const float h[EKF_N], 
                 const float error, 
                 const float stdMeasNoise)
         {
-            float h[EKF_N] = {};
-            memcpy(h, hdat, EKF_N*sizeof(float));
             float ph[EKF_N] = {};
             multiply(_p, h, ph);
             const auto r = stdMeasNoise * stdMeasNoise;
