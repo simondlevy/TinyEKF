@@ -177,8 +177,8 @@ class TinyEkf {
 
         static void get_prediction(
                 const uint32_t nowMsec,
-                const bool didAddProcessNoise,
                 const float xold[EKF_N],
+                bool & didAddProcessNoise,
                 float xnew[EKF_N],
                 float F[EKF_N][EKF_N]);
 
@@ -217,8 +217,6 @@ class TinyEkf {
 
         void predict(const uint32_t nowMsec)
         {
-            static uint32_t _lastProcessNoiseUpdateMsec;
-
             _isUpdated = true;
 
             float xnew[EKF_N] = {};
@@ -229,10 +227,14 @@ class TinyEkf {
 
             float Fdat[EKF_N][EKF_N] = {};
 
-            const auto shouldAddProcessNoise = 
-                nowMsec - _lastProcessNoiseUpdateMsec > 0;
+            auto didAddProcessNoise = false;
 
-            get_prediction(nowMsec, shouldAddProcessNoise, _x.dat, xnew, Fdat);
+            get_prediction(
+                    nowMsec, 
+                    _x.dat, 
+                    didAddProcessNoise, 
+                    xnew, 
+                    Fdat);
 
             matrix_t F = {};
             makemat(Fdat, F);
@@ -243,9 +245,7 @@ class TinyEkf {
 
             cleanupCovariance();
 
-            if (shouldAddProcessNoise) {
-
-                _lastProcessNoiseUpdateMsec = nowMsec;
+            if (didAddProcessNoise) {
 
                 for (uint8_t i=0; i<EKF_N; ++i) {
                     set(_x, i, xnew[i]);
