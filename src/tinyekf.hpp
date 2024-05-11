@@ -9,7 +9,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <string.h>
 
 class TinyEkf {
 
@@ -17,7 +16,6 @@ class TinyEkf {
 
         void initialize(
                 const float pdiag[EKF_N],
-                const uint32_t nowMsec,
                 const float min_covariance, 
                 const float max_covariance)
         {
