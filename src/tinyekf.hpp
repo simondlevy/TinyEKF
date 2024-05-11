@@ -38,26 +38,21 @@ class TinyEkf {
 
         }
 
-        void predict(const uint32_t nowMsec)
+        // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
+        void predict(
+            const float xnew[EKF_N],
+            const float F[EKF_N][EKF_N],
+            const float Q[EKF_N][EKF_N])
         {
-            _isUpdated = true;
-
-            float xnew[EKF_N] = {};
-            float F[EKF_N][EKF_N] = {};
-            float Q[EKF_N][EKF_N] = {};
-            get_prediction(nowMsec, _x, xnew, F, Q);
-
             // $\hat{x}_k = f(\hat{x}_{k-1})$
             for (uint8_t i=0; i<EKF_N; ++i) {
                 _x[i] = xnew[i];
             }
 
-            // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
             multiplyCovariance(F);
             add(_p, Q, _p);
-
             cleanupCovariance();
-        }
+         }
 
         void update(
                 const float hdat[EKF_N], 
@@ -103,15 +98,18 @@ class TinyEkf {
             _isUpdated = true;
         }
 
-        void finalize(void)
+        void finalize(
+                const float newx[EKF_N], 
+                const float A[EKF_N][EKF_N],
+                const bool isErrorSufficient) 
         {
             if (_isUpdated) {
 
-                float A[EKF_N][EKF_N] = {};
+                for (uint8_t i=0; i<EKF_N; ++i) {
+                    _x[i] = newx[i];
+                }
 
-                // Move attitude error into attitude if any of the angle errors are
-                // large enough
-                if (did_finalize(_x, A)) {
+                if (isErrorSufficient) {
 
                     multiplyCovariance(A);
 
@@ -258,16 +256,4 @@ class TinyEkf {
                 }
             }
         }
-
-    protected:
-
-        static void get_prediction(
-                const uint32_t nowMsec,
-                const float xold[EKF_N],
-                float xnew[EKF_N],
-                float F[EKF_N][EKF_N],
-                float Q[EKF_N][EKF_N]);
-
-        static bool did_finalize(float x[EKF_N], float A[EKF_N][EKF_N]);
-
 };
