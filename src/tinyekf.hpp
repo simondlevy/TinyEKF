@@ -9,6 +9,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string.h>
 
 class TinyEkf {
 
@@ -50,22 +51,6 @@ class TinyEkf {
                         pval > _max_covariance ?  _max_covariance :
                         (i==j && pval < _min_covariance) ?  _min_covariance :
                         pval;
-                }
-            }
-        }
-
-        static void makevec(const float dat[EKF_N], vector_t & x)
-        {
-            for (uint8_t i=0; i<EKF_N; ++i) {
-                x[i] = dat[i];
-            }
-        }
-
-        static void makemat(const float dat[EKF_N][EKF_N], matrix_t & a)
-        {
-            for (uint8_t i=0; i<EKF_N; ++i) {
-                for (uint8_t j=0; j<EKF_N; ++j) {
-                    a[i][j] = dat[i][j];
                 }
             }
         }
@@ -215,16 +200,14 @@ class TinyEkf {
                 const float error, 
                 const float stdMeasNoise)
         {
-            vector_t h = {};
-            makevec(hdat, h);
 
-            // ====== INNOVATION COVARIANCE ======
+            vector_t h = {};
+            memcpy(h, hdat, EKF_N*sizeof(float));
             vector_t ph = {};
             multiply(_p, h, ph);
             const auto r = stdMeasNoise * stdMeasNoise;
             const auto hphr = r + dot(h, ph); // HPH' + R
 
-            // Compute the Kalman gain as a column vector
             vector_t g = {};
             for (uint8_t i=0; i<EKF_N; ++i) {
                 g[i] = ph[i] / hphr;
