@@ -257,7 +257,7 @@ class TinyEkf {
             _isUpdated = true;
         }
 
-        void finalize(const uint32_t nowMsec)
+        void finalize(void)
         {
             if (_isUpdated) {
 
