@@ -178,7 +178,6 @@ class TinyEkf {
         static void get_prediction(
                 const uint32_t nowMsec,
                 const float xold[EKF_N],
-                bool & didAddProcessNoise,
                 float xnew[EKF_N],
                 float F[EKF_N][EKF_N]);
 
@@ -220,40 +219,19 @@ class TinyEkf {
             _isUpdated = true;
 
             float xnew[EKF_N] = {};
+            float Fdat[EKF_N][EKF_N] = {};
+            get_prediction(nowMsec, _x.dat, xnew, Fdat);
 
+            // $\hat{x}_k = f(\hat{x}_{k-1})$
             for (uint8_t i=0; i<EKF_N; ++i) {
-                xnew[i] = get(_x, i);
+                set(_x, i, xnew[i]);
             }
 
-            float Fdat[EKF_N][EKF_N] = {};
-
-            auto didAddProcessNoise = false;
-
-            get_prediction(
-                    nowMsec, 
-                    _x.dat, 
-                    didAddProcessNoise, 
-                    xnew, 
-                    Fdat);
-
+            // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
             matrix_t F = {};
             makemat(Fdat, F);
-
-            // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$ -------------
-
             multiplyCovariance(F);
-
             cleanupCovariance();
-
-            if (didAddProcessNoise) {
-
-                for (uint8_t i=0; i<EKF_N; ++i) {
-                    set(_x, i, xnew[i]);
-                }
-
-            }
-
-            // -----------------------------------------------------------
         }
 
         void update(
