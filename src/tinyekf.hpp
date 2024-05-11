@@ -205,7 +205,7 @@ class TinyEkf {
 
             // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
             multiplyCovariance(F);
-            //add(_p, Q, _p);
+            add(_p, Q, _p);
 
             cleanupCovariance();
         }
