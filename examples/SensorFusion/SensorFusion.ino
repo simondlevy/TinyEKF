@@ -71,8 +71,6 @@ static Fuser ekf;
 
 static SFE_BMP180 baro;
 
-static TinyEkf _tinyEkf;
-
 // Adapted from https://github.com/sparkfun/BMP180_Breakout
 static void getBaroReadings(double & T, double & P)
 {
@@ -96,6 +94,8 @@ static void getBaroReadings(double & T, double & P)
     else Serial.println("error starting temperature measurement");
 }
 
+static TinyEkf _tinyEkf;
+
 void setup() {
 
     Serial.begin(115200);
@@ -106,31 +106,75 @@ void setup() {
     // Set up to read from LM35
     analogReference(INTERNAL);
 
-    _tinyEkf.initialize();
+    // Use identity matrix as covariance matrix P
+    static const float Pdiag[EKF_N] = { 1, 1 };
+
+    _tinyEkf.initialize(Pdiag);
 }
 
 void loop() {
 
-    // Approximate process noise Q using a small constant
-    /*
-    this->setQ(0, 0, .0001);
-    this->setQ(1, 1, .0001);
+    static const float eps = 1e-4;
 
-    // Same for measurement noise
-    this->setR(0, 0, .0001);
-    this->setR(1, 1, .0001);
-    this->setR(2, 2, .0001);
-    */
+    // Process model is f(x) = x
+    const auto x = _tinyEkf.getState();
+
+    // So process model Jacobian is identity matrix
+    const float F[EKF_N][EKF_N] = {
+        {1, 0},
+        {0, 1}
+    };
+
+
+    // Approximate process noise covariance Q using a small constant
+    static const float Q[EKF_N][EKF_N] = {
+        {eps, 0},
+        {0, eps}
+    };
+
+    _tinyEkf.predict(x, F, Q);
 
     // Read pressure, temperature from BMP180
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
 
     // Read temperature from LM35
-    float lm35Temperature = analogRead(LM35_PIN) / 9.31;
+    const float lm35Temperature = analogRead(LM35_PIN) / 9.31;
+
+    // Set the observation vector z
+    const float z[EKF_M] = {baroPressure, baroTemperature, lm35Temperature};
+
+    // Set the Jacobian H of the measurement function
+    static const float H[EKF_M][EKF_N] = {
+        {1, 0},
+        {0, 1},
+        {0, 1}
+    };
+
+    // Approximate measurement noise covariance R using a small constant
+    static const float R[EKF_M][EKF_M] = {
+        {eps, 0, 0},
+        {0, eps, 0},
+        {0, 0, eps}
+    };
+
+    // Measurement function simplifies the relationship between state
+    // and sensor readings for convenience.  A more realistic
+    // measurement function would distinguish between state value and
+    // measured value; e.g.:
+    //   hx[0] = pow(this->x[0], 1.03);
+    //   hx[1] = 1.005 * this->x[1];
+    //   hx[2] = .9987 * this->x[1] + .001;
+    static const float hx[EKF_M] = {
+        x[0], // Barometric pressure from previous state
+        x[1], // Baro temperature from previous state
+        x[1]  // LM35 temperature from previous state
+    };
+
+    // Update the EKF
+    _tinyEkf.update(H, z, hx, R);
 
     // Send these measurements to the EKF
-    float z[3] = {baroPressure, baroTemperature, lm35Temperature};
     ekf.step(z);
 
     // Report measured and predicte/fused values

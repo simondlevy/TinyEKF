@@ -16,8 +16,8 @@ class TinyEkf {
 
         void initialize(
                 const float pdiag[EKF_N],
-                const float min_covariance, 
-                const float max_covariance)
+                const float min_covariance=0, 
+                const float max_covariance=0)
         {
             _isUpdated = false;
 
@@ -29,24 +29,6 @@ class TinyEkf {
                 for (uint8_t j=0; j<EKF_N; ++j) {
 
                     _p[i][j] = i==j ? pdiag[i] : 0;
-                }
-
-                _x[i] = 0;
-            }
-        }
-
-        void initialize(void)
-        {
-            _isUpdated = false;
-
-            _min_covariance = 0;
-            _max_covariance = 0;
-
-            for (uint8_t i=0; i<EKF_N; ++i) {
-
-                for (uint8_t j=0; j<EKF_N; ++j) {
-
-                    _p[i][j] = i==j ? 1 : 0;
                 }
 
                 _x[i] = 0;
@@ -71,9 +53,9 @@ class TinyEkf {
 
         void update(
                 const float H[EKF_M][EKF_N], 
-                const float z[EKF_N],
+                const float z[EKF_M],
                 const float hx[EKF_M],
-                const float R[EKF_M][EKF_N])
+                const float R[EKF_M][EKF_M])
         {
         }
 
