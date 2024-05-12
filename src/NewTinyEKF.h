@@ -253,44 +253,6 @@ class TinyEKF {
 
         } ekf2_t;
 
-        static void unpack(void * v, ekf2_t * ekf, int n, int m)
-        {
-            /* skip over n, m in data structure */
-            char * cptr = (char *)v;
-            cptr += 2*sizeof(int);
-
-            float * dptr = (float *)cptr;
-            dptr += n;
-            ekf->P = dptr;
-            dptr += n*n;
-            ekf->Q = dptr;
-            dptr += n*n;
-            ekf->R = dptr;
-            dptr += m*m;
-            ekf->F = dptr;
-            dptr += n*n;
-            ekf->H = dptr;
-            dptr += m*n;
-            ekf->Pp = dptr;
-            dptr += n*n;
-            ekf->fx = dptr;
-            dptr += n;
-            ekf->hx = dptr;
-        }
-
-        void ekf_init(void * v, int n, int m)
-        {
-            /* retrieve n, m and set them in incoming data structure */
-            int * ptr = (int *)v;
-            *ptr = n;
-            ptr++;
-            *ptr = m;
-
-            /* unpack rest of incoming structure for initlization */
-            ekf2_t ekf;
-            unpack(v, &ekf, n, m);
-        }
-
         int ekf_step(
                 void * v, 
                 float * z, 
@@ -364,7 +326,6 @@ class TinyEKF {
          * Initializes a TinyEKF object.
          */
         TinyEKF() { 
-            ekf_init(&this->ekf, EKF_N, EKF_M); 
         }
 
         /**
