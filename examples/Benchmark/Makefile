@@ -1,33 +1,20 @@
-# Makefile for building, uploading, and maintaining Arduino TinyEKF Benchmark example
-# for those who want to avoid the Arduino IDE.
-#
-# Copyright (C) 2015 Simon D. Levy
-#
-# MIT License
+SKETCH = Benchmark
 
-PORT = ACM0
+PORT = /dev/ttyACM0
 
-#all: build Benchmark
-all: build
+BOARD = arduino:avr:uno
 
-edit:
-	vim Benchmark.ino
+LIBS = ../../..
 
-build: Benchmark.ino
-	arduino --verify Benchmark.ino
+build: $(SKETCH).ino 
+	arduino-cli compile  --libraries $(LIBS) --fqbn $(BOARD) $(SKETCH).ino
 
-upload: Benchmark.ino
-	arduino --upload Benchmark.ino
-
-probe:
-	ls /dev/ttyA*
+flash:
+	arduino-cli upload -p $(PORT) --fqbn $(BOARD) .
 
 listen:
-	miniterm.py /dev/tty$(PORT) 9600
+	miniterm $(PORT) 115200
 
-commit:
-	git commit -a --allow-empty-message -m ''
-	git push
+edit:
+	vim $(SKETCH).ino
 
-clean:
-	rm -f *~

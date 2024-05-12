@@ -11,8 +11,6 @@
 
 #include <TinyEKF.h>
 
-//#define DEBUG   // comment this out to do timing
-
 class Fuser : public TinyEKF {
 
     public:
@@ -30,7 +28,11 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(float fx[EKF_N], float F[EKF_N][EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N])
+        void model(
+                float fx[EKF_N], 
+                float F[EKF_N][EKF_N], 
+                float hx[EKF_M], 
+                float H[EKF_M][EKF_N])
         {
             
             for (int j=0; j<EKF_N; ++j) {
@@ -70,13 +72,6 @@ void loop() {
 
     ekf.step(z);
 
-#ifdef DEBUG
-    for (int j=0; j<EKF_N; ++j) {
-        Serial.print(ekf.getX(j));
-        Serial.print(" ");
-    }
-    Serial.println();
-#else
     count++;
 
     const auto msec = millis();
@@ -92,5 +87,4 @@ void loop() {
         count = 0;
         msec_prev = msec;
     }
-#endif
 }
