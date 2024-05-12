@@ -41,6 +41,40 @@ typedef struct {
 
 class TinyEKF {
 
+    public:
+
+        /**
+         * Returns the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @return state value at index
+         */
+        float getX(int i) 
+        { 
+            return this->ekf.x[i]; 
+        }
+
+        /**
+         * Sets the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @param value value to set
+         */
+        void setX(int i, float value) 
+        { 
+            this->ekf.x[i] = value; 
+        }
+
+        /**
+          Performs one step of the prediction and update.
+         * @param z observation vector, length <i>m</i>
+         * @return true on success, false on failure caused by
+         * non-positive-definite matrix.
+         */
+        bool step(float * z) 
+        { 
+            this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
+
+            return ekf_step(&this->ekf, z) ? false : true;
+        }
     private:
 
         ekf_t ekf;
@@ -132,7 +166,9 @@ class TinyEKF {
         }
 
         /* C <- A * B */
-        static void mulmat(float * a, float * b, float * c, int arows, int acols, int bcols)
+        static void mulmat(
+                float * a, float * b, float * c, 
+                int arows, int acols, int bcols)
         {
             int i, j,l;
 
@@ -367,16 +403,22 @@ class TinyEKF {
 
         /**
          * Implement this function for your EKF model.
-         * @param fx gets output of state-transition function <i>f(x<sub>0 .. n-1</sub>)</i>
-         * @param F gets <i>n &times; n</i> Jacobian of <i>f(x)</i>
-         * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
-         * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
+         * @param fx gets output of state-transition function <i>f(x<sub>0 ..
+         * n-1</sub>)</i> @param F gets <i>n &times; n</i> Jacobian of
+         * <i>f(x)</i>
+         * @param hx gets output of observation function <i>h(x<sub>0 ..
+         * n-1</sub>)</i> @param H gets <i>m &times; n</i> Jacobian of
+         * <i>h(x)</i>
          */
-        virtual void model(float fx[EKF_N], float F[EKF_N][EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N]) = 0;
+        virtual void model(
+                float fx[EKF_N], 
+                float F[EKF_N][EKF_N], 
+                float hx[EKF_M], 
+                float H[EKF_M][EKF_N]) = 0;
 
         /**
-         * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>
-         * @param i row index
+         * Sets the specified value of the prediction error covariance.
+         * <i>P<sub>i,j</sub> = value</i> @param i row index
          * @param j column index
          * @param value value to set
          */
@@ -385,8 +427,8 @@ class TinyEKF {
             this->ekf.P[i][j] = value; 
         }
 
-        /**
-         * Sets the specified value of the process noise covariance. <i>Q<sub>i,j</sub> = value</i>
+        /** Sets the specified value of the process noise covariance.
+         * <i>Q<sub>i,j</sub> = value</i>
          * @param i row index
          * @param j column index
          * @param value value to set
@@ -397,8 +439,8 @@ class TinyEKF {
         }
 
         /**
-         * Sets the specified value of the observation noise covariance. <i>R<sub>i,j</sub> = value</i>
-         * @param i row index
+         * Sets the specified value of the observation noise covariance.
+         * <i>R<sub>i,j</sub> = value</i> @param i row index
          * @param j column index
          * @param value value to set
          */
@@ -407,37 +449,4 @@ class TinyEKF {
             this->ekf.R[i][j] = value; 
         }
 
-    public:
-
-        /**
-         * Returns the state element at a given index.
-         * @param i the index (at least 0 and less than <i>n</i>
-         * @return state value at index
-         */
-        float getX(int i) 
-        { 
-            return this->ekf.x[i]; 
-        }
-
-        /**
-         * Sets the state element at a given index.
-         * @param i the index (at least 0 and less than <i>n</i>
-         * @param value value to set
-         */
-        void setX(int i, float value) 
-        { 
-            this->ekf.x[i] = value; 
-        }
-
-        /**
-          Performs one step of the prediction and update.
-         * @param z observation vector, length <i>m</i>
-         * @return true on success, false on failure caused by non-positive-definite matrix.
-         */
-        bool step(float * z) 
-        { 
-            this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
-
-            return ekf_step(&this->ekf, z) ? false : true;
-        }
 };
