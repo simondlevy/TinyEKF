@@ -210,26 +210,6 @@ class TinyEKF {
                 a[i*n+i] += 1;
         }
 
-        typedef struct {
-
-            float * foo;    /* state vector */
-
-            float * P;  /* prediction error covariance */
-            float * Q;  /* process noise covariance */
-            float * R;  /* measurement error covariance */
-
-            float * G;  /* Kalman gain; a.k.a. K */
-
-            float * F;  /* Jacobian of process model */
-            float * H;  /* Jacobian of measurement model */
-
-            float * Pp; /* P, post-prediction, pre-update */
-
-            float * fx;  /* output of user defined f() state-transition function */
-            float * hx;  /* output of user defined h() measurement function */
-
-        } ekf2_t;
-
         int ekf_step(
                 float * z, 
                 float fx[EKF_N], 
