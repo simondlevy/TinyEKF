@@ -58,18 +58,16 @@ class TinyEKF {
                 return false;
             }
 
-            /*
-            for (i = 0; i < n; i++) {
-                a[i*n+i] = 1 / p[i];
-                for (j = i + 1; j < n; j++) {
-                    sum = 0;
-                    for (k = i; k < j; k++) {
-                        sum -= a[j*n+k] * a[k*n+i];
+            for (uint8_t i = 0; i < EKF_M; i++) {
+                a[i][i] = 1 / p[i];
+                for (uint8_t j = i + 1; j < EKF_M; j++) {
+                    float sum = 0;
+                    for (uint8_t k = i; k < j; k++) {
+                        sum -= a[j][k] * a[k][i];
                     }
-                    a[j*n+i] = sum / p[j];
+                    a[j][i] = sum / p[j];
                 }
             }
-            */
 
             return true;
         }
