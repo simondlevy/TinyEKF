@@ -1,6 +1,6 @@
 # TinyEKF: Lightweight C++ Extended Kalman Filter with Python for prototyping
 
-<img src="media/barotemp2.jpg" width=1000>
+<img src="media/barotemp2.jpg" width=500>
 <img src="media/altitude.png" width=1000>
 
 TinyEKF is a simple C++ implementation of the [Extended Kalman Filter](https://simondlevy.github.io/ekf-tutorial/) 
