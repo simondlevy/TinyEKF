@@ -6,94 +6,44 @@
  * MIT License
  */
 
+typedef struct {
+
+    int n;          /* number of state values */
+    int m;          /* number of observables */
+
+    float x[EKF_N];    /* state vector */
+
+    float P[EKF_N][EKF_N];  /* prediction error covariance */
+    float Q[EKF_N][EKF_N];  /* process noise covariance */
+    float R[EKF_M][EKF_M];  /* measurement error covariance */
+
+    float G[EKF_N][EKF_M];  /* Kalman gain; a.k.a. K */
+
+    float F[EKF_N][EKF_N];  /* Jacobian of process model */
+    float H[EKF_M][EKF_N];  /* Jacobian of measurement model */
+
+    float Ht[EKF_N][EKF_M]; /* transpose of measurement Jacobian */
+    float Ft[EKF_N][EKF_N]; /* transpose of process Jacobian */
+    float Pp[EKF_N][EKF_N]; /* P, post-prediction, pre-update */
+
+    float fx[EKF_N];   /* output of user defined f() state-transition function */
+    float hx[EKF_M];   /* output of user defined h() measurement function */
+
+    /* temporary storage */
+    float tmp0[EKF_N][EKF_N];
+    float tmp1[EKF_N][EKF_M];
+    float tmp2[EKF_M][EKF_N];
+    float tmp3[EKF_M][EKF_M];
+    float tmp4[EKF_M][EKF_M];
+    float tmp5[EKF_M]; 
+
+} ekf_t;        
+
 class TinyEKF {
-
-    public:
-
-        /**
-          Performs one step of the prediction and update.
-         * @param z observation vector, length <i>m</i>
-         * @return true on success, false on failure caused by
-         * non-positive-definite matrix.
-         */
-        bool step(const float z[EKF_M])
-        {        
-            float tmp0[EKF_N*EKF_N] = {};
-            float tmp1[EKF_N*EKF_M] = {};
-            float tmp2[EKF_M*EKF_N] = {};
-            float tmp3[EKF_M*EKF_M] = {};
-            float tmp4[EKF_M*EKF_M] = {};
-            float tmp5[EKF_M] = {}; 
-
-            /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(F, P, tmp0, EKF_N, EKF_N, EKF_N);
-            transpose(F, Ft, EKF_N, EKF_N);
-            mulmat(tmp0, Ft, Pp, EKF_N, EKF_N, EKF_N);
-            accum(Pp, Q, EKF_N, EKF_N);
-
-            /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-            transpose(H, Ht, EKF_M, EKF_N);
-            mulmat(Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
-            mulmat(H, Pp, tmp2, EKF_M, EKF_N, EKF_N);
-            mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
-            accum(tmp3, R, EKF_M, EKF_M);
-            if (!cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
-            mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
-
-            /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
-            sub(z, hx, tmp5, EKF_M);
-            mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-            add(fx, tmp2, x, EKF_N);
-
-            /* P_k = (I - G_k H_k) P_k */
-            mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
-            negate(tmp0, EKF_N, EKF_N);
-            mat_addeye(tmp0, EKF_N);
-            mulmat(tmp0, Pp, P, EKF_N, EKF_N, EKF_N);
-
-            /* success */
-            return true;
-        }        
-        
-        /**
-         * Returns the state element at a given index.
-         * @param i the index (at least 0 and less than <i>n</i>
-         * @return state value at index
-         */
-        float getX(const int i) 
-        { 
-            return x[i]; 
-        }
-
-        /**
-         * Sets the state element at a given index.
-         * @param i the index (at least 0 and less than <i>n</i>
-         * @param value value to set
-         */
-        void setX(const int i, const float value) 
-        { 
-            x[i] = value; 
-        }
 
     private:
 
-        float x[EKF_N];    /* state vector */
-
-        float P[EKF_N*EKF_N];  /* prediction error covariance */
-        float Q[EKF_N*EKF_N];  /* process noise covariance */
-        float R[EKF_M*EKF_M];  /* measurement error covariance */
-
-        float G[EKF_N*EKF_M];  /* Kalman gain; a.k.a. K */
-
-        float F[EKF_N*EKF_N];  /* Jacobian of process model */
-        float H[EKF_M*EKF_N];  /* Jacobian of measurement model */
-
-        float Ht[EKF_N*EKF_M]; /* transpose of measurement Jacobian */
-        float Ft[EKF_N*EKF_N]; /* transpose of process Jacobian */
-        float Pp[EKF_N*EKF_N]; /* P, post-prediction, pre-update */
-
-        float fx[EKF_N];   /* output of user defined f() state-transition function */
-        float hx[EKF_M];   /* output of user defined h() measurement function */
+        ekf_t ekf;
 
         // Cholesky-decomposition matrix-inversion code, adapated from
         // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
@@ -123,13 +73,13 @@ class TinyEKF {
             return 0; /* success */
         }
 
-        static bool choldcsl(float * A, float * a, float * p, int n) 
+        static int choldcsl(float * A, float * a, float * p, int n) 
         {
             int i,j,k; float sum;
             for (i = 0; i < n; i++) 
                 for (j = 0; j < n; j++) 
                     a[i*n+j] = A[i*n+j];
-            if (choldc1(a, p, n)) return false;
+            if (choldc1(a, p, n)) return 1;
             for (i = 0; i < n; i++) {
                 a[i*n+i] = 1 / p[i];
                 for (j = i + 1; j < n; j++) {
@@ -141,13 +91,14 @@ class TinyEKF {
                 }
             }
 
-            return true; /* success */
+            return 0; /* success */
         }
 
-        static bool cholsl(float * A, float * a, float * p, int n) 
+
+        static int cholsl(float * A, float * a, float * p, int n) 
         {
             int i,j,k;
-            if (choldcsl(A,a,p,n)) return false;
+            if (choldcsl(A,a,p,n)) return 1;
             for (i = 0; i < n; i++) {
                 for (j = i + 1; j < n; j++) {
                     a[i*n+j] = 0.0;
@@ -170,12 +121,18 @@ class TinyEKF {
                 }
             }
 
-            return true; /* success */
+            return 0; /* success */
+        }
+
+        static void zeros(float * a, int m, int n)
+        {
+            int j;
+            for (j=0; j<m*n; ++j)
+                a[j] = 0;
         }
 
         /* C <- A * B */
-        static void mulmat(
-                float * a, float * b, float * c, int arows, int acols, int bcols)
+        static void mulmat(float * a, float * b, float * c, int arows, int acols, int bcols)
         {
             int i, j,l;
 
@@ -252,55 +209,235 @@ class TinyEKF {
             for (i=0; i<n; ++i)
                 a[i*n+i] += 1;
         }
+        typedef struct {
 
+            float * x;    /* state vector */
 
+            float * P;  /* prediction error covariance */
+            float * Q;  /* process noise covariance */
+            float * R;  /* measurement error covariance */
+
+            float * G;  /* Kalman gain; a.k.a. K */
+
+            float * F;  /* Jacobian of process model */
+            float * H;  /* Jacobian of measurement model */
+
+            float * Ht; /* transpose of measurement Jacobian */
+            float * Ft; /* transpose of process Jacobian */
+            float * Pp; /* P, post-prediction, pre-update */
+
+            float * fx;  /* output of user defined f() state-transition function */
+            float * hx;  /* output of user defined h() measurement function */
+
+            /* temporary storage */
+            float * tmp0;
+            float * tmp1;
+            float * tmp2;
+            float * tmp3;
+            float * tmp4;
+            float * tmp5; 
+
+        } ekf_t;
+
+        static void unpack(void * v, ekf_t * ekf, int n, int m)
+        {
+            /* skip over n, m in data structure */
+            char * cptr = (char *)v;
+            cptr += 2*sizeof(int);
+
+            float * dptr = (float *)cptr;
+            ekf->x = dptr;
+            dptr += n;
+            ekf->P = dptr;
+            dptr += n*n;
+            ekf->Q = dptr;
+            dptr += n*n;
+            ekf->R = dptr;
+            dptr += m*m;
+            ekf->G = dptr;
+            dptr += n*m;
+            ekf->F = dptr;
+            dptr += n*n;
+            ekf->H = dptr;
+            dptr += m*n;
+            ekf->Ht = dptr;
+            dptr += n*m;
+            ekf->Ft = dptr;
+            dptr += n*n;
+            ekf->Pp = dptr;
+            dptr += n*n;
+            ekf->fx = dptr;
+            dptr += n;
+            ekf->hx = dptr;
+            dptr += m;
+            ekf->tmp0 = dptr;
+            dptr += n*n;
+            ekf->tmp1 = dptr;
+            dptr += n*m;
+            ekf->tmp2 = dptr;
+            dptr += m*n;
+            ekf->tmp3 = dptr;
+            dptr += m*m;
+            ekf->tmp4 = dptr;
+            dptr += m*m;
+            ekf->tmp5 = dptr;
+        }
+
+        void ekf_init(void * v, int n, int m)
+        {
+            /* retrieve n, m and set them in incoming data structure */
+            int * ptr = (int *)v;
+            *ptr = n;
+            ptr++;
+            *ptr = m;
+
+            /* unpack rest of incoming structure for initlization */
+            ekf_t ekf;
+            unpack(v, &ekf, n, m);
+
+            /* zero-out matrices */
+            zeros(ekf.P, n, n);
+            zeros(ekf.Q, n, n);
+            zeros(ekf.R, m, m);
+            zeros(ekf.G, n, m);
+            zeros(ekf.F, n, n);
+            zeros(ekf.H, m, n);
+        }
+
+        int ekf_step(void * v, float * z)
+        {        
+            /* unpack incoming structure */
+
+            int * ptr = (int *)v;
+            int n = *ptr;
+            ptr++;
+            int m = *ptr;
+
+            ekf_t ekf;
+            unpack(v, &ekf, n, m); 
+
+            /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
+            mulmat(ekf.F, ekf.P, ekf.tmp0, n, n, n);
+            transpose(ekf.F, ekf.Ft, n, n);
+            mulmat(ekf.tmp0, ekf.Ft, ekf.Pp, n, n, n);
+            accum(ekf.Pp, ekf.Q, n, n);
+
+            /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
+            transpose(ekf.H, ekf.Ht, m, n);
+            mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m);
+            mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n);
+            mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m);
+            accum(ekf.tmp3, ekf.R, m, m);
+            if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
+            mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
+
+            /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
+            sub(z, ekf.hx, ekf.tmp5, m);
+            mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
+            add(ekf.fx, ekf.tmp2, ekf.x, n);
+
+            /* P_k = (I - G_k H_k) P_k */
+            mulmat(ekf.G, ekf.H, ekf.tmp0, n, m, n);
+            negate(ekf.tmp0, n, n);
+            mat_addeye(ekf.tmp0, n);
+            mulmat(ekf.tmp0, ekf.Pp, ekf.P, n, n, n);
+
+            /* success */
+            return 0;
+        }
     protected:
 
         /**
+         * The current state.
+         */
+        float * x;
+
+        /**
+         * Initializes a TinyEKF object.
+         */
+        TinyEKF() { 
+            ekf_init(&this->ekf, EKF_N, EKF_M); 
+            this->x = this->ekf.x; 
+        }
+
+        /**
+         * Deallocates memory for a TinyEKF object.
+         */
+        ~TinyEKF() { }
+
+        /**
          * Implement this function for your EKF model.
-         * @param fx gets output of state-transition function <i>f(x<sub>0 ..
-         * n-1</sub>)</i> @param F gets <i>n &times; n</i> Jacobian of
-         * <i>f(x)</i>
-         * @param hx gets output of observation function <i>h(x<sub>0 ..
-         * n-1</sub>)</i> @param H gets <i>m &times; n</i> Jacobian of
-         * <i>h(x)</i>
+         * @param fx gets output of state-transition function <i>f(x<sub>0 .. n-1</sub>)</i>
+         * @param F gets <i>n &times; n</i> Jacobian of <i>f(x)</i>
+         * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
+         * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
          */
-        virtual void model(
-                float fx[EKF_N], 
-                float F[EKF_N][EKF_N], 
-                float hx[EKF_M], 
-                float H[EKF_M][EKF_N]) = 0;
+        virtual void model(float fx[EKF_N], float F[EKF_N][EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N]) = 0;
 
         /**
-         * Sets the specified value of the prediction error covariance.
-         * <i>P<sub>i,j</sub> = value</i> @param i row index
+         * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>
+         * @param i row index
          * @param j column index
          * @param value value to set
          */
-        void setP(const int i, const int j, const float value) 
+        void setP(int i, int j, float value) 
         { 
-            P[i*EKF_N+j] = value; 
+            this->ekf.P[i][j] = value; 
         }
 
         /**
-         * Sets the specified value of the process noise covariance.
-         * <i>Q<sub>i,j</sub> = value</i> @param i row index
+         * Sets the specified value of the process noise covariance. <i>Q<sub>i,j</sub> = value</i>
+         * @param i row index
          * @param j column index
          * @param value value to set
          */
-        void setQ(const int i, const int j, float value) 
+        void setQ(int i, int j, float value) 
         { 
-            Q[i*EKF_N+j] = value; 
+            this->ekf.Q[i][j] = value; 
         }
 
         /**
-         * Sets the specified value of the observation noise covariance.
-         * <i>R<sub>i,j</sub> = value</i> @param i row index
+         * Sets the specified value of the observation noise covariance. <i>R<sub>i,j</sub> = value</i>
+         * @param i row index
          * @param j column index
          * @param value value to set
          */
-        void setR(const int i, const int j, const float value) 
+        void setR(int i, int j, float value) 
         { 
-            R[i*EKF_M+j] = value; 
+            this->ekf.R[i][j] = value; 
+        }
+
+    public:
+
+        /**
+         * Returns the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @return state value at index
+         */
+        float getX(int i) 
+        { 
+            return this->ekf.x[i]; 
+        }
+
+        /**
+         * Sets the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @param value value to set
+         */
+        void setX(int i, float value) 
+        { 
+            this->ekf.x[i] = value; 
+        }
+
+        /**
+          Performs one step of the prediction and update.
+         * @param z observation vector, length <i>m</i>
+         * @return true on success, false on failure caused by non-positive-definite matrix.
+         */
+        bool step(float * z) 
+        { 
+            this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
+
+            return ekf_step(&this->ekf, z) ? false : true;
         }
 };
