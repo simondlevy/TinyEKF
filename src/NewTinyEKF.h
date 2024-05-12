@@ -210,6 +210,12 @@ class TinyEKF {
                 a[i*n+i] += 1;
         }
 
+        float P[EKF_N * EKF_N];
+
+        float Q[EKF_N * EKF_N];  
+
+        float R[EKF_M * EKF_M];  
+
         int ekf_step(
                 float * z, 
                 float fx[EKF_N], 
@@ -267,16 +273,7 @@ class TinyEKF {
 
     protected:
 
-        /**
-         * The current state.
-         */
         float x[EKF_N];
-
-        float P[EKF_N * EKF_N];
-
-        float Q[EKF_N * EKF_N];  
-
-        float R[EKF_M * EKF_M];  
 
         /**
          * Implement this function for your EKF model.
