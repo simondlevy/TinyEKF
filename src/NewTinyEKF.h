@@ -20,7 +20,6 @@ typedef struct {
     float F[EKF_N][EKF_N];  
     float H[EKF_M][EKF_N];  
 
-    float Ht[EKF_N][EKF_M]; 
     float Ft[EKF_N][EKF_N]; 
     float Pp[EKF_N][EKF_N]; 
 
@@ -249,7 +248,6 @@ class TinyEKF {
             float * F;  /* Jacobian of process model */
             float * H;  /* Jacobian of measurement model */
 
-            float * Ht; /* transpose of measurement Jacobian */
             float * Ft; /* transpose of process Jacobian */
             float * Pp; /* P, post-prediction, pre-update */
 
@@ -277,8 +275,6 @@ class TinyEKF {
             dptr += n*n;
             ekf->H = dptr;
             dptr += m*n;
-            ekf->Ht = dptr;
-            dptr += n*m;
             ekf->Ft = dptr;
             dptr += n*n;
             ekf->Pp = dptr;
@@ -328,7 +324,8 @@ class TinyEKF {
             float tmp4[EKF_M*EKF_M] = {};
             float tmp5[EKF_M] = {}; 
 
-            float G[EKF_N*EKF_M];  
+            float G[EKF_N*EKF_M] = {};  
+            float Ht[EKF_N*EKF_M] = {}; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
             mulmat(ekf2.F, ekf2.P, tmp0, n, n, n);
@@ -337,10 +334,10 @@ class TinyEKF {
             accum(ekf2.Pp, ekf2.Q, n, n);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-            transpose(ekf2.H, ekf2.Ht, m, n);
-            mulmat(ekf2.Pp, ekf2.Ht, tmp1, n, n, m);
+            transpose(ekf2.H, Ht, m, n);
+            mulmat(ekf2.Pp, Ht, tmp1, n, n, m);
             mulmat(ekf2.H, ekf2.Pp, tmp2, m, n, n);
-            mulmat(tmp2, ekf2.Ht, tmp3, m, n, m);
+            mulmat(tmp2, Ht, tmp3, m, n, m);
             accum(tmp3, ekf2.R, m, m);
             if (cholsl(tmp3, tmp4, tmp5, m)) return 1;
             mulmat(tmp1, tmp4, G, n, m, m);
