@@ -350,34 +350,34 @@ class TinyEKF {
             ptr++;
             int m = *ptr;
 
-            ekf2_t ekf;
-            unpack(v, &ekf, n, m); 
+            ekf2_t ekf2;
+            unpack(v, &ekf2, n, m); 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(ekf.F, ekf.P, ekf.tmp0, n, n, n);
-            transpose(ekf.F, ekf.Ft, n, n);
-            mulmat(ekf.tmp0, ekf.Ft, ekf.Pp, n, n, n);
-            accum(ekf.Pp, ekf.Q, n, n);
+            mulmat(ekf2.F, ekf2.P, ekf2.tmp0, n, n, n);
+            transpose(ekf2.F, ekf2.Ft, n, n);
+            mulmat(ekf2.tmp0, ekf2.Ft, ekf2.Pp, n, n, n);
+            accum(ekf2.Pp, ekf2.Q, n, n);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-            transpose(ekf.H, ekf.Ht, m, n);
-            mulmat(ekf.Pp, ekf.Ht, ekf.tmp1, n, n, m);
-            mulmat(ekf.H, ekf.Pp, ekf.tmp2, m, n, n);
-            mulmat(ekf.tmp2, ekf.Ht, ekf.tmp3, m, n, m);
-            accum(ekf.tmp3, ekf.R, m, m);
-            if (cholsl(ekf.tmp3, ekf.tmp4, ekf.tmp5, m)) return 1;
-            mulmat(ekf.tmp1, ekf.tmp4, ekf.G, n, m, m);
+            transpose(ekf2.H, ekf2.Ht, m, n);
+            mulmat(ekf2.Pp, ekf2.Ht, ekf2.tmp1, n, n, m);
+            mulmat(ekf2.H, ekf2.Pp, ekf2.tmp2, m, n, n);
+            mulmat(ekf2.tmp2, ekf2.Ht, ekf2.tmp3, m, n, m);
+            accum(ekf2.tmp3, ekf2.R, m, m);
+            if (cholsl(ekf2.tmp3, ekf2.tmp4, ekf2.tmp5, m)) return 1;
+            mulmat(ekf2.tmp1, ekf2.tmp4, ekf2.G, n, m, m);
 
             /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
-            sub(z, ekf.hx, ekf.tmp5, m);
-            mulvec(ekf.G, ekf.tmp5, ekf.tmp2, n, m);
-            add(ekf.fx, ekf.tmp2, ekf.x, n);
+            sub(z, ekf2.hx, ekf2.tmp5, m);
+            mulvec(ekf2.G, ekf2.tmp5, ekf2.tmp2, n, m);
+            add(ekf2.fx, ekf2.tmp2, ekf2.x, n);
 
             /* P_k = (I - G_k H_k) P_k */
-            mulmat(ekf.G, ekf.H, ekf.tmp0, n, m, n);
-            negate(ekf.tmp0, n, n);
-            mat_addeye(ekf.tmp0, n);
-            mulmat(ekf.tmp0, ekf.Pp, ekf.P, n, n, n);
+            mulmat(ekf2.G, ekf2.H, ekf2.tmp0, n, m, n);
+            negate(ekf2.tmp0, n, n);
+            mat_addeye(ekf2.tmp0, n);
+            mulmat(ekf2.tmp0, ekf2.Pp, ekf2.P, n, n, n);
 
             /* success */
             return 0;
