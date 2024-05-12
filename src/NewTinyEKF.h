@@ -328,7 +328,7 @@ class TinyEKF {
             float Pp[EKF_N*EKF_N]; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(_F, ekf2.P, tmp0, EKF_N,EKF_N, EKF_N);
+            mulmat(_F, P, tmp0, EKF_N,EKF_N, EKF_N);
             transpose(_F, Ft, EKF_N, EKF_N);
             mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
             accum(Pp, ekf2.Q, EKF_N, EKF_N);
@@ -351,7 +351,7 @@ class TinyEKF {
             mulmat(G, _H, tmp0, EKF_N,EKF_M,n);
             negate(tmp0, EKF_N, EKF_N);
             mat_addeye(tmp0, n);
-            mulmat(tmp0, Pp, ekf2.P, EKF_N,EKF_N, EKF_N);
+            mulmat(tmp0, Pp, P, EKF_N,EKF_N, EKF_N);
 
             /* success */
             return 0;
@@ -363,6 +363,8 @@ class TinyEKF {
          * The current state.
          */
         float x[EKF_N];
+
+        float P[EKF_N * EKF_N];
 
         /**
          * Initializes a TinyEKF object.
