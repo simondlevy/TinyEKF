@@ -29,7 +29,6 @@ typedef struct {
     float fx[EKF_N];   
     float hx[EKF_M];   
 
-    float tmp2[EKF_M][EKF_N];
     float tmp3[EKF_M][EKF_M];
     float tmp4[EKF_M][EKF_M];
     float tmp5[EKF_M]; 
@@ -264,7 +263,6 @@ class TinyEKF {
             float * hx;  /* output of user defined h() measurement function */
 
             /* temporary storage */
-            float * tmp2;
             float * tmp3;
             float * tmp4;
             float * tmp5; 
@@ -303,8 +301,6 @@ class TinyEKF {
             ekf->hx = dptr;
 
             dptr += m;
-            ekf->tmp2 = dptr;
-            dptr += m*n;
             ekf->tmp3 = dptr;
             dptr += m*m;
             ekf->tmp4 = dptr;
@@ -346,7 +342,8 @@ class TinyEKF {
             unpack(v, &ekf2, n, m); 
 
             float tmp0[EKF_N*EKF_N] = {};
-            float tmp1[EKF_N*EKF_M];
+            float tmp1[EKF_N*EKF_M] = {};
+            float tmp2[EKF_M*EKF_N] = {};
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
             mulmat(ekf2.F, ekf2.P, tmp0, n, n, n);
@@ -357,16 +354,16 @@ class TinyEKF {
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
             transpose(ekf2.H, ekf2.Ht, m, n);
             mulmat(ekf2.Pp, ekf2.Ht, tmp1, n, n, m);
-            mulmat(ekf2.H, ekf2.Pp, ekf2.tmp2, m, n, n);
-            mulmat(ekf2.tmp2, ekf2.Ht, ekf2.tmp3, m, n, m);
+            mulmat(ekf2.H, ekf2.Pp, tmp2, m, n, n);
+            mulmat(tmp2, ekf2.Ht, ekf2.tmp3, m, n, m);
             accum(ekf2.tmp3, ekf2.R, m, m);
             if (cholsl(ekf2.tmp3, ekf2.tmp4, ekf2.tmp5, m)) return 1;
             mulmat(tmp1, ekf2.tmp4, ekf2.G, n, m, m);
 
             /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
             sub(z, ekf2.hx, ekf2.tmp5, m);
-            mulvec(ekf2.G, ekf2.tmp5, ekf2.tmp2, n, m);
-            add(ekf2.fx, ekf2.tmp2, ekf2.x, n);
+            mulvec(ekf2.G, ekf2.tmp5, tmp2, n, m);
+            add(ekf2.fx, tmp2, ekf2.x, n);
 
             /* P_k = (I - G_k H_k) P_k */
             mulmat(ekf2.G, ekf2.H, tmp0, n, m, n);
