@@ -1,4 +1,4 @@
-SKETCH = SensorFusion
+SKETCH = NewSensorFusion
 
 PORT = /dev/ttyACM0
 
