@@ -7,8 +7,8 @@
 
 
 // These must be defined before including TinyEKF.h
-#define Nsta 2     // pressure, temperature
-#define Mobs 3     // baro pressure, baro temperature, LM35 temperature
+#define EKF_N 2     // pressure, temperature
+#define EKF_M 3     // baro pressure, baro temperature, LM35 temperature
 
 static const uint8_t LM35_PIN = 0;
 
@@ -35,10 +35,10 @@ class Fuser : public TinyEKF {
     protected:
 
         void model(
-                double fx[Nsta], 
-                double F[Nsta][Nsta], 
-                double hx[Mobs], 
-                double H[Mobs][Nsta])
+                double fx[EKF_N], 
+                double F[EKF_N][EKF_N], 
+                double hx[EKF_M], 
+                double H[EKF_M][EKF_N])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];

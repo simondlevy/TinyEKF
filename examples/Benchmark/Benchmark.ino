@@ -6,11 +6,10 @@
  */
 
 
-#define Nsta 5     // states, will also be measurement values M
-#define Mobs Nsta
+#define EKF_N 5     // states, will also be measurement values M
+#define EKF_M EKF_N
 
 #include <TinyEKF.h>
-#include <elapsedMillis.h>
 
 //#define DEBUG   // comment this out to do timing
 
@@ -21,20 +20,20 @@ class Fuser : public TinyEKF {
         Fuser()
         {            
             // We approximate the process noise using a small constant
-            for (int j=0; j<Nsta; ++j)
+            for (int j=0; j<EKF_N; ++j)
                 this->setQ(j, j, .0001);
 
             // Same for measurement noise
-            for (int j=0; j<Nsta; ++j)
+            for (int j=0; j<EKF_N; ++j)
                 this->setR(j, j, .0001);
         }
 
     protected:
 
-        void model(double fx[Nsta], double F[Nsta][Nsta], double hx[Mobs], double H[Mobs][Nsta])
+        void model(double fx[EKF_N], double F[EKF_N][EKF_N], double hx[EKF_M], double H[EKF_M][EKF_N])
         {
             
-            for (int j=0; j<Nsta; ++j) {
+            for (int j=0; j<EKF_N; ++j) {
 
                 // Process model is f(x) = x
                 fx[j] = x[j];
@@ -42,7 +41,7 @@ class Fuser : public TinyEKF {
                 // So process model Jacobian is identity matrix
                 F[j][j] = 1;
 
-                // Mobseasurement function
+                // EKF_Measurement function
                 hx[j] = this->x[j]; 
 
                 // Jacobian of measurement function
@@ -51,17 +50,16 @@ class Fuser : public TinyEKF {
         }
 };
 
-Fuser ekf;
-unsigned long count;
-elapsedMillis timeElapsed; 
-double z[Mobs];
+static Fuser ekf;
+static unsigned long count;
+static double z[EKF_M];
 
 void setup() {
 
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Fake up some sensor readings for later
-    for (int j=0; j<Nsta; ++j)
+    for (int j=0; j<EKF_N; ++j)
         z[j] = j;
 
     count = 0;
@@ -73,7 +71,7 @@ void loop() {
     ekf.step(z);
 
 #ifdef DEBUG
-    for (int j=0; j<Nsta; ++j) {
+    for (int j=0; j<EKF_N; ++j) {
         Serial.print(ekf.getX(j));
         Serial.print(" ");
     }
@@ -81,14 +79,18 @@ void loop() {
 #else
     count++;
 
-    if (timeElapsed > 1000) {
+    const auto msec = millis();
+
+    static uint32_t msec_prev;
+
+    if (msec - msec_prev > 1000) {
         Serial.print("N = M = ");
-        Serial.print(Nsta);
+        Serial.print(EKF_N);
         Serial.print(" : ");
         Serial.print(count);
         Serial.println(" updates per second");
-        timeElapsed = 0;
         count = 0;
+        msec_prev = msec;
     }
 #endif
 }
