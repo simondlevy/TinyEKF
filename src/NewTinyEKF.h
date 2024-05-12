@@ -67,7 +67,7 @@ class TinyEKF {
         }
         */
 
-        static void cholsl(
+        static bool cholsl(
                 float A[EKF_M][EKF_M], float a[EKF_M][EKF_M], float p[EKF_M]) 
         {
             /*
@@ -94,6 +94,8 @@ class TinyEKF {
                     a[i*n+j] = a[j*n+i];
                 }
             }*/
+
+            return true;
         }
 
         // Matrix * Matrix
@@ -177,7 +179,7 @@ class TinyEKF {
 
     public:
 
-        void step(float v[EKF_N], float z[EKF_M])
+        bool step(float v[EKF_N], float z[EKF_M])
         {        
             // Predict -------------------------------------------------------
 
@@ -209,7 +211,9 @@ class TinyEKF {
             accum(HPpHt, R);
             float tmp4[EKF_M][EKF_M];
             float tmp5[EKF_M]; 
-            cholsl(HPpHt, tmp4, tmp5);
+            if (!cholsl(HPpHt, tmp4, tmp5)) {
+                return false;
+            }
             /*
             mulmat(PpHt, tmp4, G, n, m, m);
 
@@ -224,6 +228,8 @@ class TinyEKF {
             mat_addeye(tmp0, n);
             mulmat(tmp0, Pp, P, n, n, n);
             */
+
+            return true;
         }
 
         /**
