@@ -44,13 +44,18 @@ class TinyEKF {
 
             return 0; // success 
         }
+        */
 
-        static int choldcsl(float * A, float * a, float * p, int n) 
+        static bool choldcsl(
+                float A[EKF_M][EKF_M], float a[EKF_M][EKF_M], float p[EKF_M]) 
         {
-            int i,j,k; float sum;
-            for (i = 0; i < n; i++) 
-                for (j = 0; j < n; j++) 
-                    a[i*n+j] = A[i*n+j];
+            for (uint8_t i = 0; i < EKF_M; i++) {
+                for (uint8_t j = 0; j < EKF_M; j++)  {
+                    a[i][j] = A[i][j];
+                }
+            }
+
+                    /*
             if (choldc1(a, p, n)) return 1;
             for (i = 0; i < n; i++) {
                 a[i*n+i] = 1 / p[i];
@@ -62,17 +67,19 @@ class TinyEKF {
                     a[j*n+i] = sum / p[j];
                 }
             }
+            */
 
-            return 0; // success 
+            return true;
         }
-        */
 
         static bool cholsl(
                 float A[EKF_M][EKF_M], float a[EKF_M][EKF_M], float p[EKF_M]) 
         {
+            if (choldcsl(A, a, p)) {
+                return false;
+            }
+
             /*
-            int i,j,k;
-            if (choldcsl(A,a,p,n)) return 1;
             for (i = 0; i < n; i++) {
                 for (j = i + 1; j < n; j++) {
                     a[i*n+j] = 0.0;
