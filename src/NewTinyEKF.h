@@ -29,9 +29,6 @@ typedef struct {
     float fx[EKF_N];   
     float hx[EKF_M];   
 
-    float tmp4[EKF_M][EKF_M];
-    float tmp5[EKF_M]; 
-
 } ekf1_t;        
 
 class TinyEKF {
@@ -261,10 +258,6 @@ class TinyEKF {
             float * fx;  /* output of user defined f() state-transition function */
             float * hx;  /* output of user defined h() measurement function */
 
-            /* temporary storage */
-            float * tmp4;
-            float * tmp5; 
-
         } ekf2_t;
 
         static void unpack(void * v, ekf2_t * ekf, int n, int m)
@@ -297,11 +290,6 @@ class TinyEKF {
             ekf->fx = dptr;
             dptr += n;
             ekf->hx = dptr;
-
-            dptr += m;
-            ekf->tmp4 = dptr;
-            dptr += m*m;
-            ekf->tmp5 = dptr;
         }
 
         void ekf_init(void * v, int n, int m)
@@ -341,6 +329,8 @@ class TinyEKF {
             float tmp1[EKF_N*EKF_M] = {};
             float tmp2[EKF_M*EKF_N] = {};
             float tmp3[EKF_M*EKF_M] = {};
+            float tmp4[EKF_M*EKF_M] = {};
+            float tmp5[EKF_M] = {}; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
             mulmat(ekf2.F, ekf2.P, tmp0, n, n, n);
@@ -354,12 +344,12 @@ class TinyEKF {
             mulmat(ekf2.H, ekf2.Pp, tmp2, m, n, n);
             mulmat(tmp2, ekf2.Ht, tmp3, m, n, m);
             accum(tmp3, ekf2.R, m, m);
-            if (cholsl(tmp3, ekf2.tmp4, ekf2.tmp5, m)) return 1;
-            mulmat(tmp1, ekf2.tmp4, ekf2.G, n, m, m);
+            if (cholsl(tmp3, tmp4, tmp5, m)) return 1;
+            mulmat(tmp1, tmp4, ekf2.G, n, m, m);
 
             /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
-            sub(z, ekf2.hx, ekf2.tmp5, m);
-            mulvec(ekf2.G, ekf2.tmp5, tmp2, n, m);
+            sub(z, ekf2.hx, tmp5, m);
+            mulvec(ekf2.G, tmp5, tmp2, n, m);
             add(ekf2.fx, tmp2, ekf2.x, n);
 
             /* P_k = (I - G_k H_k) P_k */
