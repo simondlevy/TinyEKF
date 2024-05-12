@@ -305,16 +305,6 @@ class TinyEKF {
             float _H[EKF_M*EKF_N] = {};
             memcpy(_H, H, EKF_M*EKF_N*sizeof(float));
 
-            /* unpack incoming structure */
-
-            int * ptr = (int *)v;
-            int n = *ptr;
-            ptr++;
-            int m = *ptr;
-
-            ekf2_t ekf2;
-            unpack(v, &ekf2, n, m); 
-
             float tmp0[EKF_N*EKF_N] = {};
             float tmp1[EKF_N*EKF_M] = {};
             float tmp2[EKF_M*EKF_N] = {};
@@ -334,23 +324,23 @@ class TinyEKF {
             accum(Pp, Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-            transpose(_H, Ht, EKF_M,n);
+            transpose(_H, Ht, EKF_M, EKF_N);
             mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
             mulmat(_H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
             accum(tmp3, R, EKF_M, EKF_M);
-            if (cholsl(tmp3, tmp4, tmp5, m)) return 1;
+            if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return 1;
             mulmat(tmp1, tmp4, G, EKF_N,EKF_M, EKF_M);
 
             /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
-            sub(z, hx, tmp5, m);
+            sub(z, hx, tmp5, EKF_M);
             mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-            add(fx, tmp2, x, n);
+            add(fx, tmp2, x, EKF_N);
 
             /* P_k = (I - G_k H_k) P_k */
-            mulmat(G, _H, tmp0, EKF_N,EKF_M,n);
+            mulmat(G, _H, tmp0, EKF_N,EKF_M, EKF_N);
             negate(tmp0, EKF_N, EKF_N);
-            mat_addeye(tmp0, n);
+            mat_addeye(tmp0, EKF_N);
             mulmat(tmp0, Pp, P, EKF_N,EKF_N, EKF_N);
 
             /* success */
