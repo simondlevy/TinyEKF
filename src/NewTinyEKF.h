@@ -6,27 +6,6 @@
  * MIT License
  */
 
-typedef struct {
-
-    int n;          
-    int m;          
-
-    float x[EKF_N];    
-
-    float P[EKF_N][EKF_N];  
-    float Q[EKF_N][EKF_N];  
-    float R[EKF_M][EKF_M];  
-
-    float F[EKF_N][EKF_N];  
-    float H[EKF_M][EKF_N];  
-
-    float Pp[EKF_N][EKF_N]; 
-
-    float fx[EKF_N];   
-    float hx[EKF_M];   
-
-} ekf1_t;        
-
 class TinyEKF {
 
     public:
@@ -66,12 +45,10 @@ class TinyEKF {
 
             this->model(fx, F, hx, H); 
 
-            return ekf_step(&this->ekf, z, fx, F, hx, H) ? false : true;
+            return ekf_step(z, fx, F, hx, H) ? false : true;
         }
 
     private:
-
-        ekf1_t ekf;
 
         // Cholesky-decomposition matrix-inversion code, adapated from
         // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
@@ -254,7 +231,6 @@ class TinyEKF {
         } ekf2_t;
 
         int ekf_step(
-                void * v, 
                 float * z, 
                 float fx[EKF_N], 
                 float F[EKF_N][EKF_N],
