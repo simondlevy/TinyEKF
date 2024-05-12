@@ -323,17 +323,18 @@ class TinyEKF {
             float G[EKF_N*EKF_M] = {};  
             float Ht[EKF_N*EKF_M] = {}; 
             float Ft[EKF_N*EKF_N] = {};
+            float Pp[EKF_N*EKF_N]; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
             mulmat(ekf2.F, ekf2.P, tmp0, EKF_N,EKF_N, EKF_N);
             transpose(ekf2.F, Ft, EKF_N, EKF_N);
-            mulmat(tmp0, Ft, ekf2.Pp, EKF_N,EKF_N, EKF_N);
-            accum(ekf2.Pp, ekf2.Q, EKF_N, EKF_N);
+            mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
+            accum(Pp, ekf2.Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
             transpose(ekf2.H, Ht, EKF_M,n);
-            mulmat(ekf2.Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
-            mulmat(ekf2.H, ekf2.Pp, tmp2, EKF_M,EKF_N, EKF_N);
+            mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
+            mulmat(ekf2.H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
             accum(tmp3, ekf2.R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, m)) return 1;
@@ -348,7 +349,7 @@ class TinyEKF {
             mulmat(G, ekf2.H, tmp0, EKF_N,EKF_M,n);
             negate(tmp0, EKF_N, EKF_N);
             mat_addeye(tmp0, n);
-            mulmat(tmp0, ekf2.Pp, ekf2.P, EKF_N,EKF_N, EKF_N);
+            mulmat(tmp0, Pp, ekf2.P, EKF_N,EKF_N, EKF_N);
 
             /* success */
             return 0;
