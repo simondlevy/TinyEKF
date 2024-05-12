@@ -152,13 +152,6 @@ class TinyEKF {
             return 0; /* success */
         }
 
-        static void zeros(float * a, int m, int n)
-        {
-            int j;
-            for (j=0; j<m*n; ++j)
-                a[j] = 0;
-        }
-
         /* C <- A * B */
         static void mulmat(
                 float * a, float * b, float * c, 
@@ -297,14 +290,6 @@ class TinyEKF {
             /* unpack rest of incoming structure for initlization */
             ekf2_t ekf;
             unpack(v, &ekf, n, m);
-
-            /* zero-out matrices */
-            zeros(ekf.P, n, n);
-            zeros(ekf.Q, n, n);
-            zeros(ekf.R, m, m);
-            zeros(ekf.G, n, m);
-            zeros(ekf.F, n, n);
-            zeros(ekf.H, m, n);
         }
 
         int ekf_step(
