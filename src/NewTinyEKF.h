@@ -159,18 +159,18 @@ class TinyEKF {
         }
 
         // A <- A + B 
-        static void accum(float a[EKF_M][EKF_N], float  b[EKF_N][EKF_M])
+        static void accum(float a[EKF_N][EKF_N], float  b[EKF_N][EKF_N])
         {        
-            for (uint8_t i=0; i<EKF_M; ++i) {
+            for (uint8_t i=0; i<EKF_N; ++i) {
                 for (uint8_t j=0; j<EKF_N; ++j) {
                     a[i][j] += b[i][j];
                 }
             }
         }
-        static void accum(float a[EKF_M][EKF_N], float  b[EKF_N][EKF_N])
+        static void accum(float a[EKF_M][EKF_M], float  b[EKF_N][EKF_M])
         {        
-            for (uint8_t i=0; i<EKF_N; ++i) {
-                for (uint8_t j=0; j<EKF_N; ++j) {
+            for (uint8_t i=0; i<EKF_M; ++i) {
+                for (uint8_t j=0; j<EKF_M; ++j) {
                     a[i][j] += b[i][j];
                 }
             }
@@ -193,13 +193,12 @@ class TinyEKF {
 
             // Update --------------------------------------------------------
 
-            /*
-            float tmp0[EKF_N][EKF_N];
-            float tmp1[EKF_N][EKF_M];
-            float tmp2[EKF_M][EKF_N];
-            float tmp3[EKF_M][EKF_M];
-            float tmp4[EKF_M][EKF_M];
-            float tmp5[EKF_M]; 
+            //float tmp0[EKF_N][EKF_N];
+            //float tmp1[EKF_N][EKF_M];
+            //float tmp2[EKF_M][EKF_N];
+            //float tmp3[EKF_M][EKF_M];
+            //float tmp4[EKF_M][EKF_M];
+            //float tmp5[EKF_M]; 
 
             // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
             float Ht[EKF_N][EKF_M] = {};
@@ -207,10 +206,12 @@ class TinyEKF {
             float PpHt[EKF_N][EKF_M] = {};
             multiply(Pp, Ht, PpHt);
             float HPp[EKF_M][EKF_N] = {};
-            mulmat(H, Pp, HPpn);
-            mulmat(HPp, Ht, tmp3, m, n, m);
-            accum(tmp3, R, m, m);
-            cholsl(tmp3, tmp4, tmp5, m);
+            multiply(H, Pp, HPp);
+            float HPpHt[EKF_M][EKF_M];
+            multiply(HPp, Ht, HPpHt);
+            accum(HPpHt, R);
+            /*
+            cholsl(HPpHt, tmp4, tmp5, m);
             mulmat(PpHt, tmp4, G, n, m, m);
 
             // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
