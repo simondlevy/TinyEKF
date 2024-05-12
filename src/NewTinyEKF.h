@@ -59,10 +59,13 @@ class TinyEKF {
          */
         bool step(float * z) 
         { 
-            this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
+            float fx[EKF_N] = {};
 
-            return ekf_step(&this->ekf, z) ? false : true;
+            this->model(fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
+
+            return ekf_step(&this->ekf, z, fx) ? false : true;
         }
+
     private:
 
         ekf1_t ekf;
@@ -301,7 +304,7 @@ class TinyEKF {
             zeros(ekf.H, m, n);
         }
 
-        int ekf_step(void * v, float * z)
+        int ekf_step(void * v, float * z, float fx[EKF_N])
         {        
             /* unpack incoming structure */
 
@@ -343,7 +346,7 @@ class TinyEKF {
             /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
             sub(z, ekf2.hx, tmp5, m);
             mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-            add(ekf2.fx, tmp2, ekf2.x, n);
+            add(fx, tmp2, ekf2.x, n);
 
             /* P_k = (I - G_k H_k) P_k */
             mulmat(G, ekf2.H, tmp0, EKF_N,EKF_M,n);
