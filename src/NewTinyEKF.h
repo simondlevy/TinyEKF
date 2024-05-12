@@ -38,7 +38,7 @@ class TinyEKF {
          */
         float getX(int i) 
         { 
-            return this->ekf.x[i]; 
+            return x[i]; 
         }
 
         /**
@@ -48,7 +48,7 @@ class TinyEKF {
          */
         void setX(int i, float value) 
         { 
-            this->ekf.x[i] = value; 
+            x[i] = value; 
         }
 
         /**
@@ -235,7 +235,7 @@ class TinyEKF {
 
         typedef struct {
 
-            float * x;    /* state vector */
+            float * foo;    /* state vector */
 
             float * P;  /* prediction error covariance */
             float * Q;  /* process noise covariance */
@@ -260,7 +260,6 @@ class TinyEKF {
             cptr += 2*sizeof(int);
 
             float * dptr = (float *)cptr;
-            ekf->x = dptr;
             dptr += n;
             ekf->P = dptr;
             dptr += n*n;
@@ -346,7 +345,7 @@ class TinyEKF {
             /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
             sub(z, hx, tmp5, m);
             mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-            add(fx, tmp2, ekf2.x, n);
+            add(fx, tmp2, x, n);
 
             /* P_k = (I - G_k H_k) P_k */
             mulmat(G, _H, tmp0, EKF_N,EKF_M,n);
@@ -363,14 +362,13 @@ class TinyEKF {
         /**
          * The current state.
          */
-        float * x;
+        float x[EKF_N];
 
         /**
          * Initializes a TinyEKF object.
          */
         TinyEKF() { 
             ekf_init(&this->ekf, EKF_N, EKF_M); 
-            this->x = this->ekf.x; 
         }
 
         /**
