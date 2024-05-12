@@ -60,10 +60,11 @@ class TinyEKF {
         bool step(float * z) 
         { 
             float fx[EKF_N] = {};
+            float F[EKF_N][EKF_N] = {};
 
-            this->model(fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
+            this->model(fx, F, this->ekf.hx, this->ekf.H); 
 
-            return ekf_step(&this->ekf, z, fx) ? false : true;
+            return ekf_step(&this->ekf, z, fx, F) ? false : true;
         }
 
     private:
@@ -304,7 +305,7 @@ class TinyEKF {
             zeros(ekf.H, m, n);
         }
 
-        int ekf_step(void * v, float * z, float fx[EKF_N])
+        int ekf_step(void * v, float * z, float fx[EKF_N], float F[EKF_N][EKF_N])
         {        
             /* unpack incoming structure */
 
