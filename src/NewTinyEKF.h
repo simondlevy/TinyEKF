@@ -338,7 +338,7 @@ class TinyEKF {
             mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
             mulmat(_H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
-            accum(tmp3, ekf2.R, EKF_M, EKF_M);
+            accum(tmp3, R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, m)) return 1;
             mulmat(tmp1, tmp4, G, EKF_N,EKF_M, EKF_M);
 
@@ -367,6 +367,8 @@ class TinyEKF {
         float P[EKF_N * EKF_N];
 
         float Q[EKF_N * EKF_N];  
+
+        float R[EKF_M * EKF_M];  
 
         /**
          * Initializes a TinyEKF object.
@@ -425,7 +427,7 @@ class TinyEKF {
          */
         void setR(int i, int j, float value) 
         { 
-            this->ekf.R[i][j] = value; 
+            R[i * EKF_M + j] = value; 
         }
 
 };
