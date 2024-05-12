@@ -8,28 +8,28 @@
 
 typedef struct {
 
-    int n;          /* number of state values */
-    int m;          /* number of observables */
+    int n;          
+    int m;          
 
-    float x[EKF_N];    /* state vector */
+    float x[EKF_N];    
 
-    float P[EKF_N][EKF_N];  /* prediction error covariance */
-    float Q[EKF_N][EKF_N];  /* process noise covariance */
-    float R[EKF_M][EKF_M];  /* measurement error covariance */
+    float P[EKF_N][EKF_N];  
+    float Q[EKF_N][EKF_N];  
+    float R[EKF_M][EKF_M];  
 
-    float G[EKF_N][EKF_M];  /* Kalman gain; a.k.a. K */
+    float G[EKF_N][EKF_M];  
 
-    float F[EKF_N][EKF_N];  /* Jacobian of process model */
-    float H[EKF_M][EKF_N];  /* Jacobian of measurement model */
+    float F[EKF_N][EKF_N];  
+    float H[EKF_M][EKF_N];  
 
-    float Ht[EKF_N][EKF_M]; /* transpose of measurement Jacobian */
-    float Ft[EKF_N][EKF_N]; /* transpose of process Jacobian */
-    float Pp[EKF_N][EKF_N]; /* P, post-prediction, pre-update */
+    float Ht[EKF_N][EKF_M]; 
+    float Ft[EKF_N][EKF_N]; 
+    float Pp[EKF_N][EKF_N]; 
 
-    float fx[EKF_N];   /* output of user defined f() state-transition function */
-    float hx[EKF_M];   /* output of user defined h() measurement function */
+    float fx[EKF_N];   
+    float hx[EKF_M];   
 
-    /* temporary storage */
+    
     float tmp0[EKF_N][EKF_N];
     float tmp1[EKF_N][EKF_M];
     float tmp2[EKF_M][EKF_N];
@@ -37,7 +37,7 @@ typedef struct {
     float tmp4[EKF_M][EKF_M];
     float tmp5[EKF_M]; 
 
-} ekf_t;        
+} ekf1_t;        
 
 class TinyEKF {
 
@@ -77,7 +77,7 @@ class TinyEKF {
         }
     private:
 
-        ekf_t ekf;
+        ekf1_t ekf;
 
         // Cholesky-decomposition matrix-inversion code, adapated from
         // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
@@ -245,6 +245,7 @@ class TinyEKF {
             for (i=0; i<n; ++i)
                 a[i*n+i] += 1;
         }
+
         typedef struct {
 
             float * x;    /* state vector */
@@ -273,9 +274,9 @@ class TinyEKF {
             float * tmp4;
             float * tmp5; 
 
-        } ekf_t;
+        } ekf2_t;
 
-        static void unpack(void * v, ekf_t * ekf, int n, int m)
+        static void unpack(void * v, ekf2_t * ekf, int n, int m)
         {
             /* skip over n, m in data structure */
             char * cptr = (char *)v;
@@ -328,7 +329,7 @@ class TinyEKF {
             *ptr = m;
 
             /* unpack rest of incoming structure for initlization */
-            ekf_t ekf;
+            ekf2_t ekf;
             unpack(v, &ekf, n, m);
 
             /* zero-out matrices */
@@ -349,7 +350,7 @@ class TinyEKF {
             ptr++;
             int m = *ptr;
 
-            ekf_t ekf;
+            ekf2_t ekf;
             unpack(v, &ekf, n, m); 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
