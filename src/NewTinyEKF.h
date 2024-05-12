@@ -79,28 +79,27 @@ class TinyEKF {
                 return false;
             }
 
-            /*
-            for (i = 0; i < n; i++) {
-                for (j = i + 1; j < n; j++) {
-                    a[i*n+j] = 0.0;
+            for (uint8_t i = 0; i<EKF_M; i++) {
+                for (uint8_t j=i + 1; j <EKF_M; j++) {
+                    a[i][j] = 0.0;
                 }
             }
-            for (i = 0; i < n; i++) {
-                a[i*n+i] *= a[i*n+i];
-                for (k = i + 1; k < n; k++) {
-                    a[i*n+i] += a[k*n+i] * a[k*n+i];
+            for (uint8_t i = 0; i<EKF_M; i++) {
+                a[i][i] *= a[i][i];
+                for (uint8_t k=i + 1; k <EKF_M; k++) {
+                    a[i][i] += a[k][i] * a[k][i];
                 }
-                for (j = i + 1; j < n; j++) {
-                    for (k = j; k < n; k++) {
-                        a[i*n+j] += a[k*n+i] * a[k*n+j];
+                for (uint8_t j = i + 1; j <EKF_M; j++) {
+                    for (uint8_t k=j; k <EKF_M; k++) {
+                        a[i][j] += a[k][i] * a[k][j];
                     }
                 }
             }
-            for (i = 0; i < n; i++) {
-                for (j = 0; j < i; j++) {
-                    a[i*n+j] = a[j*n+i];
+            for (uint8_t i = 0; i<EKF_M; i++) {
+                for (uint8_t j=0; j < i; j++) {
+                    a[i][j] = a[j][i];
                 }
-            }*/
+            }
 
             return true;
         }
