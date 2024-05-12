@@ -6,9 +6,6 @@
  * MIT License
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 typedef struct {
 
     int n;          /* number of state values */
