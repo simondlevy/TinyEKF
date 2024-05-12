@@ -20,7 +20,6 @@ typedef struct {
     float F[EKF_N][EKF_N];  
     float H[EKF_M][EKF_N];  
 
-    float Ft[EKF_N][EKF_N]; 
     float Pp[EKF_N][EKF_N]; 
 
     float fx[EKF_N];   
@@ -248,7 +247,6 @@ class TinyEKF {
             float * F;  /* Jacobian of process model */
             float * H;  /* Jacobian of measurement model */
 
-            float * Ft; /* transpose of process Jacobian */
             float * Pp; /* P, post-prediction, pre-update */
 
             float * fx;  /* output of user defined f() state-transition function */
@@ -275,8 +273,6 @@ class TinyEKF {
             dptr += n*n;
             ekf->H = dptr;
             dptr += m*n;
-            ekf->Ft = dptr;
-            dptr += n*n;
             ekf->Pp = dptr;
             dptr += n*n;
             ekf->fx = dptr;
@@ -326,11 +322,12 @@ class TinyEKF {
 
             float G[EKF_N*EKF_M] = {};  
             float Ht[EKF_N*EKF_M] = {}; 
+            float Ft[EKF_N*EKF_N] = {};
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
             mulmat(ekf2.F, ekf2.P, tmp0, n, n, n);
-            transpose(ekf2.F, ekf2.Ft, n, n);
-            mulmat(tmp0, ekf2.Ft, ekf2.Pp, n, n, n);
+            transpose(ekf2.F, Ft, n, n);
+            mulmat(tmp0, Ft, ekf2.Pp, n, n, n);
             accum(ekf2.Pp, ekf2.Q, n, n);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
