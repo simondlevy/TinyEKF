@@ -30,7 +30,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(double fx[EKF_N], double F[EKF_N][EKF_N], double hx[EKF_M], double H[EKF_M][EKF_N])
+        void model(float fx[EKF_N], float F[EKF_N][EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N])
         {
             
             for (int j=0; j<EKF_N; ++j) {
@@ -52,7 +52,7 @@ class Fuser : public TinyEKF {
 
 static Fuser ekf;
 static unsigned long count;
-static double z[EKF_M];
+static float z[EKF_M];
 
 void setup() {
 

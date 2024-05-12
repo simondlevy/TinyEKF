@@ -19,31 +19,31 @@
         int n;           // number of state values 
         int m;           // number of observables 
 
-        double x[N];     // state vector
+        float x[N];     // state vector
 
-        double P[N][N];  // prediction error covariance
-        double Q[N][N];  // process noise covariance 
-        double R[M][M];  // measurement error covariance
+        float P[N][N];  // prediction error covariance
+        float Q[N][N];  // process noise covariance 
+        float R[M][M];  // measurement error covariance
 
-        double G[N][M];  // Kalman gain; a.k.a. K
+        float G[N][M];  // Kalman gain; a.k.a. K
 
-        double F[N][N];  // Jacobian of process model
-        double H[M][N];  // Jacobian of measurement model
+        float F[N][N];  // Jacobian of process model
+        float H[M][N];  // Jacobian of measurement model
 
-        double Ht[N][M]; // transpose of measurement Jacobian
-        double Ft[N][N]; // transpose of process Jacobian
-        double Pp[N][N]; // P, post-prediction, pre-update
+        float Ht[N][M]; // transpose of measurement Jacobian
+        float Ft[N][N]; // transpose of process Jacobian
+        float Pp[N][N]; // P, post-prediction, pre-update
 
-        double fx[N];   // output of user defined f() state-transition function
-        double hx[M];   // output of user defined h() measurement function
+        float fx[N];   // output of user defined f() state-transition function
+        float hx[M];   // output of user defined h() measurement function
 
       &nbsp; // temporary storage
-        double tmp0[N][N];
-        double tmp1[N][Msta];
-        double tmp2[M][N];
-        double tmp3[M][M];
-        double tmp4[M][M];
-        double tmp5[M]; 
+        float tmp0[N][N];
+        float tmp1[N][Msta];
+        float tmp2[M][N];
+        float tmp3[M][M];
+        float tmp4[M][M];
+        float tmp5[M]; 
     * </pre>
   */
 void ekf_init(void * ekf, int n, int m);
@@ -55,4 +55,4 @@ void ekf_init(void * ekf, int n, int m);
   * @param z array of measurement (observation) values
   * @return 0 on success, 1 on failure caused by non-positive-definite matrix.
   */
-int ekf_step(void * ekf, double * z);
+int ekf_step(void * ekf, float * z);

@@ -13,6 +13,7 @@
 static const uint8_t LM35_PIN = 0;
 
 #include <TinyEKF.h>
+#include <tinyekf.hpp>
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
@@ -35,10 +36,10 @@ class Fuser : public TinyEKF {
     protected:
 
         void model(
-                double fx[EKF_N], 
-                double F[EKF_N][EKF_N], 
-                double hx[EKF_M], 
-                double H[EKF_M][EKF_N])
+                float fx[EKF_N], 
+                float F[EKF_N][EKF_N], 
+                float hx[EKF_M], 
+                float H[EKF_M][EKF_N])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];
@@ -69,6 +70,8 @@ class Fuser : public TinyEKF {
 static Fuser ekf;
 
 static SFE_BMP180 baro;
+
+static TinyEkf _tinyEkf;
 
 // Adapted from https://github.com/sparkfun/BMP180_Breakout
 static void getBaroReadings(double & T, double & P)
@@ -102,9 +105,22 @@ void setup() {
 
     // Set up to read from LM35
     analogReference(INTERNAL);
+
+    _tinyEkf.initialize();
 }
 
 void loop() {
+
+    // Approximate process noise Q using a small constant
+    /*
+    this->setQ(0, 0, .0001);
+    this->setQ(1, 1, .0001);
+
+    // Same for measurement noise
+    this->setR(0, 0, .0001);
+    this->setR(1, 1, .0001);
+    this->setR(2, 2, .0001);
+    */
 
     // Read pressure, temperature from BMP180
     double baroTemperature, baroPressure;
@@ -114,7 +130,7 @@ void loop() {
     float lm35Temperature = analogRead(LM35_PIN) / 9.31;
 
     // Send these measurements to the EKF
-    double z[3] = {baroPressure, baroTemperature, lm35Temperature};
+    float z[3] = {baroPressure, baroTemperature, lm35Temperature};
     ekf.step(z);
 
     // Report measured and predicte/fused values

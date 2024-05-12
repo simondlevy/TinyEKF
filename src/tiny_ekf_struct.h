@@ -14,30 +14,30 @@ typedef struct {
     int n;          /* number of state values */
     int m;          /* number of observables */
 
-    double x[EKF_N];    /* state vector */
+    float x[EKF_N];    /* state vector */
 
-    double P[EKF_N][EKF_N];  /* prediction error covariance */
-    double Q[EKF_N][EKF_N];  /* process noise covariance */
-    double R[EKF_M][EKF_M];  /* measurement error covariance */
+    float P[EKF_N][EKF_N];  /* prediction error covariance */
+    float Q[EKF_N][EKF_N];  /* process noise covariance */
+    float R[EKF_M][EKF_M];  /* measurement error covariance */
 
-    double G[EKF_N][EKF_M];  /* Kalman gain; a.k.a. K */
+    float G[EKF_N][EKF_M];  /* Kalman gain; a.k.a. K */
 
-    double F[EKF_N][EKF_N];  /* Jacobian of process model */
-    double H[EKF_M][EKF_N];  /* Jacobian of measurement model */
+    float F[EKF_N][EKF_N];  /* Jacobian of process model */
+    float H[EKF_M][EKF_N];  /* Jacobian of measurement model */
 
-    double Ht[EKF_N][EKF_M]; /* transpose of measurement Jacobian */
-    double Ft[EKF_N][EKF_N]; /* transpose of process Jacobian */
-    double Pp[EKF_N][EKF_N]; /* P, post-prediction, pre-update */
+    float Ht[EKF_N][EKF_M]; /* transpose of measurement Jacobian */
+    float Ft[EKF_N][EKF_N]; /* transpose of process Jacobian */
+    float Pp[EKF_N][EKF_N]; /* P, post-prediction, pre-update */
 
-    double fx[EKF_N];   /* output of user defined f() state-transition function */
-    double hx[EKF_M];   /* output of user defined h() measurement function */
+    float fx[EKF_N];   /* output of user defined f() state-transition function */
+    float hx[EKF_M];   /* output of user defined h() measurement function */
 
     /* temporary storage */
-    double tmp0[EKF_N][EKF_N];
-    double tmp1[EKF_N][EKF_M];
-    double tmp2[EKF_M][EKF_N];
-    double tmp3[EKF_M][EKF_M];
-    double tmp4[EKF_M][EKF_M];
-    double tmp5[EKF_M]; 
+    float tmp0[EKF_N][EKF_N];
+    float tmp1[EKF_N][EKF_M];
+    float tmp2[EKF_M][EKF_N];
+    float tmp3[EKF_M][EKF_M];
+    float tmp4[EKF_M][EKF_M];
+    float tmp5[EKF_M]; 
 
 } ekf_t;        

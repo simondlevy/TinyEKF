@@ -35,6 +35,24 @@ class TinyEkf {
             }
         }
 
+        void initialize(void)
+        {
+            _isUpdated = false;
+
+            _min_covariance = 0;
+            _max_covariance = 0;
+
+            for (uint8_t i=0; i<EKF_N; ++i) {
+
+                for (uint8_t j=0; j<EKF_N; ++j) {
+
+                    _p[i][j] = i==j ? 1 : 0;
+                }
+
+                _x[i] = 0;
+            }
+        }
+
         // # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         void predict(
             const float xnew[EKF_N],
@@ -52,14 +70,14 @@ class TinyEkf {
          }
 
         void update(
-                const float h[EKF_M], 
+                const float H[EKF_M][EKF_N], 
                 const float z[EKF_N],
-                const float hx[EKF_N],
-                const float r)
+                const float hx[EKF_M],
+                const float R[EKF_M][EKF_N])
         {
         }
 
-         void update(
+         void update_with_scalar(
                 const float h[EKF_N], 
                 const float z,
                 const float hx,
@@ -244,18 +262,21 @@ class TinyEkf {
 
         void cleanupCovariance(void)
         {
-            // Enforce symmetry of the covariance matrix, and ensure the
-            // values stay bounded
-            for (int i=0; i<EKF_N; i++) {
+            if (_min_covariance < _max_covariance) {
 
-                for (int j=i; j<EKF_N; j++) {
+                // Enforce symmetry of the covariance matrix, and ensure the
+                // values stay bounded
+                for (int i=0; i<EKF_N; i++) {
 
-                    const auto pval = (_p[i][j] + _p[j][i]) / 2;
+                    for (int j=i; j<EKF_N; j++) {
 
-                    _p[i][j] = _p[j][i] = 
-                        pval > _max_covariance ?  _max_covariance :
-                        (i==j && pval < _min_covariance) ?  _min_covariance :
-                        pval;
+                        const auto pval = (_p[i][j] + _p[j][i]) / 2;
+
+                        _p[i][j] = _p[j][i] = 
+                            pval > _max_covariance ?  _max_covariance :
+                            (i==j && pval < _min_covariance) ?  _min_covariance :
+                            pval;
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@
 extern "C" {
 #endif
     void ekf_init(void *, int, int);
-    int ekf_step(void *, double *);
+    int ekf_step(void *, float *);
 #ifndef MAIN
 }
 #endif
@@ -35,7 +35,7 @@ class TinyEKF {
         /**
           * The current state.
           */
-        double * x;
+        float * x;
 
         /**
          * Initializes a TinyEKF object.
@@ -57,7 +57,7 @@ class TinyEKF {
          * @param hx gets output of observation function <i>h(x<sub>0 .. n-1</sub>)</i>
          * @param H gets <i>m &times; n</i> Jacobian of <i>h(x)</i>
          */
-        virtual void model(double fx[EKF_N], double F[EKF_N][EKF_N], double hx[EKF_M], double H[EKF_M][EKF_N]) = 0;
+        virtual void model(float fx[EKF_N], float F[EKF_N][EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N]) = 0;
 
         /**
          * Sets the specified value of the prediction error covariance. <i>P<sub>i,j</sub> = value</i>
@@ -65,7 +65,7 @@ class TinyEKF {
          * @param j column index
          * @param value value to set
          */
-        void setP(int i, int j, double value) 
+        void setP(int i, int j, float value) 
         { 
             this->ekf.P[i][j] = value; 
         }
@@ -76,7 +76,7 @@ class TinyEKF {
          * @param j column index
          * @param value value to set
          */
-        void setQ(int i, int j, double value) 
+        void setQ(int i, int j, float value) 
         { 
             this->ekf.Q[i][j] = value; 
         }
@@ -87,7 +87,7 @@ class TinyEKF {
          * @param j column index
          * @param value value to set
          */
-        void setR(int i, int j, double value) 
+        void setR(int i, int j, float value) 
         { 
             this->ekf.R[i][j] = value; 
         }
@@ -99,7 +99,7 @@ class TinyEKF {
          * @param i the index (at least 0 and less than <i>n</i>
          * @return state value at index
          */
-        double getX(int i) 
+        float getX(int i) 
         { 
             return this->ekf.x[i]; 
         }
@@ -109,7 +109,7 @@ class TinyEKF {
          * @param i the index (at least 0 and less than <i>n</i>
          * @param value value to set
          */
-        void setX(int i, double value) 
+        void setX(int i, float value) 
         { 
             this->ekf.x[i] = value; 
         }
@@ -119,7 +119,7 @@ class TinyEKF {
          * @param z observation vector, length <i>m</i>
          * @return true on success, false on failure caused by non-positive-definite matrix.
          */
-        bool step(double * z) 
+        bool step(float * z) 
         { 
             this->model(this->ekf.fx, this->ekf.F, this->ekf.hx, this->ekf.H); 
 

@@ -13,9 +13,9 @@
 /* Cholesky-decomposition matrix-inversion code, adapated from
    http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
 
-static int choldc1(double * a, double * p, int n) {
+static int choldc1(float * a, float * p, int n) {
     int i,j,k;
-    double sum;
+    float sum;
 
     for (i = 0; i < n; i++) {
         for (j = i; j < n; j++) {
@@ -38,9 +38,9 @@ static int choldc1(double * a, double * p, int n) {
     return 0; /* success */
 }
 
-static int choldcsl(double * A, double * a, double * p, int n) 
+static int choldcsl(float * A, float * a, float * p, int n) 
 {
-    int i,j,k; double sum;
+    int i,j,k; float sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
             a[i*n+j] = A[i*n+j];
@@ -60,7 +60,7 @@ static int choldcsl(double * A, double * a, double * p, int n)
 }
 
 
-static int cholsl(double * A, double * a, double * p, int n) 
+static int cholsl(float * A, float * a, float * p, int n) 
 {
     int i,j,k;
     if (choldcsl(A,a,p,n)) return 1;
@@ -89,7 +89,7 @@ static int cholsl(double * A, double * a, double * p, int n)
     return 0; /* success */
 }
 
-static void zeros(double * a, int m, int n)
+static void zeros(float * a, int m, int n)
 {
     int j;
     for (j=0; j<m*n; ++j)
@@ -97,7 +97,7 @@ static void zeros(double * a, int m, int n)
 }
 
 #ifdef DEBUG
-static void dump(double * a, int m, int n, const char * fmt)
+static void dump(float * a, int m, int n, const char * fmt)
 {
     int i,j;
 
@@ -112,7 +112,7 @@ static void dump(double * a, int m, int n, const char * fmt)
 #endif
 
 /* C <- A * B */
-static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
+static void mulmat(float * a, float * b, float * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
@@ -124,7 +124,7 @@ static void mulmat(double * a, double * b, double * c, int arows, int acols, int
         }
 }
 
-static void mulvec(double * a, double * x, double * y, int m, int n)
+static void mulvec(float * a, float * x, float * y, int m, int n)
 {
     int i, j;
 
@@ -135,7 +135,7 @@ static void mulvec(double * a, double * x, double * y, int m, int n)
     }
 }
 
-static void transpose(double * a, double * at, int m, int n)
+static void transpose(float * a, float * at, int m, int n)
 {
     int i,j;
 
@@ -146,7 +146,7 @@ static void transpose(double * a, double * at, int m, int n)
 }
 
 /* A <- A + B */
-static void accum(double * a, double * b, int m, int n)
+static void accum(float * a, float * b, int m, int n)
 {        
     int i,j;
 
@@ -156,7 +156,7 @@ static void accum(double * a, double * b, int m, int n)
 }
 
 /* C <- A + B */
-static void add(double * a, double * b, double * c, int n)
+static void add(float * a, float * b, float * c, int n)
 {
     int j;
 
@@ -166,7 +166,7 @@ static void add(double * a, double * b, double * c, int n)
 
 
 /* C <- A - B */
-static void sub(double * a, double * b, double * c, int n)
+static void sub(float * a, float * b, float * c, int n)
 {
     int j;
 
@@ -174,7 +174,7 @@ static void sub(double * a, double * b, double * c, int n)
         c[j] = a[j] - b[j];
 }
 
-static void negate(double * a, int m, int n)
+static void negate(float * a, int m, int n)
 {        
     int i, j;
 
@@ -183,7 +183,7 @@ static void negate(double * a, int m, int n)
             a[i*n+j] = -a[i*n+j];
 }
 
-static void mat_addeye(double * a, int n)
+static void mat_addeye(float * a, int n)
 {
     int i;
     for (i=0; i<n; ++i)
@@ -196,31 +196,31 @@ static void mat_addeye(double * a, int n)
 
 typedef struct {
 
-    double * x;    /* state vector */
+    float * x;    /* state vector */
 
-    double * P;  /* prediction error covariance */
-    double * Q;  /* process noise covariance */
-    double * R;  /* measurement error covariance */
+    float * P;  /* prediction error covariance */
+    float * Q;  /* process noise covariance */
+    float * R;  /* measurement error covariance */
 
-    double * G;  /* Kalman gain; a.k.a. K */
+    float * G;  /* Kalman gain; a.k.a. K */
 
-    double * F;  /* Jacobian of process model */
-    double * H;  /* Jacobian of measurement model */
+    float * F;  /* Jacobian of process model */
+    float * H;  /* Jacobian of measurement model */
 
-    double * Ht; /* transpose of measurement Jacobian */
-    double * Ft; /* transpose of process Jacobian */
-    double * Pp; /* P, post-prediction, pre-update */
+    float * Ht; /* transpose of measurement Jacobian */
+    float * Ft; /* transpose of process Jacobian */
+    float * Pp; /* P, post-prediction, pre-update */
 
-    double * fx;  /* output of user defined f() state-transition function */
-    double * hx;  /* output of user defined h() measurement function */
+    float * fx;  /* output of user defined f() state-transition function */
+    float * hx;  /* output of user defined h() measurement function */
 
     /* temporary storage */
-    double * tmp0;
-    double * tmp1;
-    double * tmp2;
-    double * tmp3;
-    double * tmp4;
-    double * tmp5; 
+    float * tmp0;
+    float * tmp1;
+    float * tmp2;
+    float * tmp3;
+    float * tmp4;
+    float * tmp5; 
 
 } ekf_t;
 
@@ -230,7 +230,7 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     char * cptr = (char *)v;
     cptr += 2*sizeof(int);
 
-    double * dptr = (double *)cptr;
+    float * dptr = (float *)cptr;
     ekf->x = dptr;
     dptr += n;
     ekf->P = dptr;
@@ -289,7 +289,7 @@ void ekf_init(void * v, int n, int m)
     zeros(ekf.H, m, n);
 }
 
-int ekf_step(void * v, double * z)
+int ekf_step(void * v, float * z)
 {        
     /* unpack incoming structure */
 
