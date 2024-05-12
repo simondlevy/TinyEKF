@@ -313,6 +313,9 @@ class TinyEKF {
                 float F[EKF_N][EKF_N],
                 float hx[EKF_N])
         {        
+            float _F[EKF_N*EKF_N] = {};
+            memcpy(_F, F, EKF_N*EKF_N*sizeof(float));
+
             /* unpack incoming structure */
 
             int * ptr = (int *)v;
@@ -336,8 +339,8 @@ class TinyEKF {
             float Pp[EKF_N*EKF_N]; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(ekf2.F, ekf2.P, tmp0, EKF_N,EKF_N, EKF_N);
-            transpose(ekf2.F, Ft, EKF_N, EKF_N);
+            mulmat(_F, ekf2.P, tmp0, EKF_N,EKF_N, EKF_N);
+            transpose(_F, Ft, EKF_N, EKF_N);
             mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
             accum(Pp, ekf2.Q, EKF_N, EKF_N);
 
