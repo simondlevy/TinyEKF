@@ -180,14 +180,6 @@ class TinyEKF {
 
         void step(float v[EKF_N], float z[EKF_M])
         {        
-            /*
-            float tmp0[EKF_N][EKF_N];
-            float tmp1[EKF_N][EKF_M];
-            float tmp2[EKF_M][EKF_N];
-            float tmp3[EKF_M][EKF_M];
-            float tmp4[EKF_M][EKF_M];
-            float tmp5[EKF_M]; 
-
             // Predict -------------------------------------------------------
 
             // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
@@ -200,6 +192,14 @@ class TinyEKF {
             accum(Pp, Q);
 
             // Update --------------------------------------------------------
+
+            /*
+            float tmp0[EKF_N][EKF_N];
+            float tmp1[EKF_N][EKF_M];
+            float tmp2[EKF_M][EKF_N];
+            float tmp3[EKF_M][EKF_M];
+            float tmp4[EKF_M][EKF_M];
+            float tmp5[EKF_M]; 
 
             // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
             float Ht[EKF_N][EKF_M] = {};
