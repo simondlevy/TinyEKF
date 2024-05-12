@@ -65,10 +65,12 @@ class TinyEKF {
 
             return 0; // success 
         }
+        */
 
-
-        static int cholsl(float * A, float * a, float * p, int n) 
+        static void cholsl(
+                float A[EKF_M][EKF_M], float a[EKF_M][EKF_M], float p[EKF_M]) 
         {
+            /*
             int i,j,k;
             if (choldcsl(A,a,p,n)) return 1;
             for (i = 0; i < n; i++) {
@@ -91,11 +93,8 @@ class TinyEKF {
                 for (j = 0; j < i; j++) {
                     a[i*n+j] = a[j*n+i];
                 }
-            }
-
-            return 0; // success 
+            }*/
         }
-        */
 
         // Matrix * Matrix
 
@@ -197,8 +196,6 @@ class TinyEKF {
             //float tmp1[EKF_N][EKF_M];
             //float tmp2[EKF_M][EKF_N];
             //float tmp3[EKF_M][EKF_M];
-            //float tmp4[EKF_M][EKF_M];
-            //float tmp5[EKF_M]; 
 
             // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
             float Ht[EKF_N][EKF_M] = {};
@@ -210,8 +207,10 @@ class TinyEKF {
             float HPpHt[EKF_M][EKF_M];
             multiply(HPp, Ht, HPpHt);
             accum(HPpHt, R);
+            float tmp4[EKF_M][EKF_M];
+            float tmp5[EKF_M]; 
+            cholsl(HPpHt, tmp4, tmp5);
             /*
-            cholsl(HPpHt, tmp4, tmp5, m);
             mulmat(PpHt, tmp4, G, n, m, m);
 
             // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
