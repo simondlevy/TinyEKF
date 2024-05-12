@@ -30,7 +30,6 @@ typedef struct {
     float hx[EKF_M];   
 
     
-    float tmp0[EKF_N][EKF_N];
     float tmp1[EKF_N][EKF_M];
     float tmp2[EKF_M][EKF_N];
     float tmp3[EKF_M][EKF_M];
@@ -267,7 +266,6 @@ class TinyEKF {
             float * hx;  /* output of user defined h() measurement function */
 
             /* temporary storage */
-            float * tmp0;
             float * tmp1;
             float * tmp2;
             float * tmp3;
@@ -306,9 +304,8 @@ class TinyEKF {
             ekf->fx = dptr;
             dptr += n;
             ekf->hx = dptr;
+
             dptr += m;
-            ekf->tmp0 = dptr;
-            dptr += n*n;
             ekf->tmp1 = dptr;
             dptr += n*m;
             ekf->tmp2 = dptr;
@@ -353,10 +350,12 @@ class TinyEKF {
             ekf2_t ekf2;
             unpack(v, &ekf2, n, m); 
 
+            float tmp0[EKF_N*EKF_N] = {};
+
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(ekf2.F, ekf2.P, ekf2.tmp0, n, n, n);
+            mulmat(ekf2.F, ekf2.P, tmp0, n, n, n);
             transpose(ekf2.F, ekf2.Ft, n, n);
-            mulmat(ekf2.tmp0, ekf2.Ft, ekf2.Pp, n, n, n);
+            mulmat(tmp0, ekf2.Ft, ekf2.Pp, n, n, n);
             accum(ekf2.Pp, ekf2.Q, n, n);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
@@ -374,10 +373,10 @@ class TinyEKF {
             add(ekf2.fx, ekf2.tmp2, ekf2.x, n);
 
             /* P_k = (I - G_k H_k) P_k */
-            mulmat(ekf2.G, ekf2.H, ekf2.tmp0, n, m, n);
-            negate(ekf2.tmp0, n, n);
-            mat_addeye(ekf2.tmp0, n);
-            mulmat(ekf2.tmp0, ekf2.Pp, ekf2.P, n, n, n);
+            mulmat(ekf2.G, ekf2.H, tmp0, n, m, n);
+            negate(tmp0, n, n);
+            mat_addeye(tmp0, n);
+            mulmat(tmp0, ekf2.Pp, ekf2.P, n, n, n);
 
             /* success */
             return 0;
