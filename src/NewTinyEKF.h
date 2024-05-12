@@ -279,17 +279,6 @@ class TinyEKF {
         float R[EKF_M * EKF_M];  
 
         /**
-         * Initializes a TinyEKF object.
-         */
-        TinyEKF() { 
-        }
-
-        /**
-         * Deallocates memory for a TinyEKF object.
-         */
-        ~TinyEKF() { }
-
-        /**
          * Implement this function for your EKF model.
          * @param fx gets output of state-transition function <i>f(x<sub>0 ..
          * n-1</sub>)</i> @param F gets <i>n &times; n</i> Jacobian of
