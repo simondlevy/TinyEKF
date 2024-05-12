@@ -331,7 +331,7 @@ class TinyEKF {
             mulmat(_F, P, tmp0, EKF_N,EKF_N, EKF_N);
             transpose(_F, Ft, EKF_N, EKF_N);
             mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
-            accum(Pp, ekf2.Q, EKF_N, EKF_N);
+            accum(Pp, Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
             transpose(_H, Ht, EKF_M,n);
@@ -365,6 +365,8 @@ class TinyEKF {
         float x[EKF_N];
 
         float P[EKF_N * EKF_N];
+
+        float Q[EKF_N * EKF_N];  
 
         /**
          * Initializes a TinyEKF object.
@@ -401,7 +403,7 @@ class TinyEKF {
          */
         void setP(int i, int j, float value) 
         { 
-            this->ekf.P[i][j] = value; 
+            P[i * EKF_N + j] = value; 
         }
 
         /** Sets the specified value of the process noise covariance.
@@ -412,7 +414,7 @@ class TinyEKF {
          */
         void setQ(int i, int j, float value) 
         { 
-            this->ekf.Q[i][j] = value; 
+            Q[i * EKF_N + j] = value; 
         }
 
         /**
