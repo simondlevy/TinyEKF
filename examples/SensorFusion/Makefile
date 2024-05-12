@@ -12,7 +12,5 @@ build: $(SKETCH).ino
 flash:
 	arduino-cli upload -p $(PORT) --fqbn $(BOARD) .
 
-	vim $(SKETCH).ino
-
 listen:
 	miniterm $(PORT) 115200

@@ -39,24 +39,14 @@ typedef struct {
 
 } ekf_t;        
 
-/*
-extern "C" {
-    void ekf_init(void *, int, int);
-    int ekf_step(void *, float *);
-}*/
-
-/**
- * A header-only class for the Extended Kalman Filter.  Your implementing class should #define the constant N and 
- * and then #include <TinyEKF.h>  You will also need to implement a model() method for your application.
- */
 class TinyEKF {
 
     private:
 
         ekf_t ekf;
 
-        /* Cholesky-decomposition matrix-inversion code, adapated from
-http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
+        // Cholesky-decomposition matrix-inversion code, adapated from
+        // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
 
         static int choldc1(float * a, float * p, int n) {
             int i,j,k;
@@ -141,21 +131,6 @@ http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
                 a[j] = 0;
         }
 
-#ifdef DEBUG
-        static void dump(float * a, int m, int n, const char * fmt)
-        {
-            int i,j;
-
-            char f[100];
-            sprintf(f, "%s ", fmt);
-            for(i=0; i<m; ++i) {
-                for(j=0; j<n; ++j)
-                    printf(f, a[i*n+j]);
-                printf("\n");
-            }
-        }
-#endif
-
         /* C <- A * B */
         static void mulmat(float * a, float * b, float * c, int arows, int acols, int bcols)
         {
@@ -234,9 +209,6 @@ http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
             for (i=0; i<n; ++i)
                 a[i*n+i] += 1;
         }
-
-        /* TinyEKF code ------------------------------------------------------------------- */
-
         typedef struct {
 
             float * x;    /* state vector */
