@@ -62,10 +62,11 @@ class TinyEKF {
             float fx[EKF_N] = {};
             float F[EKF_N][EKF_N] = {};
             float hx[EKF_M] = {};
+            float H[EKF_M][EKF_N] = {};
 
-            this->model(fx, F, hx, this->ekf.H); 
+            this->model(fx, F, hx, H); 
 
-            return ekf_step(&this->ekf, z, fx, F, hx) ? false : true;
+            return ekf_step(&this->ekf, z, fx, F, hx, H) ? false : true;
         }
 
     private:
@@ -311,10 +312,14 @@ class TinyEKF {
                 float * z, 
                 float fx[EKF_N], 
                 float F[EKF_N][EKF_N],
-                float hx[EKF_N])
+                float hx[EKF_N],
+                float H[EKF_M][EKF_N])
         {        
             float _F[EKF_N*EKF_N] = {};
             memcpy(_F, F, EKF_N*EKF_N*sizeof(float));
+
+            float _H[EKF_M*EKF_N] = {};
+            memcpy(_H, H, EKF_M*EKF_N*sizeof(float));
 
             /* unpack incoming structure */
 
@@ -345,9 +350,9 @@ class TinyEKF {
             accum(Pp, ekf2.Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-            transpose(ekf2.H, Ht, EKF_M,n);
+            transpose(_H, Ht, EKF_M,n);
             mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
-            mulmat(ekf2.H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
+            mulmat(_H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
             accum(tmp3, ekf2.R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, m)) return 1;
@@ -359,7 +364,7 @@ class TinyEKF {
             add(fx, tmp2, ekf2.x, n);
 
             /* P_k = (I - G_k H_k) P_k */
-            mulmat(G, ekf2.H, tmp0, EKF_N,EKF_M,n);
+            mulmat(G, _H, tmp0, EKF_N,EKF_M,n);
             negate(tmp0, EKF_N, EKF_N);
             mat_addeye(tmp0, n);
             mulmat(tmp0, Pp, ekf2.P, EKF_N,EKF_N, EKF_N);
