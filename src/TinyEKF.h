@@ -31,19 +31,16 @@ class TinyEKF {
          * non-positive-definite matrix.
          */
         bool step(
+                const float F[EKF_N*EKF_N],
                 const float Q[EKF_N*EKF_N],
                 const float R[EKF_M*EKF_M],
                 const float z[EKF_M]) 
         { 
             float fx[EKF_N] = {};
-            float F[EKF_N][EKF_N] = {};
             float hx[EKF_M] = {};
             float H[EKF_M][EKF_N] = {};
 
-            this->model(fx, F, hx, H); 
-
-            float _F[EKF_N*EKF_N] = {};
-            memcpy(_F, F, EKF_N*EKF_N*sizeof(float));
+            this->model(fx, hx, H); 
 
             float _H[EKF_M*EKF_N] = {};
             memcpy(_H, H, EKF_M*EKF_N*sizeof(float));
@@ -61,8 +58,8 @@ class TinyEKF {
             float Pp[EKF_N*EKF_N]; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(_F, _P, tmp0, EKF_N,EKF_N, EKF_N);
-            transpose(_F, Ft, EKF_N, EKF_N);
+            mulmat(F, _P, tmp0, EKF_N,EKF_N, EKF_N);
+            transpose(F, Ft, EKF_N, EKF_N);
             mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
             accum(Pp, Q, EKF_N, EKF_N);
 
@@ -255,7 +252,6 @@ class TinyEKF {
          */
         virtual void model(
                 float fx[EKF_N], 
-                float F[EKF_N][EKF_N], 
                 float hx[EKF_M], 
                 float H[EKF_M][EKF_N]) = 0;
 

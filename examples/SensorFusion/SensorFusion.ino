@@ -33,23 +33,26 @@ static const float R[EKF_M*EKF_M] = {
 
 };
 
+// So process model Jacobian is identity matrix
+static const float F[EKF_N*EKF_N] = {
+    1, 0,
+    0, 1
+};
+
+
+
 class Fuser : public TinyEKF {
 
     protected:
 
         void model(
                 float fx[EKF_N], 
-                float F[EKF_N][EKF_N], 
                 float hx[EKF_M], 
                 float H[EKF_M][EKF_N])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];
             fx[1] = this->x[1];
-
-            // So process model Jacobian is identity matrix
-            F[0][0] = 1;
-            F[1][1] = 1;
 
             // Measurement function simplifies the relationship between state
             // and sensor readings for convenience.  A more realistic
@@ -77,7 +80,7 @@ static SFE_BMP180 baro;
 static void getBaroReadings(double & T, double & P)
 {
     char status = baro.startTemperature();
-   
+
     if (status != 0) {
         delay(status);
         status = baro.getTemperature(T);
@@ -113,13 +116,6 @@ void setup() {
 void loop() {
 
     static const float eps = 1e-4;
-
-    // So process model Jacobian is identity matrix
-    const float F[EKF_N][EKF_N] = {
-        {1, 0},
-        {0, 1}
-    };
-
 
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
@@ -159,7 +155,7 @@ void loop() {
     };*/
 
     // Send these measurements to the EKF
-    ekf.step(Q, R, z);
+    ekf.step(F, Q, R, z);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");
