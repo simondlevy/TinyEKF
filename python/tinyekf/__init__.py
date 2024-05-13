@@ -31,12 +31,11 @@ class EKF(object):
 
         # Set up covariance matrices
         self.P_post = self._covar(n, P)
-        self.R = self._covar(m, R)
 
         # Identity matrix will be usefel later
         self.eye = np.eye(n)
 
-    def step(self, fx, F, Q, hx, H, z):
+    def step(self, fx, F, Q, hx, H, R, z):
         '''
         Runs one step of the EKF 
         '''
@@ -50,7 +49,7 @@ class EKF(object):
 
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
         G = np.dot(self.P_pre.dot(H.T),
-                   np.linalg.inv(H.dot(self.P_pre).dot(H.T) + self.R))
+                   np.linalg.inv(H.dot(self.P_pre).dot(H.T) + R))
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
         self.x = fx + np.dot(G, (np.array(z) - hx.T).T)
