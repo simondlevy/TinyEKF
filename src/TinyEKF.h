@@ -37,16 +37,14 @@ class TinyEKF {
                 const float F[EKF_N*EKF_N],
                 const float Q[EKF_N*EKF_N])
         { 
-            float tmp0[EKF_N*EKF_N] = {};
+            // $\hat{x}_k = f(\hat{x}_{k-1})$
+            for (uint8_t i=0; i<EKF_N; ++i) {
+                _x[i] = fx[i];
+            }
 
-            float Ft[EKF_N*EKF_N] = {};
-            float Pp[EKF_N*EKF_N]; 
-
-            // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-            mulmat(F, _P, tmp0, EKF_N,EKF_N, EKF_N);
-            transpose(F, Ft, EKF_N, EKF_N);
-            mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
+            multiplyCovariance(F);
             accum(_P, Q, EKF_N, EKF_N);
+            //cleanupCovariance();
         }
 
         bool update(
@@ -114,6 +112,17 @@ class TinyEKF {
 
         bool _isUpdated;
 
+        void multiplyCovariance(const float a[EKF_N*EKF_N])
+        {
+            float at[EKF_N*EKF_N] = {};
+            transpose(a, at, EKF_N, EKF_N);  
+            float ap[EKF_N*EKF_N] = {};
+            mulmat(a, _P,  ap, EKF_N, EKF_N, EKF_N);
+            mulmat(ap, at, _P, EKF_N, EKF_N, EKF_N);
+        }
+
+
+ 
         // Cholesky-decomposition matrix-inversion code, adapated from
         // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
 
