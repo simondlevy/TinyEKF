@@ -44,7 +44,7 @@ class TinyEKF {
 
             multiplyCovariance(F);
             accum(_P, Q, EKF_N, EKF_N);
-            //cleanupCovariance();
+            cleanupCovariance();
         }
 
         bool update(
@@ -121,8 +121,26 @@ class TinyEKF {
             mulmat(ap, at, _P, EKF_N, EKF_N, EKF_N);
         }
 
+        void cleanupCovariance(void)
+        {
+            if (_min_covariance < _max_covariance) {
 
- 
+                // Enforce symmetry of the covariance matrix, and ensure the
+                // values stay bounded
+                for (int i=0; i<EKF_N; i++) {
+
+                    for (int j=i; j<EKF_N; j++) {
+
+                        const auto pval = (_P[i*EKF_N+j] + _P[EKF_N*j+i]) / 2;
+
+                        _P[i*EKF_N+j] = _P[j*EKF_N+i] = 
+                            pval > _max_covariance ?  _max_covariance :
+                            (i==j && pval < _min_covariance) ?  _min_covariance :
+                            pval;
+                    }
+                }
+            }
+        } 
         // Cholesky-decomposition matrix-inversion code, adapated from
         // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
 
