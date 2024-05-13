@@ -40,7 +40,7 @@ class TinyEKF {
          * @return true on success, false on failure caused by
          * non-positive-definite matrix.
          */
-        bool step(float * z) 
+        bool step(const float z[EKF_M]) 
         { 
             float fx[EKF_N] = {};
             float F[EKF_N][EKF_N] = {};
