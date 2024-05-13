@@ -37,15 +37,12 @@ class EKF(object):
         # Identity matrix will be usefel later
         self.eye = np.eye(n)
 
-    def step(self, z):
+    def step(self, fx, F, z):
         '''
         Runs one step of the EKF 
         '''
 
         # Predict ----------------------------------------------------
-
-        # $\hat{x}_k = f(\hat{x}_{k-1})$
-        self.x, F = self.f(self.x)
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
         self.P_pre = np.dot(F, self.P_post).dot(F.T) + self.Q
@@ -59,7 +56,7 @@ class EKF(object):
                    np.linalg.inv(H.dot(self.P_pre).dot(H.T) + self.R))
 
         # $\hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))$
-        self.x += np.dot(G, (np.array(z) - h.T).T)
+        self.x = fx + np.dot(G, (np.array(z) - h.T).T)
 
         # $P_k = (I - G_k H_k) P_k$
         self.P_post = np.dot(self.eye - np.dot(G, H), self.P_pre)
@@ -67,17 +64,6 @@ class EKF(object):
     def get(self):
 
         return self.x
-
-    def f(self, x):
-        '''
-        Your implementing class should override this method for the
-        state-transition function f(x).  Your state-transition function should
-        return a NumPy array of n elements representing the new state, and a
-        nXn NumPy array of elements representing the the Jacobian of the
-        function with respect to the new state.  By default this is just the
-        identity function np.copy(x), so the Jacobian is just np.eye(len(x)).
-        '''
-        return np.copy(x), np.eye(len(x))
 
     def h(self, x):
         '''

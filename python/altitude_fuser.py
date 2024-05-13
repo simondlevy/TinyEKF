@@ -113,9 +113,16 @@ if __name__ == '__main__':
         sonar[k] = (sonarfun(50 * (1 - sine)) +
                     (50 if np.random.rand() > 0.9 else 0))
 
+        # Observation is baro and sonar
         z = baro[k], sonar[k]
 
-        ekf.step(z)
+        # State-transition function f is identity
+        fx = ekf.get()
+
+        # So first derivative of f is identity matrix
+        F = np.eye(1)
+
+        ekf.step(fx, F, z)
 
         fused[k] = ekf.get()[0]
 
