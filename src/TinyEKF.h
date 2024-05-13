@@ -34,6 +34,29 @@ class TinyEKF {
             x[i] = value; 
         }
 
+        /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
+        void predict(
+                const float fx[EKF_N], 
+                const float F[EKF_N][EKF_N],
+                const float Q[EKF_N][EKF_N])
+        {
+            /*
+            float _F[EKF_N*EKF_N] = {};
+            memcpy(_F, F, EKF_N*EKF_N*sizeof(float));
+
+            float _H[EKF_M*EKF_N] = {};
+            memcpy(_H, H, EKF_M*EKF_N*sizeof(float));
+
+            float tmp0[EKF_N*EKF_N] = {};
+
+            // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+            mulmat(_F, P, tmp0, EKF_N,EKF_N, EKF_N);
+            transpose(_F, Ft, EKF_N, EKF_N);
+            mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
+            accum(Pp, Q, EKF_N, EKF_N);
+            */
+        }
+ 
         /**
           Performs one step of the prediction and update.
          * @param z observation vector, length <i>m</i>
@@ -68,17 +91,17 @@ class TinyEKF {
             float Pp[EKF_N*EKF_N]; 
 
             /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
-            mulmat(_F, P, tmp0, EKF_N,EKF_N, EKF_N);
+            mulmat(_F, _P, tmp0, EKF_N,EKF_N, EKF_N);
             transpose(_F, Ft, EKF_N, EKF_N);
             mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
-            accum(Pp, Q, EKF_N, EKF_N);
+            accum(Pp, _Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
             transpose(_H, Ht, EKF_M, EKF_N);
             mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
             mulmat(_H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
-            accum(tmp3, R, EKF_M, EKF_M);
+            accum(tmp3, _R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
             mulmat(tmp1, tmp4, G, EKF_N,EKF_M, EKF_M);
 
@@ -91,7 +114,7 @@ class TinyEKF {
             mulmat(G, _H, tmp0, EKF_N,EKF_M, EKF_N);
             negate(tmp0, EKF_N, EKF_N);
             mat_addeye(tmp0, EKF_N);
-            mulmat(tmp0, Pp, P, EKF_N,EKF_N, EKF_N);
+            mulmat(tmp0, Pp, _P, EKF_N,EKF_N, EKF_N);
 
             /* success */
             return true;
@@ -259,20 +282,11 @@ class TinyEKF {
                 a[i*n+i] += 1;
         }
 
-        float P[EKF_N * EKF_N];
+        float _P[EKF_N * EKF_N];
 
-        float Q[EKF_N * EKF_N];  
+        float _Q[EKF_N * EKF_N];  
 
-        float R[EKF_M * EKF_M];  
-
-        int ekf_step(
-                float * z, 
-                float fx[EKF_N], 
-                float F[EKF_N][EKF_N],
-                float hx[EKF_N],
-                float H[EKF_M][EKF_N])
-        {        
-        }
+        float _R[EKF_M * EKF_M];  
 
     protected:
 
@@ -301,7 +315,7 @@ class TinyEKF {
          */
         void setP(int i, int j, float value) 
         { 
-            P[i * EKF_N + j] = value; 
+            _P[i * EKF_N + j] = value; 
         }
 
         /** Sets the specified value of the process noise covariance.
@@ -312,7 +326,7 @@ class TinyEKF {
          */
         void setQ(int i, int j, float value) 
         { 
-            Q[i * EKF_N + j] = value; 
+            _Q[i * EKF_N + j] = value; 
         }
 
         /**
@@ -323,7 +337,7 @@ class TinyEKF {
          */
         void setR(int i, int j, float value) 
         { 
-            R[i * EKF_M + j] = value; 
+            _R[i * EKF_M + j] = value; 
         }
 
 };
