@@ -9,7 +9,7 @@ practical for running on Arduino, STM32, and other microcontrollers, it uses
 static (compile-time) memory allocation (no "new" or "malloc").  The
 **examples** folder includes an Arduino example of sensor fusion.  The
 **python** folder includes an abstract Python class that you can use to
-prototype your EKF before implementing it in C++.
+prototype your EKF before implementing it in C++, along with a couple of examples.
 
 Arduino users can simply install or drag the whole TinyEKF folder into their Arduino libraries folder. 
 The **examples/SensorFusion** folder contains a little sensor fusion example using a 
