@@ -36,7 +36,7 @@ class EKF(object):
 
     def step(self, fx, F, Q, hx, H, R, z):
         '''
-        Runs one step of the EKF 
+        Runs one step of the EKF
         '''
 
         # Predict ----------------------------------------------------
@@ -59,4 +59,3 @@ class EKF(object):
     def get(self):
 
         return self.x
-

@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
         # So first derivative of f is identity matrix
         F = np.eye(2)
-    
+
         # Observation is mouse coordinates
         z = mouse_info.x, mouse_info.y
 
