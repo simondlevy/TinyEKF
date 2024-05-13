@@ -31,13 +31,12 @@ class EKF(object):
 
         # Set up covariance matrices
         self.P_post = self._covar(n, P)
-        self.Q = self._covar(n, Q)
         self.R = self._covar(m, R)
 
         # Identity matrix will be usefel later
         self.eye = np.eye(n)
 
-    def step(self, fx, F, hx, H, z):
+    def step(self, fx, F, Q, hx, H, z):
         '''
         Runs one step of the EKF 
         '''
@@ -45,7 +44,7 @@ class EKF(object):
         # Predict ----------------------------------------------------
 
         # $P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}$
-        self.P_pre = np.dot(F, self.P_post).dot(F.T) + self.Q
+        self.P_pre = np.dot(F, self.P_post).dot(F.T) + Q
 
         # Update -----------------------------------------------------
 

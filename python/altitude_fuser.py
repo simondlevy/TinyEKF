@@ -67,6 +67,12 @@ if __name__ == '__main__':
 
     N = 100
 
+    # One state (ASL), two measurements (baro, sonar), with
+    # larger-than-usual measurement covariance noise to help with sonar
+    # blips.
+    Q = np.eye(1) * 1e-4
+    R = np.eye(2) * 5e-1
+
     baro = np.zeros(N)
     sonar = np.zeros(N)
     fused = np.zeros(N)
@@ -113,7 +119,7 @@ if __name__ == '__main__':
 
         H = np.array([[dpdx], [dsdx]])
 
-        ekf.step(fx, F, hx, H, z)
+        ekf.step(fx, F, Q, hx, H, z)
 
         fused[k] = ekf.get()[0]
 
