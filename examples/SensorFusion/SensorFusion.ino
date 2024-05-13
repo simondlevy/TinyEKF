@@ -39,16 +39,18 @@ static const float F[EKF_N*EKF_N] = {
     0, 1
 };
 
+static const float newH[EKF_M*EKF_N] = {
 
+    1, 0,
+    0, 1,
+    0, 1
+};
 
 class Fuser : public TinyEKF {
 
     protected:
 
-        void model(
-                float fx[EKF_N], 
-                float hx[EKF_M], 
-                float H[EKF_M][EKF_N])
+        void model(float fx[EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];
@@ -155,7 +157,7 @@ void loop() {
     };*/
 
     // Send these measurements to the EKF
-    ekf.step(F, Q, R, z);
+    ekf.step(F, Q, newH, R, z);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");

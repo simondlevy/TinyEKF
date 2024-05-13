@@ -33,17 +33,15 @@ class TinyEKF {
         bool step(
                 const float F[EKF_N*EKF_N],
                 const float Q[EKF_N*EKF_N],
+                const float H[EKF_M*EKF_N],
                 const float R[EKF_M*EKF_M],
                 const float z[EKF_M]) 
         { 
             float fx[EKF_N] = {};
             float hx[EKF_M] = {};
-            float H[EKF_M][EKF_N] = {};
+            float oldH[EKF_M][EKF_N] = {};
 
-            this->model(fx, hx, H); 
-
-            float _H[EKF_M*EKF_N] = {};
-            memcpy(_H, H, EKF_M*EKF_N*sizeof(float));
+            this->model(fx, hx, oldH); 
 
             float tmp0[EKF_N*EKF_N] = {};
             float tmp1[EKF_N*EKF_M] = {};
@@ -64,9 +62,9 @@ class TinyEKF {
             accum(Pp, Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
-            transpose(_H, Ht, EKF_M, EKF_N);
+            transpose(H, Ht, EKF_M, EKF_N);
             mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
-            mulmat(_H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
+            mulmat(H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
             accum(tmp3, R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
@@ -78,7 +76,7 @@ class TinyEKF {
             add(fx, tmp2, x, EKF_N);
 
             /* P_k = (I - G_k H_k) P_k */
-            mulmat(G, _H, tmp0, EKF_N,EKF_M, EKF_N);
+            mulmat(G, H, tmp0, EKF_N,EKF_M, EKF_N);
             negate(tmp0, EKF_N, EKF_N);
             mat_addeye(tmp0, EKF_N);
             mulmat(tmp0, Pp, _P, EKF_N,EKF_N, EKF_N);
