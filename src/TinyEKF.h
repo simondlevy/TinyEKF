@@ -40,21 +40,19 @@ class TinyEKF {
                 const float F[EKF_N][EKF_N],
                 const float Q[EKF_N][EKF_N])
         {
-            /*
             float _F[EKF_N*EKF_N] = {};
             memcpy(_F, F, EKF_N*EKF_N*sizeof(float));
 
-            float _H[EKF_M*EKF_N] = {};
-            memcpy(_H, H, EKF_M*EKF_N*sizeof(float));
-
-            float tmp0[EKF_N*EKF_N] = {};
+            float _Q[EKF_N*EKF_N] = {};
+            memcpy(_Q, Q, EKF_N*EKF_N*sizeof(float));
 
             // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-            mulmat(_F, P, tmp0, EKF_N,EKF_N, EKF_N);
+            float FP[EKF_N*EKF_N] = {};
+            mulmat(_F, _P, FP, EKF_N,EKF_N, EKF_N);
+            float Ft[EKF_N*EKF_N] = {};
             transpose(_F, Ft, EKF_N, EKF_N);
-            mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
-            accum(Pp, Q, EKF_N, EKF_N);
-            */
+            mulmat(FP, Ft, _P, EKF_N,EKF_N, EKF_N);
+            add(_Q, _P, _P, EKF_N*EKF_N);
         }
  
         /**
@@ -255,7 +253,6 @@ class TinyEKF {
             for(j=0; j<n; ++j)
                 c[j] = a[j] + b[j];
         }
-
 
         /* C <- A - B */
         static void sub(float * a, float * b, float * c, int n)
