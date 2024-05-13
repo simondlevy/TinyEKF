@@ -10,6 +10,10 @@ class TinyEKF {
 
     public:
 
+        void initialize(const float Pdiag[EKF_N])
+        {
+        }
+
         /**
          * Returns the state element at a given index.
          * @param i the index (at least 0 and less than <i>n</i>

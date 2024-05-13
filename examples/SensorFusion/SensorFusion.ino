@@ -13,7 +13,6 @@
 static const uint8_t LM35_PIN = 0;
 
 #include <TinyEKF.h>
-#include <tinyekf.hpp>
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
@@ -94,8 +93,6 @@ static void getBaroReadings(double & T, double & P)
     else Serial.println("error starting temperature measurement");
 }
 
-static TinyEkf _tinyEkf;
-
 void setup() {
 
     Serial.begin(115200);
@@ -108,16 +105,11 @@ void setup() {
 
     // Use identity matrix as covariance matrix P
     static const float Pdiag[EKF_N] = { 1, 1 };
-
-    _tinyEkf.initialize(Pdiag);
 }
 
 void loop() {
 
     static const float eps = 1e-4;
-
-    // Process model is f(x) = x
-    const auto x = _tinyEkf.getState();
 
     // So process model Jacobian is identity matrix
     const float F[EKF_N][EKF_N] = {
@@ -132,8 +124,6 @@ void loop() {
         {0, eps}
     };
 
-    _tinyEkf.predict(x, F, Q);
-
     // Read pressure, temperature from BMP180
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
@@ -144,6 +134,7 @@ void loop() {
     // Set the observation vector z
     const float z[EKF_M] = {baroPressure, baroTemperature, lm35Temperature};
 
+    /*
     // Set the Jacobian H of the measurement function
     static const float H[EKF_M][EKF_N] = {
         {1, 0},
@@ -169,10 +160,7 @@ void loop() {
         x[0], // Barometric pressure from previous state
         x[1], // Baro temperature from previous state
         x[1]  // LM35 temperature from previous state
-    };
-
-    // Update the EKF
-    _tinyEkf.update(H, z, hx, R);
+    };*/
 
     // Send these measurements to the EKF
     ekf.step(z);
