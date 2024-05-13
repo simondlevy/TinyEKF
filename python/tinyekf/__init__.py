@@ -37,7 +37,7 @@ class EKF(object):
         # Identity matrix will be usefel later
         self.eye = np.eye(n)
 
-    def step(self, fx, F, hx, z):
+    def step(self, fx, F, hx, H, z):
         '''
         Runs one step of the EKF 
         '''
@@ -48,8 +48,6 @@ class EKF(object):
         self.P_pre = np.dot(F, self.P_post).dot(F.T) + self.Q
 
         # Update -----------------------------------------------------
-
-        _, H = self.h(self.x)
 
         # $G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}$
         G = np.dot(self.P_pre.dot(H.T),

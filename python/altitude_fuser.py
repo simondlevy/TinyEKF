@@ -54,37 +54,6 @@ class ASL_EKF(EKF):
         # blips.
         EKF.__init__(self, 1, 2, P=1e-1, Q=1e-4, R=5e-1)
 
-    def f(self, x):
-
-        # State-transition function is identity
-        return np.copy(x), np.eye(1)
-
-    def h(self, x):
-
-        # State value is ASL
-        asl = x[0]
-
-        # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline from
-        # baro
-        s = sonarfun(asl - baro2asl(BARO_BASELINE))
-
-        # Convert ASL cm to Pascals: see
-        # http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-        b = asl2baro(asl)
-
-        h = np.array([b, s])
-
-        # First derivative of nonlinear baro-measurement function
-        # Used http://www.wolframalpha.com
-        dpdx = -0.120131 * pow((1 - 2.2577e-7 * x[0]), 4.25588)
-
-        # Sonar response is linear, so derivative is constant
-        dsdx = 0.933
-
-        H = np.array([[dpdx], [dsdx]])
-
-        return h, H
-
 # Simulation ==================================================================
 
 
@@ -135,7 +104,16 @@ if __name__ == '__main__':
 
         hx = np.array([b, s])
 
-        ekf.step(fx, F, hx, z)
+        # First derivative of nonlinear baro-measurement function
+        # Used http://www.wolframalpha.com
+        dpdx = -0.120131 * pow((1 - 2.2577e-7 * asl), 4.25588)
+
+        # Sonar response is linear, so derivative is constant
+        dsdx = 0.933
+
+        H = np.array([[dpdx], [dsdx]])
+
+        ekf.step(fx, F, hx, H, z)
 
         fused[k] = ekf.get()[0]
 
