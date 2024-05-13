@@ -105,7 +105,9 @@ if __name__ == '__main__':
 
         H = np.array([[dpdx], [dsdx]])
 
-        ekf.step(fx, F, Q, hx, H, R, z)
+        ekf.predict(fx, F, Q)
+
+        ekf.update(z, hx, H, R)
 
         fused[k] = ekf.get()[0]
 

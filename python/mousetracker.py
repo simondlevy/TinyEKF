@@ -146,7 +146,9 @@ if __name__ == '__main__':
         # So first deriviative of H is also identity matrix
         H = np.eye(2)
 
-        ekf.step(fx, F, Q, hx, H, R, z)
+        ekf.predict(fx, F, Q)
+
+        ekf.update(z, hx, H, R)
 
         estimate = ekf.get()
 
