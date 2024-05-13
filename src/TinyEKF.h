@@ -227,22 +227,9 @@ class TinyEKF {
                 a[i*n+i] += 1;
         }
 
+        // State
         float _x[EKF_N];
 
+        // Covariance matrix
         float _P[EKF_N * EKF_N];
-
-    protected:
-
-        float x[EKF_N];
-
-        /**
-         * Sets the specified value of the prediction error covariance.
-         * <i>P<sub>i,j</sub> = value</i> @param i row index
-         * @param j column index
-         * @param value value to set
-         */
-        void setP(int i, int j, float value) 
-        { 
-            _P[i * EKF_N + j] = value; 
-        }
 };
