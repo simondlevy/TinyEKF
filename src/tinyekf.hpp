@@ -31,7 +31,6 @@ class TinyEKF {
             }
         }
 
-
         void predict(
                 const float fx[EKF_N],
                 const float F[EKF_N*EKF_N],
@@ -152,19 +151,15 @@ class TinyEKF {
             }
         }
 
-        /**
-         * Returns the state element at a given index.
-         * @param i the index (at least 0 and less than <i>n</i>
-         * @return state value at index
-         */
-        float get(const int i) 
+        float * get(void) 
         { 
-            return _x[i]; 
-        }
+            static float x[EKF_N] = {};
 
-        float * getState(void) 
-        { 
-            return _x; 
+            for (int i=0; i<EKF_N; ++i) {
+                x[i] = _x[i];
+            }
+
+            return x; 
         }
 
     private:

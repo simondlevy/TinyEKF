@@ -100,8 +100,11 @@ void loop()
     // Set the observation vector z
     const float z[EKF_M] = {baroPressure, baroTemperature, lm35Temperature};
 
+    // Get the current state estimation x
+    const auto x = _ekf.get();
+
     // Process model is f(x) = x
-    const float fx[EKF_N] = { _ekf.get(0), _ekf.get(1) };
+    const float fx[EKF_N] = { x[0], x[1] };
 
     // Run the prediction step of the DKF
     _ekf.predict(fx, F, Q);
@@ -113,7 +116,7 @@ void loop()
     //   hx[0] = pow(this->x[0], 1.03);
     //   hx[1] = 1.005 * this->x[1];
     //   hx[2] = .9987 * this->x[1] + .001;
-    const float hx[EKF_M] = {_ekf.get(0), _ekf.get(1), _ekf.get(1) };
+    const float hx[EKF_M] = {x[0], x[1], x[1] };
 
     // Run the update step
     _ekf.update(z, hx, H, R);
@@ -127,9 +130,9 @@ void loop()
     Serial.print(" LM35Temp:");
     Serial.print(z[2]);
     Serial.print(" EKFPress:");
-    Serial.print(_ekf.get(0));
+    Serial.print(x[0]);
     Serial.print(" EKFTemp:");
-    Serial.println(_ekf.get(1));
+    Serial.println(x[1]);
 }
 
 
