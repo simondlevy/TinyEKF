@@ -131,15 +131,20 @@ if __name__ == '__main__':
 
         # Update the Kalman filter with the mouse point, getting the estimate.
 
+        # State-transition function f is identity
         fx = ekf.get()
 
+        # So first derivative of f is identity matrix
         F = np.eye(2)
     
+        # Observation is mouse coordinates
         z = mouse_info.x, mouse_info.y
 
-        hx = fx
+        # Observiation function h is also identity
+        hx = ekf.get()
 
-        H = F
+        # So first deriviative of H is also identity matrix
+        H = np.eye(2)
 
         ekf.step(fx, F, Q, hx, H, R, z)
 
