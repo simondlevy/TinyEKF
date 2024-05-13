@@ -39,7 +39,7 @@ static const float F[EKF_N*EKF_N] = {
     0, 1
 };
 
-static const float newH[EKF_M*EKF_N] = {
+static const float H[EKF_M*EKF_N] = {
 
     1, 0,
     0, 1,
@@ -124,20 +124,6 @@ void loop() {
     const float z[EKF_M] = {baroPressure, baroTemperature, lm35Temperature};
 
     /*
-    // Set the Jacobian H of the measurement function
-    static const float H[EKF_M][EKF_N] = {
-        {1, 0},
-        {0, 1},
-        {0, 1}
-    };
-
-    // Approximate measurement noise covariance R using a small constant
-    static const float R[EKF_M][EKF_M] = {
-        {eps, 0, 0},
-        {0, eps, 0},
-        {0, 0, eps}
-    };
-
     // Measurement function simplifies the relationship between state
     // and sensor readings for convenience.  A more realistic
     // measurement function would distinguish between state value and
@@ -152,7 +138,7 @@ void loop() {
     };*/
 
     // Send these measurements to the EKF
-    ekf.step(F, Q, newH, R, z);
+    ekf.step(F, Q, H, R, z);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");
