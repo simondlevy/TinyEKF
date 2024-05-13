@@ -110,8 +110,14 @@ if __name__ == '__main__':
     measured_points = []
     kalman_points = []
 
+    P = np.eye(2) * 1e-1
+
+    Q = np.eye(2) * 1e-4
+
+    R = np.eye(2) * 1e-1
+
     # Create a new Kalman filter for mouse tracking
-    kalfilt = EKF(2, 2, P=1e-1, Q=1e-4, R=1e-1)
+    ekf = EKF(P)
 
     # Loop till user hits escape
     while True:
@@ -124,7 +130,20 @@ if __name__ == '__main__':
         measured_points.append(measured)
 
         # Update the Kalman filter with the mouse point, getting the estimate.
-        estimate = kalfilt.step((mouse_info.x, mouse_info.y))
+
+        fx = ekf.get()
+
+        F = np.eye(2)
+    
+        z = mouse_info.x, mouse_info.y
+
+        hx = fx
+
+        H = F
+
+        ekf.step(fx, F, Q, hx, H, R, z)
+
+        estimate = ekf.get()
 
         # Add the estimate to the trajectory
         estimated = [int(c) for c in estimate]
