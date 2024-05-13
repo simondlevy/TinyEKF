@@ -122,7 +122,20 @@ if __name__ == '__main__':
         # So first derivative of f is identity matrix
         F = np.eye(1)
 
-        ekf.step(fx, F, z)
+        # State value is ASL
+        asl = ekf.get()[0]
+
+        # Convert ASL cm to sonar AGL cm by subtracting off ASL baseline from
+        # baro
+        s = sonarfun(asl - baro2asl(BARO_BASELINE))
+
+        # Convert ASL cm to Pascals: see
+        # http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
+        b = asl2baro(asl)
+
+        hx = np.array([b, s])
+
+        ekf.step(fx, F, hx, z)
 
         fused[k] = ekf.get()[0]
 
