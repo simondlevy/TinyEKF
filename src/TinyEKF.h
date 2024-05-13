@@ -19,7 +19,7 @@ class TinyEKF {
          * @param i the index (at least 0 and less than <i>n</i>
          * @return state value at index
          */
-        float getX(int i) 
+        float get(int i) 
         { 
             return x[i]; 
         }
@@ -31,17 +31,14 @@ class TinyEKF {
          * non-positive-definite matrix.
          */
         bool step(
+                const float fx[EKF_N],
                 const float F[EKF_N*EKF_N],
                 const float Q[EKF_N*EKF_N],
+                const float hx[EKF_M],
                 const float H[EKF_M*EKF_N],
                 const float R[EKF_M*EKF_M],
                 const float z[EKF_M]) 
         { 
-            float fx[EKF_N] = {};
-            float hx[EKF_M] = {};
-
-            this->model(fx, hx); 
-
             float tmp0[EKF_N*EKF_N] = {};
             float tmp1[EKF_N*EKF_M] = {};
             float tmp2[EKF_M*EKF_N] = {};
@@ -237,17 +234,6 @@ class TinyEKF {
     protected:
 
         float x[EKF_N];
-
-        /**
-         * Implement this function for your EKF model.
-         * @param fx gets output of state-transition function <i>f(x<sub>0 ..
-         * n-1</sub>)</i> @param F gets <i>n &times; n</i> Jacobian of
-         * <i>f(x)</i>
-         * @param hx gets output of observation function <i>h(x<sub>0 ..
-         * n-1</sub>)</i> @param H gets <i>m &times; n</i> Jacobian of
-         * <i>h(x)</i>
-         */
-        virtual void model( float fx[EKF_N], float hx[EKF_M]) = 0;
 
         /**
          * Sets the specified value of the prediction error covariance.

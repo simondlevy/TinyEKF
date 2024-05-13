@@ -46,30 +46,7 @@ static const float H[EKF_M*EKF_N] = {
     0, 1
 };
 
-class Fuser : public TinyEKF {
-
-    protected:
-
-        void model(float fx[EKF_N], float hx[EKF_M])
-        {
-            // Process model is f(x) = x
-            fx[0] = this->x[0];
-            fx[1] = this->x[1];
-
-            // Measurement function simplifies the relationship between state
-            // and sensor readings for convenience.  A more realistic
-            // measurement function would distinguish between state value and
-            // measured value; e.g.:
-            //   hx[0] = pow(this->x[0], 1.03);
-            //   hx[1] = 1.005 * this->x[1];
-            //   hx[2] = .9987 * this->x[1] + .001;
-            hx[0] = this->x[0]; // Barometric pressure from previous state
-            hx[1] = this->x[1]; // Baro temperature from previous state
-            hx[2] = this->x[1]; // LM35 temperature from previous state
-        }
-};
-
-static Fuser ekf;
+static TinyEKF _ekf;
 
 static SFE_BMP180 baro;
 
@@ -123,7 +100,9 @@ void loop() {
     // Set the observation vector z
     const float z[EKF_M] = {baroPressure, baroTemperature, lm35Temperature};
 
-    /*
+    // Process model is f(x) = x
+    const float fx[EKF_N] = { _ekf.get(0), _ekf.get(1) };
+
     // Measurement function simplifies the relationship between state
     // and sensor readings for convenience.  A more realistic
     // measurement function would distinguish between state value and
@@ -131,14 +110,10 @@ void loop() {
     //   hx[0] = pow(this->x[0], 1.03);
     //   hx[1] = 1.005 * this->x[1];
     //   hx[2] = .9987 * this->x[1] + .001;
-    static const float hx[EKF_M] = {
-        x[0], // Barometric pressure from previous state
-        x[1], // Baro temperature from previous state
-        x[1]  // LM35 temperature from previous state
-    };*/
+    const float hx[EKF_M] = {_ekf.get(0), _ekf.get(1), _ekf.get(1) };
 
-    // Send these measurements to the EKF
-    ekf.step(F, Q, H, R, z);
+    // Send these values to the EKF
+    _ekf.step(fx, F, Q, hx, H, R, z);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");
@@ -149,9 +124,9 @@ void loop() {
     Serial.print(" LM35Temp:");
     Serial.print(z[2]);
     Serial.print(" EKFPress:");
-    Serial.print(ekf.getX(0));
+    Serial.print(_ekf.get(0));
     Serial.print(" EKFTemp:");
-    Serial.println(ekf.getX(1));
+    Serial.println(_ekf.get(1));
 }
 
 
