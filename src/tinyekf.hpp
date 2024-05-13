@@ -94,7 +94,7 @@ class TinyEKF {
                 const float r)
         {
             float ph[EKF_N] = {};
-            multiply(_P, h, ph);
+            mulvec(_P, h, ph, EKF_N, EKF_N);
             const auto hphr = r + dot(h, ph); // HPH' + R
 
             float g[EKF_N] = {};
@@ -300,20 +300,6 @@ class TinyEKF {
                     for (int l=0; l<acols; ++l)
                         c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
                 }
-        }
-
-        static void multiply(
-                const float a[EKF_N*EKF_N], 
-                const float x[EKF_N],
-                float y[EKF_N])
-
-        {
-            for (uint8_t i=0; i<EKF_N; i++) {
-                y[i] = 0;
-                for (uint8_t j=0; j<EKF_N; j++) {
-                    y[i] += a[i*EKF_N+j] * x[j];
-                }
-            }
         }
 
         static void mulvec(
