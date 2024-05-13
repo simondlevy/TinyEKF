@@ -73,7 +73,12 @@ static void getBaroReadings(double & T, double & P)
     else Serial.println("error starting temperature measurement");
 }
 
-void setup() {
+void setup() 
+{
+    // Use identity matrix as initiali covariance matrix
+    const float Pdiag[EKF_N] = {1, 1};
+
+    _ekf.initialize(Pdiag);
 
     Serial.begin(115200);
 
@@ -82,15 +87,10 @@ void setup() {
 
     // Set up to read from LM35
     analogReference(INTERNAL);
-
-    // Use identity matrix as covariance matrix P
-    static const float Pdiag[EKF_N] = { 1, 1 };
 }
 
-void loop() {
-
-    static const float eps = 1e-4;
-
+void loop() 
+{
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
 
