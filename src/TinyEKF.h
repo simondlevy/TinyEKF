@@ -10,34 +10,50 @@ class TinyEKF {
 
     public:
 
-        void initialize(const float Pdiag[EKF_N])
+        void initialize(
+                const float pdiag[EKF_N],
+                const float min_covariance=0, 
+                const float max_covariance=0)
         {
+            _isUpdated = false;
+
+            _min_covariance = min_covariance;
+            _max_covariance = max_covariance;
+
+            for (uint8_t i=0; i<EKF_N; ++i) {
+
+                for (uint8_t j=0; j<EKF_N; ++j) {
+
+                    _P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
+                }
+
+                _x[i] = 0;
+            }
         }
 
-        /**
-         * Returns the state element at a given index.
-         * @param i the index (at least 0 and less than <i>n</i>
-         * @return state value at index
-         */
-        float get(const int i) 
-        { 
-            return _x[i]; 
-        }
 
-         /**
-          Performs one step of the prediction and update.
-         * @param z observation vector, length <i>m</i>
-         * @return true on success, false on failure caused by
-         * non-positive-definite matrix.
-         */
-        bool step(
+        void predict(
                 const float fx[EKF_N],
                 const float F[EKF_N*EKF_N],
-                const float Q[EKF_N*EKF_N],
+                const float Q[EKF_N*EKF_N])
+        { 
+            float tmp0[EKF_N*EKF_N] = {};
+
+            float Ft[EKF_N*EKF_N] = {};
+            float Pp[EKF_N*EKF_N]; 
+
+            // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+            mulmat(F, _P, tmp0, EKF_N,EKF_N, EKF_N);
+            transpose(F, Ft, EKF_N, EKF_N);
+            mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
+            accum(_P, Q, EKF_N, EKF_N);
+        }
+
+        bool update(
+                const float z[EKF_M], 
                 const float hx[EKF_M],
                 const float H[EKF_M*EKF_N],
-                const float R[EKF_M*EKF_M],
-                const float z[EKF_M]) 
+                const float R[EKF_M*EKF_M])
         { 
             float tmp0[EKF_N*EKF_N] = {};
             float tmp1[EKF_N*EKF_M] = {};
@@ -51,16 +67,10 @@ class TinyEKF {
             float Ft[EKF_N*EKF_N] = {};
             float Pp[EKF_N*EKF_N]; 
 
-            // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-            mulmat(F, _P, tmp0, EKF_N,EKF_N, EKF_N);
-            transpose(F, Ft, EKF_N, EKF_N);
-            mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
-            accum(Pp, Q, EKF_N, EKF_N);
-
             // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
             transpose(H, Ht, EKF_M, EKF_N);
-            mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
-            mulmat(H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
+            mulmat(_P, Ht, tmp1, EKF_N,EKF_N, EKF_M);
+            mulmat(H, _P, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
             accum(tmp3, R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
@@ -69,19 +79,40 @@ class TinyEKF {
             // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
             sub(z, hx, tmp5, EKF_M);
             mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-            add(fx, tmp2, _x, EKF_N);
+            add(_x, tmp2, _x, EKF_N);
 
             // P_k = (I - G_k H_k) P_k
             mulmat(G, H, tmp0, EKF_N,EKF_M, EKF_N);
             negate(tmp0, EKF_N, EKF_N);
             mat_addeye(tmp0, EKF_N);
-            mulmat(tmp0, Pp, _P, EKF_N,EKF_N, EKF_N);
+            mulmat(tmp0, _P, _P, EKF_N,EKF_N, EKF_N);
 
             // success
             return true;
         }
 
+        /**
+         * Returns the state element at a given index.
+         * @param i the index (at least 0 and less than <i>n</i>
+         * @return state value at index
+         */
+        float get(const int i) 
+        { 
+            return _x[i]; 
+        }
+
     private:
+
+        // State
+        float _x[EKF_N];
+
+        // Covariance matrix
+        float _P[EKF_N * EKF_N];
+
+        float _min_covariance;
+        float _max_covariance;
+
+        bool _isUpdated;
 
         // Cholesky-decomposition matrix-inversion code, adapated from
         // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
@@ -230,9 +261,4 @@ class TinyEKF {
                 a[i*n+i] += 1;
         }
 
-        // State
-        float _x[EKF_N];
-
-        // Covariance matrix
-        float _P[EKF_N * EKF_N];
 };

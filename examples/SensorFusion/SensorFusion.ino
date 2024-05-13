@@ -103,6 +103,9 @@ void loop() {
     // Process model is f(x) = x
     const float fx[EKF_N] = { _ekf.get(0), _ekf.get(1) };
 
+    // Run the prediction step of the DKF
+    _ekf.predict(fx, F, Q);
+
     // Measurement function simplifies the relationship between state
     // and sensor readings for convenience.  A more realistic
     // measurement function would distinguish between state value and
@@ -112,8 +115,8 @@ void loop() {
     //   hx[2] = .9987 * this->x[1] + .001;
     const float hx[EKF_M] = {_ekf.get(0), _ekf.get(1), _ekf.get(1) };
 
-    // Send these values to the EKF
-    _ekf.step(fx, F, Q, hx, H, R, z);
+    // Run the update step
+    _ekf.update(z, hx, H, R);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");
