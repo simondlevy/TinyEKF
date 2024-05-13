@@ -42,9 +42,6 @@ def baro2asl(pa):
     return (1.0 - pow(pa / 101325.0, 0.190295)) * 4433000.0
 
 
-# Simulation ==================================================================
-
-
 if __name__ == '__main__':
 
     LOOPSIZE = 100
@@ -56,11 +53,11 @@ if __name__ == '__main__':
     # One state (ASL), two measurements (baro, sonar), with
     # larger-than-usual measurement covariance noise to help with sonar
     # blips.
-    P = 1e-1
+    P = np.eye(1) * 1e-1
     Q = np.eye(1) * 1e-4
     R = np.eye(2) * 5e-1
 
-    ekf = EKF(1, P)
+    ekf = EKF(P)
 
     baro = np.zeros(N)
     sonar = np.zeros(N)

@@ -15,13 +15,12 @@ class EKF(object):
     http://home.wlu.edu/~levys/kalman_tutorial.
     '''
 
-    def __init__(self, n, P=1):
+    def __init__(self, P):
         '''
-        Creates a KF object with n states, m observables, and specified values
-        for prediction noise covariance P, process noise covariance Q,
-        and measurement noise covariance R.  You can also pass in your own
-        covariance matrix for each of these parameters.
+        Creates a KF object with an initial covariance matrix P
         '''
+
+        n, _ = P.shape
 
         # No previous prediction noise covariance
         self.P_pre = None
@@ -30,7 +29,7 @@ class EKF(object):
         self.x = np.zeros(n)
 
         # Set up covariance matrices
-        self.P_post = self._covar(n, P)
+        self.P_post = P
 
         # Identity matrix will be usefel later
         self.eye = np.eye(n)
@@ -61,18 +60,3 @@ class EKF(object):
 
         return self.x
 
-    def h(self, x):
-        '''
-        Your implementing class should override this method for the observation
-        function h(x), returning a NumPy array of m elements, and a NumPy array
-        of m x n elements representing the Jacobian matrix H of the observation
-        function with respect to the observation. For example, your function
-        might include a component that turns barometric pressure into altitude
-        in meters.By default this function is just the identity function
-        np.copy(x), so the Jacobian is just np.eye(len(x)).
-        '''
-        return np.copy(x), np.eye(len(x))
-
-    def _covar(self, siz, arg):
-
-        return arg * np.eye(siz) if np.shape(arg) == () else arg
