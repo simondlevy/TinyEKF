@@ -39,9 +39,8 @@ class TinyEKF {
         { 
             float fx[EKF_N] = {};
             float hx[EKF_M] = {};
-            float oldH[EKF_M][EKF_N] = {};
 
-            this->model(fx, hx, oldH); 
+            this->model(fx, hx); 
 
             float tmp0[EKF_N*EKF_N] = {};
             float tmp1[EKF_N*EKF_M] = {};
@@ -248,10 +247,7 @@ class TinyEKF {
          * n-1</sub>)</i> @param H gets <i>m &times; n</i> Jacobian of
          * <i>h(x)</i>
          */
-        virtual void model(
-                float fx[EKF_N], 
-                float hx[EKF_M], 
-                float H[EKF_M][EKF_N]) = 0;
+        virtual void model( float fx[EKF_N], float hx[EKF_M]) = 0;
 
         /**
          * Sets the specified value of the prediction error covariance.

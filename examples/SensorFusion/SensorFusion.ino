@@ -50,7 +50,7 @@ class Fuser : public TinyEKF {
 
     protected:
 
-        void model(float fx[EKF_N], float hx[EKF_M], float H[EKF_M][EKF_N])
+        void model(float fx[EKF_N], float hx[EKF_M])
         {
             // Process model is f(x) = x
             fx[0] = this->x[0];
@@ -66,11 +66,6 @@ class Fuser : public TinyEKF {
             hx[0] = this->x[0]; // Barometric pressure from previous state
             hx[1] = this->x[1]; // Baro temperature from previous state
             hx[2] = this->x[1]; // LM35 temperature from previous state
-
-            // Jacobian of measurement function
-            H[0][0] = 1;        // Barometric pressure from previous state
-            H[1][1] = 1 ;       // Baro temperature from previous state
-            H[2][1] = 1 ;       // LM35 temperature from previous state
         }
 };
 
