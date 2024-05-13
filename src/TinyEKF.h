@@ -30,7 +30,10 @@ class TinyEKF {
          * @return true on success, false on failure caused by
          * non-positive-definite matrix.
          */
-        bool step(const float z[EKF_M]) 
+        bool step(
+                const float Q[EKF_N*EKF_N],
+                const float R[EKF_M*EKF_M],
+                const float z[EKF_M]) 
         { 
             float fx[EKF_N] = {};
             float F[EKF_N][EKF_N] = {};
@@ -61,14 +64,14 @@ class TinyEKF {
             mulmat(_F, _P, tmp0, EKF_N,EKF_N, EKF_N);
             transpose(_F, Ft, EKF_N, EKF_N);
             mulmat(tmp0, Ft, Pp, EKF_N,EKF_N, EKF_N);
-            accum(Pp, _Q, EKF_N, EKF_N);
+            accum(Pp, Q, EKF_N, EKF_N);
 
             /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
             transpose(_H, Ht, EKF_M, EKF_N);
             mulmat(Pp, Ht, tmp1, EKF_N,EKF_N, EKF_M);
             mulmat(_H, Pp, tmp2, EKF_M,EKF_N, EKF_N);
             mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
-            accum(tmp3, _R, EKF_M, EKF_M);
+            accum(tmp3, R, EKF_M, EKF_M);
             if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
             mulmat(tmp1, tmp4, G, EKF_N,EKF_M, EKF_M);
 
@@ -237,10 +240,6 @@ class TinyEKF {
 
         float _P[EKF_N * EKF_N];
 
-        float _Q[EKF_N * EKF_N];  
-
-        float _R[EKF_M * EKF_M];  
-
     protected:
 
         float x[EKF_N];
@@ -270,27 +269,4 @@ class TinyEKF {
         { 
             _P[i * EKF_N + j] = value; 
         }
-
-        /** Sets the specified value of the process noise covariance.
-         * <i>Q<sub>i,j</sub> = value</i>
-         * @param i row index
-         * @param j column index
-         * @param value value to set
-         */
-        void setQ(int i, int j, float value) 
-        { 
-            _Q[i * EKF_N + j] = value; 
-        }
-
-        /**
-         * Sets the specified value of the observation noise covariance.
-         * <i>R<sub>i,j</sub> = value</i> @param i row index
-         * @param j column index
-         * @param value value to set
-         */
-        void setR(int i, int j, float value) 
-        { 
-            _R[i * EKF_M + j] = value; 
-        }
-
 };

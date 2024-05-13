@@ -16,21 +16,24 @@ static const uint8_t LM35_PIN = 0;
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
+static const float EPS = 1e-4;
+
+static const float Q[EKF_N*EKF_N] = {
+
+    EPS, 0,   
+    0,   EPS
+
+};
+
+static const float R[EKF_M*EKF_M] = {
+
+    EPS, 0,   0,
+    0,   EPS, 0,
+    0,   0,   EPS
+
+};
+
 class Fuser : public TinyEKF {
-
-    public:
-
-        Fuser()
-        {            
-            // We approximate the process noise using a small constant
-            this->setQ(0, 0, .0001);
-            this->setQ(1, 1, .0001);
-
-            // Same for measurement noise
-            this->setR(0, 0, .0001);
-            this->setR(1, 1, .0001);
-            this->setR(2, 2, .0001);
-        }
 
     protected:
 
@@ -118,13 +121,6 @@ void loop() {
     };
 
 
-    // Approximate process noise covariance Q using a small constant
-    static const float Q[EKF_N][EKF_N] = {
-        {eps, 0},
-        {0, eps}
-    };
-
-    // Read pressure, temperature from BMP180
     double baroTemperature, baroPressure;
     getBaroReadings(baroTemperature, baroPressure);
 
@@ -163,7 +159,7 @@ void loop() {
     };*/
 
     // Send these measurements to the EKF
-    ekf.step(z);
+    ekf.step(Q, R, z);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");
