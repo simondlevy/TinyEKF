@@ -113,7 +113,11 @@ if __name__ == '__main__':
         sonar[k] = (sonarfun(50 * (1 - sine)) +
                     (50 if np.random.rand() > 0.9 else 0))
 
-        fused[k] = ekf.step((baro[k], sonar[k]))[0]
+        z = baro[k], sonar[k]
+
+        ekf.step(z)
+
+        fused[k] = ekf.get()[0]
 
     plt.subplot(3, 1, 1)
     plt.plot(fused, 'r')

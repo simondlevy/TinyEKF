@@ -39,8 +39,7 @@ class EKF(object):
 
     def step(self, z):
         '''
-        Runs one step of the EKF on observations z, where z is a tuple of
-        length M.  Returns a NumPy array representing the updated state.
+        Runs one step of the EKF 
         '''
 
         # Predict ----------------------------------------------------
@@ -65,7 +64,8 @@ class EKF(object):
         # $P_k = (I - G_k H_k) P_k$
         self.P_post = np.dot(self.eye - np.dot(G, H), self.P_pre)
 
-        # return self.x.asarray()
+    def get(self):
+
         return self.x
 
     def f(self, x):
