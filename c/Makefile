@@ -5,13 +5,15 @@
 #
 # MIT License
 
+SRC = ../src
+
 all: gps_ekf
 
 run: gps_ekf
 	./gps_ekf
 
-gps_ekf: gps_ekf.c tinyekf.c tinyekf.h
-	gcc -Wall -I. -D_float_t=double -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c tinyekf.c -lm
+gps_ekf: gps_ekf.c $(SRC)/tinyekf.c $(SRC)/tinyekf.h
+	gcc -Wall -I$(SRC) -D_float_t=double -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c $(SRC)/tinyekf.c -lm
 
 edit:
 	vim gps_ekf.c

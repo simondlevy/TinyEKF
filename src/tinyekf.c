@@ -195,6 +195,7 @@ void ekf_predict(
         const _float_t F[EKF_N*EKF_N],
         const _float_t Q[EKF_N*EKF_N])
 {        
+    // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
     memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
 
     // temporary storage
