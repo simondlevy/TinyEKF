@@ -171,49 +171,27 @@ int main(int argc, char ** argv)
         const double Sg    = 0.01;
         const double sigma = 5;         // state transition variance
 
-        const double Qb0 = Sf * T+Sg * T * T * T/3; 
-        const double Qb1 = Sg * T * T/2; 
-        const double Qb2 = Sg * T * T/2; 
-        const double Qb3 = Sg * T;
+        const double b0 = Sf * T+Sg * T * T * T/3; 
+        const double b1 = Sg * T * T/2; 
+        const double b2 = Sg * T * T/2; 
+        const double b3 = Sg * T;
 
-        const double Qxyz0 = sigma * sigma * T * T * T/3; 
-        const double Qxyz1 = sigma * sigma * T * T/2; 
-        const double Qxyz2 = sigma * sigma * T * T/2; 
-        const double Qxyz3 = sigma * sigma * T;
+        const double xyz0 = sigma * sigma * T * T * T/3; 
+        const double xyz1 = sigma * sigma * T * T/2; 
+        const double xyz2 = sigma * sigma * T * T/2; 
+        const double xyz3 = sigma * sigma * T;
 
         const double Q[8*8] = {
 
-            Qxyz0, Qxyz1,  0,     0,     0,     0,     0,   0,
-            Qxyz2, Qxyz3,  0,     0,     0,     0,     0,   0,
-            0,     0,      Qxyz0, Qxyz1, 0,     0,     0,   0,
-            0,     0,      Qxyz2, Qxyz3, 0,     0,     0,   0,
-            0,     0,      0,     0,     Qxyz0, Qxyz1, 0,   0,
-            0,     0,      0,     0,     Qxyz2, Qxyz3, 0,   0,
-            0,     0,      0,     0,     0,     0,     Qb0, Qb1,
-            0,     0,      0,     0,     0,     0,     Qb2, Qb3
+            xyz0, xyz1,  0,     0,     0,     0,     0,   0,
+            xyz2, xyz3,  0,     0,     0,     0,     0,   0,
+            0,     0,      xyz0, xyz1, 0,     0,     0,   0,
+            0,     0,      xyz2, xyz3, 0,     0,     0,   0,
+            0,     0,      0,     0,     xyz0, xyz1, 0,   0,
+            0,     0,      0,     0,     xyz2, xyz3, 0,   0,
+            0,     0,      0,     0,     0,     0,     b0, b1,
+            0,     0,      0,     0,     0,     0,     b2, b3
         };
-
-        /*
-        Q[0] = Qxyz0;
-        Q[1] = Qxyz1;
-        Q[8] = Qxyz2;
-        Q[9] = Qxyz3;
-
-        Q[18] = Qxyz0; 
-        Q[19] = Qxyz1;
-        Q[26] = Qxyz2;
-        Q[27] = Qxyz3;
-
-        Q[36]   = Qxyz0; 
-        Q[37] = Qxyz1;
-        Q[44] = Qxyz2;
-        Q[45] = Qxyz3;
-
-        Q[54]   = Qb0; 
-        Q[55] = Qb1;
-        Q[62] = Qb2;
-        Q[63] = Qb3;
-        */
 
         // -------------------------------------------------------------------
 
