@@ -17,6 +17,10 @@ class NewTinyEKF {
                 const float min_covariance=0, 
                 const float max_covariance=0)
         {
+            ekf_initialize(&_ekf, pdiag);
+
+            _min_covariance = min_covariance;
+            _max_covariance = max_covariance;
         }
 
         void predict(
@@ -56,4 +60,11 @@ class NewTinyEKF {
         { 
             return NULL;
         }
+
+    private:
+
+        ekf_t _ekf;
+
+        float _min_covariance;
+        float _max_covariance;
 };

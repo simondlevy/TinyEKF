@@ -13,8 +13,7 @@
 
 static const uint8_t LM35_PIN = 0;
 
-#include <newtiny.hpp>
-#include <tinyekf.hpp>
+#include <tinyekf.h>
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
@@ -46,7 +45,7 @@ static const float H[EKF_M*EKF_N] = {
     0, 1
 };
 
-static TinyEKF _ekf;
+static ekf_t _ekf;
 
 static SFE_BMP180 baro;
 
@@ -78,7 +77,7 @@ void setup()
     // Use identity matrix as initiali covariance matrix
     const float Pdiag[EKF_N] = {1, 1};
 
-    _ekf.initialize(Pdiag);
+    ekf_initialize(&_ekf, Pdiag);
 
     Serial.begin(115200);
 
@@ -100,14 +99,11 @@ void loop()
     // Set the observation vector z
     const float z[EKF_M] = {baroPressure, baroTemperature, lm35Temperature};
 
-    // Get the current state estimation x
-    const auto x = _ekf.get();
-
     // Process model is f(x) = x
-    const float fx[EKF_N] = { x[0], x[1] };
+    const float fx[EKF_N] = { _ekf.x[0], _ekf.x[1] };
 
     // Run the prediction step of the DKF
-    _ekf.predict(fx, F, Q);
+    ekf_predict(&_ekf, fx, F, Q);
 
     // Measurement function simplifies the relationship between state
     // and sensor readings for convenience.  A more realistic
@@ -116,10 +112,10 @@ void loop()
     //   hx[0] = pow(this->x[0], 1.03);
     //   hx[1] = 1.005 * this->x[1];
     //   hx[2] = .9987 * this->x[1] + .001;
-    const float hx[EKF_M] = {x[0], x[1], x[1] };
+    const float hx[EKF_M] = {_ekf.x[0], _ekf.x[1], _ekf.x[1] };
 
     // Run the update step
-    _ekf.update(z, hx, H, R);
+    ekf_update(&_ekf, z, hx, H, R);
 
     // Report measured and predicte/fused values
     Serial.print("BMP180Press:");
@@ -130,9 +126,9 @@ void loop()
     Serial.print(" LM35Temp:");
     Serial.print(z[2]);
     Serial.print(" EKFPress:");
-    Serial.print(x[0]);
+    Serial.print(_ekf.x[0]);
     Serial.print(" EKFTemp:");
-    Serial.println(x[1]);
+    Serial.println(_ekf.x[1]);
 }
 
 
