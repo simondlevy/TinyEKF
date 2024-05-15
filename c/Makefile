@@ -10,8 +10,8 @@ all: gps_ekf
 run: gps_ekf
 	./gps_ekf
 
-gps_ekf: gps_ekf.c tiny_ekf.c tiny_ekf.h
-	gcc -Wall -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c tiny_ekf.c -lm
+gps_ekf: gps_ekf.c tinyekf.c tinyekf.h
+	gcc -Wall -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c tinyekf.c -lm
 
 edit:
 	vim gps_ekf.c
