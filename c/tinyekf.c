@@ -198,11 +198,11 @@ bool ekf_step(ekf_t * ekf, double * z)
     double tmp4[EKF_M*EKF_M];
     double tmp5[EKF_M]; 
 
-    double Ht[EKF_N][EKF_M]; // transpose of measurement Jacobian
-    double Ft[EKF_N][EKF_N]; // transpose of process Jacobian
+    double Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
+    double Ft[EKF_N*EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat((double *)ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
+    mulmat((double *)ekf->F, (double *)ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(ekf->F, Ft, EKF_N, EKF_N);
     mulmat((double *)tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
     accum((double *)ekf->Pp, ekf->Q, EKF_N, EKF_N);
