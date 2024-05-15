@@ -1,4 +1,4 @@
-# TinyEKF: Lightweight C++ Extended Kalman Filter with Python for prototyping
+# TinyEKF: Lightweight C/C++ Extended Kalman Filter with Python for prototyping
 
 <a href="examples/SensorFusion/SensorFusion.ino"><img src="media/barotemp2.jpg" width=750></a>
 <a href="python/altitude_fuser.py"><img src="media/altitude.png" width=1000></a>
@@ -10,7 +10,7 @@ running on Arduino, STM32, and other microcontrollers, it uses static
 (compile-time) memory allocation (no "new" or "malloc").  The **examples**
 folder includes both a "pure C" example from the literature, as well as an
 Arduino example of sensor fusion.  The **python** folder includes a Python
-class that you can use to prototype your EKF before implementing it in C++.
+class that you can use to prototype your EKF before implementing it in C or C++.
 
 Arduino users can simply install or drag the whole TinyEKF folder into their Arduino libraries folder. 
 The **examples/SensorFusion** folder contains a little sensor fusion example using a 
