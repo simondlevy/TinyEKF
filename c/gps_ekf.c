@@ -192,8 +192,6 @@ int main(int argc, char ** argv)
 
         const double Qb[4] = {Qb0, Qb1, Qb2, Qb3};
             
-        const double Qxyz[4] = {Qxyz0, Qxyz1, Qxyz2, Qxyz3};
-
         double Q[8*8] = {0};
 
         Q[0] = Qxyz0;
@@ -206,7 +204,11 @@ int main(int argc, char ** argv)
         Q[26] = Qxyz2;
         Q[27] = Qxyz3;
 
-        blkfill(Q, Qxyz, 4);
+        Q[36]   = Qxyz0; 
+        Q[37] = Qxyz1;
+        Q[44] = Qxyz2;
+        Q[45] = Qxyz3;
+
         blkfill(Q, Qb,   6);
 
         // -------------------------------------------------------------------
