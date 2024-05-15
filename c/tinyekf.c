@@ -180,12 +180,12 @@ static void mat_addeye(double * a, int n)
 
 void ekf_init(ekf_t * ekf)
 {
-    zeros((double *)ekf->P, EKF_N, EKF_N);
-    zeros((double *)ekf->Q, EKF_N, EKF_N);
-    zeros((double *)ekf->R, EKF_M, EKF_M);
-    zeros((double *)ekf->G, EKF_N, EKF_M);
-    zeros((double *)ekf->F, EKF_N, EKF_N);
-    zeros((double *)ekf->H, EKF_M, EKF_N);
+    zeros(ekf->P, EKF_N, EKF_N);
+    zeros(ekf->Q, EKF_N, EKF_N);
+    zeros(ekf->R, EKF_M, EKF_M);
+    zeros(ekf->G, EKF_N, EKF_M);
+    zeros(ekf->F, EKF_N, EKF_N);
+    zeros(ekf->H, EKF_M, EKF_N);
 }
 
 bool ekf_step(ekf_t * ekf, double * z)
