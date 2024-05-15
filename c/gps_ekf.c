@@ -1,8 +1,10 @@
 /* gps_ekf: TinyEKF test case using You Chong's GPS example:
  * 
- *   http://www.mathworks.com/matlabcentral/fileexchange/31487-extended-kalman-filter-ekf--for-gps
+ *   http://www.mathworks.com/matlabcentral/fileexchange/
+ *     31487-extended-kalman-filter-ekf--for-gps
  * 
- * Reads file gps.csv of satellite data and writes file ekf.csv of mean-subtracted estimated positions.
+ * Reads file gps.csv of satellite data and writes file ekf.csv of
+ * mean-subtracted estimated positions.
  *
  *
  * References:
@@ -210,7 +212,9 @@ int main(int argc, char ** argv)
     // Dump filtered positions minus their means
     for (j=0; j<25; ++j) {
         fprintf(ofp, "%f,%f,%f\n", 
-                Pos_KF[j][0]-mean_Pos_KF[0], Pos_KF[j][1]-mean_Pos_KF[1], Pos_KF[j][2]-mean_Pos_KF[2]);
+                Pos_KF[j][0]-mean_Pos_KF[0], 
+                Pos_KF[j][1]-mean_Pos_KF[1], 
+                Pos_KF[j][2]-mean_Pos_KF[2]);
         printf("%f %f %f\n", Pos_KF[j][0], Pos_KF[j][1], Pos_KF[j][2]);
     }
     
