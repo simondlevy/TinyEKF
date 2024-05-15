@@ -195,9 +195,9 @@ void ekf_predict(
         const _float_t F[EKF_N*EKF_N],
         const _float_t Q[EKF_N*EKF_N])
 {        
-    memcpy(ekf->fx, fx, EKF_N*sizeof(_float_t));
+    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
 
-    /* temporary storage */
+    // temporary storage
     _float_t tmp0[EKF_N*EKF_N];
 
     _float_t Ft[EKF_N*EKF_N]; // transpose of process Jacobian
@@ -239,7 +239,7 @@ bool ekf_update(
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     sub(z, hx, tmp5, EKF_M);
     mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-    add(ekf->fx, tmp2, ekf->x, EKF_N);
+    add(ekf->x, tmp2, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
     mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
