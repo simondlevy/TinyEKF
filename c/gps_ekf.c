@@ -216,9 +216,7 @@ int main(int argc, char ** argv)
 
         run_model(&ekf, SV_Pos, fx, F, hx, H);
 
-        memcpy(ekf.fx, fx, 8*sizeof(double));
-
-        ekf_predict(&ekf, F, Q);
+        ekf_predict(&ekf, fx, F, Q);
 
         ekf_update(&ekf, SV_Rho, hx, H, R);
 

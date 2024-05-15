@@ -191,9 +191,12 @@ void ekf_initialize(ekf_t * ekf)
 
 void ekf_predict(
         ekf_t * ekf, 
+        const _float_t fx[EKF_N],
         const _float_t F[EKF_N*EKF_N],
         const _float_t Q[EKF_N*EKF_N])
 {        
+    memcpy(ekf->fx, fx, EKF_N*sizeof(_float_t));
+
     /* temporary storage */
     _float_t tmp0[EKF_N*EKF_N];
 
