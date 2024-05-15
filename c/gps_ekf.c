@@ -72,7 +72,7 @@ static void init(ekf_t * ekf)
         ekf->P[i*8+i] = P0;
 
     for (i=0; i<4; ++i)
-        ekf->R[i][i] = R0;
+        ekf->R[i*4+i] = R0;
 
     // position
     ekf->x[0] = -2.168816181271560e+006;

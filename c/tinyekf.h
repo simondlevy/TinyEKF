@@ -16,9 +16,9 @@ typedef struct {
 
     double P[EKF_N*EKF_N];  // prediction error covariance
     double Q[EKF_N*EKF_N];  // process noise covariance
-    double R[EKF_M][EKF_M];  // measurement error covariance
+    double R[EKF_M*EKF_M];  // measurement error covariance
 
-    double G[EKF_N][EKF_M];  // Kalman gain; a.k.a. K
+    double G[EKF_N*EKF_M];  // Kalman gain; a.k.a. K
 
     double F[EKF_N][EKF_N];  // Jacobian of process model
     double H[EKF_M][EKF_N];  // Jacobian of measurement model
