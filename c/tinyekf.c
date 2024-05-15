@@ -181,7 +181,6 @@ static void mat_addeye(_float_t * a, int n)
 void ekf_initialize(ekf_t * ekf)
 {
     zeros(ekf->P, EKF_N, EKF_N);
-    zeros(ekf->Q, EKF_N, EKF_N);
     zeros(ekf->R, EKF_M, EKF_M);
     zeros(ekf->F, EKF_N, EKF_N);
     zeros(ekf->H, EKF_M, EKF_N);

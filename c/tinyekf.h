@@ -19,7 +19,6 @@ typedef struct {
     _float_t x[EKF_N];     // state vector
 
     _float_t P[EKF_N*EKF_N];  // prediction error covariance
-    _float_t Q[EKF_N*EKF_N];  // process noise covariance
     _float_t R[EKF_M*EKF_M];  // measurement error covariance
 
     _float_t F[EKF_N*EKF_N];  // Jacobian of process model
