@@ -10,9 +10,7 @@
 
 #include <stdbool.h>
 
-#ifndef _float_t
-typedef float _float_t;
-#endif
+#include <ekf_config.h>
 
 typedef struct {
 
