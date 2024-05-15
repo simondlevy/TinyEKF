@@ -35,10 +35,8 @@ static const double T = 1;
 static const double P0 = 10;
 static const double R0 = 36;
 
-static void blkfill(double Q[8*8], const double * a, int off)
+static void blkfill(double Q[8*8], const double * a, const int off)
 {
-    off *= 2;
-
     Q[off*8+off]   = a[0]; 
     Q[off*8+off+1] = a[1];
     Q[(off+1)*8+off] = a[2];
@@ -191,9 +189,9 @@ int main(int argc, char ** argv)
         double Q[8*8] = {0};
 
         blkfill(Q, Qxyz, 0);
-        blkfill(Q, Qxyz, 1);
         blkfill(Q, Qxyz, 2);
-        blkfill(Q, Qb,   3);
+        blkfill(Q, Qxyz, 4);
+        blkfill(Q, Qb,   6);
 
         // -------------------------------------------------------------------
 
