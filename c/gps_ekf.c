@@ -35,10 +35,10 @@ static void blkfill(ekf_t * ekf, const double * a, int off)
 {
     off *= 2;
 
-    ekf->Q[off]   [off]   = a[0]; 
-    ekf->Q[off]   [off+1] = a[1];
-    ekf->Q[off+1] [off]   = a[2];
-    ekf->Q[off+1] [off+1] = a[3];
+    ekf->Q[off*8+off]   = a[0]; 
+    ekf->Q[off*8+off+1] = a[1];
+    ekf->Q[(off+1)*8+off] = a[2];
+    ekf->Q[(off+1)*8+off+1] = a[3];
 }
 
 
