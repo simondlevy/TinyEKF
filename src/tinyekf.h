@@ -222,6 +222,7 @@ static void ekf_predict(
     mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(F, Ft, EKF_N, EKF_N);
     mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
+
     accum(ekf->Pp, Q, EKF_N, EKF_N);
 }
 

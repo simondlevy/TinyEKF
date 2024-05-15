@@ -46,50 +46,10 @@ class TinyEKF {
             cleanupCovariance();
         }
 
-        bool update(
-                const float z[EKF_M], 
-                const float hx[EKF_M],
-                const float H[EKF_M*EKF_N],
-                const float R[EKF_M*EKF_M])
-        { 
-            float tmp0[EKF_N*EKF_N] = {};
-            float tmp1[EKF_N*EKF_M] = {};
-            float tmp2[EKF_M*EKF_N] = {};
-            float tmp3[EKF_M*EKF_M] = {};
-            float tmp4[EKF_M*EKF_M] = {};
-            float tmp5[EKF_M] = {}; 
-
-            float G[EKF_N*EKF_M] = {};  
-            float Ht[EKF_N*EKF_M] = {}; 
-
-            // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-            transpose(H, Ht, EKF_M, EKF_N);
-            mulmat(_P, Ht, tmp1, EKF_N,EKF_N, EKF_M);
-            mulmat(H, _P, tmp2, EKF_M,EKF_N, EKF_N);
-            mulmat(tmp2, Ht, tmp3, EKF_M,EKF_N, EKF_M);
-            accum(tmp3, R, EKF_M, EKF_M);
-            if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
-            mulmat(tmp1, tmp4, G, EKF_N,EKF_M, EKF_M);
-
-            // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-            sub(z, hx, tmp5, EKF_M);
-            mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-            add(_x, tmp2, _x, EKF_N);
-
-            // P_k = (I - G_k H_k) P_k
-            mulmat(G, H, tmp0, EKF_N,EKF_M, EKF_N);
-            negate(tmp0, EKF_N, EKF_N);
-            mat_addeye(tmp0, EKF_N);
-            mulmat(tmp0, _P, _P, EKF_N,EKF_N, EKF_N);
-
-            // success
-            return true;
-        }
-
          void update_with_scalar(
-                const float h[EKF_N], 
                 const float z,
                 const float hx,
+                const float h[EKF_N], 
                 const float r)
         {
             float ph[EKF_N] = {};
@@ -255,34 +215,6 @@ class TinyEKF {
             return 0; /* success */
         }
 
-
-        static int cholsl(const float * A, float * a, float * p, const int n) 
-        {
-            if (choldcsl(A,a,p,n)) return 1;
-            for (int i = 0; i < n; i++) {
-                for (int j = i + 1; j < n; j++) {
-                    a[i*n+j] = 0.0;
-                }
-            }
-            for (int i = 0; i < n; i++) {
-                a[i*n+i] *= a[i*n+i];
-                for (int k = i + 1; k < n; k++) {
-                    a[i*n+i] += a[k*n+i] * a[k*n+i];
-                }
-                for (int j = i + 1; j < n; j++) {
-                    for (int k = j; k < n; k++) {
-                        a[i*n+j] += a[k*n+i] * a[k*n+j];
-                    }
-                }
-            }
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < i; j++) {
-                    a[i*n+j] = a[j*n+i];
-                }
-            }
-
-            return 0; /* success */
-        }
 
         // C <- A * B
         static void mulmat(
