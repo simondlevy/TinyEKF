@@ -9,6 +9,7 @@
 // These must be defined before including TinyEKF.h
 #define EKF_N 2     // pressure, temperature
 #define EKF_M 3     // baro pressure, baro temperature, LM35 temperature
+#define _float_t float
 
 static const uint8_t LM35_PIN = 0;
 
@@ -22,7 +23,6 @@ static const float Q[EKF_N*EKF_N] = {
 
     EPS, 0,   
     0,   EPS
-
 };
 
 static const float R[EKF_M*EKF_M] = {
@@ -30,7 +30,6 @@ static const float R[EKF_M*EKF_M] = {
     EPS, 0,   0,
     0,   EPS, 0,
     0,   0,   EPS
-
 };
 
 // So process model Jacobian is identity matrix

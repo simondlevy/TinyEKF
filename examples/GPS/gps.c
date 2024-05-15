@@ -26,6 +26,15 @@
 #include <strings.h>
 #include <math.h>
 
+// Size of state space
+#define EKF_N 8
+
+// Size of observation (measurement) space
+#define EKF_M 4
+
+// We need double precision to replicate the published results
+#define _float_t double
+
 #include <tinyekf.h>
 
 // positioning interval

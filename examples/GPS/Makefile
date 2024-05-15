@@ -12,8 +12,8 @@ all: gps
 run: gps
 	./gps
 
-gps: gps.c $(SRC)/tinyekf.c $(SRC)/tinyekf.h ekf_config.h
-	gcc -Wall -I. -I$(SRC) -o gps gps.c $(SRC)/tinyekf.c -lm
+gps: gps.c $(SRC)/tinyekf.h
+	gcc -Wall -I. -I$(SRC) -o gps gps.c -lm
 
 edit:
 	vim gps.c
