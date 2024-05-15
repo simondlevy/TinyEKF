@@ -6,8 +6,6 @@
  * MIT License
  */
 
-#include <newtiny.h>
-
 class TinyEKF {
 
     public:

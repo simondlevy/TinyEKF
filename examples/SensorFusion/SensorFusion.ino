@@ -13,6 +13,7 @@
 
 static const uint8_t LM35_PIN = 0;
 
+#include <newtiny.hpp>
 #include <tinyekf.hpp>
 #include <SFE_BMP180.h>
 #include <Wire.h>
