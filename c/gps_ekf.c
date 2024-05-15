@@ -51,7 +51,11 @@ static void init(ekf_t * ekf)
     const double Sg    = 0.01;
     const double sigma = 5;         // state transition variance
     const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-    const double Qxyz[4] = {sigma*sigma*T*T*T/3, sigma*sigma*T*T/2, sigma*sigma*T*T/2, sigma*sigma*T};
+    const double Qxyz[4] = {
+        sigma*sigma*T*T*T/3, 
+        sigma*sigma*T*T/2, 
+        sigma*sigma*T*T/2, sigma*sigma*T
+    };
 
     blkfill(ekf, Qxyz, 0);
     blkfill(ekf, Qxyz, 1);
