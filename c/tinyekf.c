@@ -256,13 +256,6 @@ bool ekf_update(ekf_t * ekf, double * z)
     double tmp5[EKF_M]; 
 
     double Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
-    double Ft[EKF_N*EKF_N]; // transpose of process Jacobian
-
-    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
-    transpose(ekf->F, Ft, EKF_N, EKF_N);
-    mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
-    accum(ekf->Pp, ekf->Q, EKF_N, EKF_N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(ekf->H, Ht, EKF_M, EKF_N);
