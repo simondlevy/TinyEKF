@@ -181,14 +181,25 @@ int main(int argc, char ** argv)
         const double Qxyz2 = sigma * sigma * T * T/2; 
         const double Qxyz3 = sigma * sigma * T;
 
-        double Q[8*8] = {0};
+        const double Q[8*8] = {
 
+            Qxyz0, Qxyz1,  0,     0,     0,     0,     0,   0,
+            Qxyz2, Qxyz3,  0,     0,     0,     0,     0,   0,
+            0,     0,      Qxyz0, Qxyz1, 0,     0,     0,   0,
+            0,     0,      Qxyz2, Qxyz3, 0,     0,     0,   0,
+            0,     0,      0,     0,     Qxyz0, Qxyz1, 0,   0,
+            0,     0,      0,     0,     Qxyz2, Qxyz3, 0,   0,
+            0,     0,      0,     0,     0,     0,     Qb0, Qb1,
+            0,     0,      0,     0,     0,     0,     Qb2, Qb3
+        };
+
+        /*
         Q[0] = Qxyz0;
         Q[1] = Qxyz1;
         Q[8] = Qxyz2;
         Q[9] = Qxyz3;
 
-        Q[18]   = Qxyz0; 
+        Q[18] = Qxyz0; 
         Q[19] = Qxyz1;
         Q[26] = Qxyz2;
         Q[27] = Qxyz3;
@@ -202,6 +213,7 @@ int main(int argc, char ** argv)
         Q[55] = Qb1;
         Q[62] = Qb2;
         Q[63] = Qb3;
+        */
 
         // -------------------------------------------------------------------
 
