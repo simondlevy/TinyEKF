@@ -31,14 +31,6 @@ typedef struct {
     double fx[EKF_N];   /* output of user defined f() state-transition function */
     double hx[EKF_M];   /* output of user defined h() measurement function */
 
-    /* temporary storage */
-    double tmp0[EKF_N][EKF_N];
-    double tmp1[EKF_N][EKF_M];
-    double tmp2[EKF_M][EKF_N];
-    double tmp3[EKF_M][EKF_M];
-    double tmp4[EKF_M][EKF_M];
-    double tmp5[EKF_M]; 
-
 } ekf_t;
 
 void ekf_init(ekf_t * ekf);
