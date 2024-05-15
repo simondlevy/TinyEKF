@@ -16,9 +16,9 @@
 /* Cholesky-decomposition matrix-inversion code, adapated from
    http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
 
-static int choldc1(double * a, double * p, int n) {
+static int choldc1(_float_t * a, _float_t * p, int n) {
     int i,j,k;
-    double sum;
+    _float_t sum;
 
     for (i = 0; i < n; i++) {
         for (j = i; j < n; j++) {
@@ -41,9 +41,9 @@ static int choldc1(double * a, double * p, int n) {
     return 0; /* success */
 }
 
-static int choldcsl(double * A, double * a, double * p, int n) 
+static int choldcsl(_float_t * A, _float_t * a, _float_t * p, int n) 
 {
-    int i,j,k; double sum;
+    int i,j,k; _float_t sum;
     for (i = 0; i < n; i++) 
         for (j = 0; j < n; j++) 
             a[i*n+j] = A[i*n+j];
@@ -63,7 +63,7 @@ static int choldcsl(double * A, double * a, double * p, int n)
 }
 
 
-static int cholsl(double * A, double * a, double * p, int n) 
+static int cholsl(_float_t * A, _float_t * a, _float_t * p, int n) 
 {
     int i,j,k;
     if (choldcsl(A,a,p,n)) return 1;
@@ -92,13 +92,13 @@ static int cholsl(double * A, double * a, double * p, int n)
     return 0; /* success */
 }
 
-static void zeros(double * a, int m, int n)
+static void zeros(_float_t * a, int m, int n)
 {
-    memset(a, 0, m*n*sizeof(double));
+    memset(a, 0, m*n*sizeof(_float_t));
 }
 
 /* C <- A * B */
-static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
+static void mulmat(_float_t * a, _float_t * b, _float_t * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
@@ -110,7 +110,7 @@ static void mulmat(double * a, double * b, double * c, int arows, int acols, int
         }
 }
 
-static void mulvec(double * a, double * x, double * y, int m, int n)
+static void mulvec(_float_t * a, _float_t * x, _float_t * y, int m, int n)
 {
     int i, j;
 
@@ -121,7 +121,7 @@ static void mulvec(double * a, double * x, double * y, int m, int n)
     }
 }
 
-static void transpose(double * a, double * at, int m, int n)
+static void transpose(_float_t * a, _float_t * at, int m, int n)
 {
     int i,j;
 
@@ -132,7 +132,7 @@ static void transpose(double * a, double * at, int m, int n)
 }
 
 /* A <- A + B */
-static void accum(double * a, double * b, int m, int n)
+static void accum(_float_t * a, _float_t * b, int m, int n)
 {        
     int i,j;
 
@@ -142,7 +142,7 @@ static void accum(double * a, double * b, int m, int n)
 }
 
 /* C <- A + B */
-static void add(double * a, double * b, double * c, int n)
+static void add(_float_t * a, _float_t * b, _float_t * c, int n)
 {
     int j;
 
@@ -152,7 +152,7 @@ static void add(double * a, double * b, double * c, int n)
 
 
 /* C <- A - B */
-static void sub(double * a, double * b, double * c, int n)
+static void sub(_float_t * a, _float_t * b, _float_t * c, int n)
 {
     int j;
 
@@ -160,7 +160,7 @@ static void sub(double * a, double * b, double * c, int n)
         c[j] = a[j] - b[j];
 }
 
-static void negate(double * a, int m, int n)
+static void negate(_float_t * a, int m, int n)
 {        
     int i, j;
 
@@ -169,7 +169,7 @@ static void negate(double * a, int m, int n)
             a[i*n+j] = -a[i*n+j];
 }
 
-static void mat_addeye(double * a, int n)
+static void mat_addeye(_float_t * a, int n)
 {
     int i;
     for (i=0; i<n; ++i)
@@ -178,7 +178,7 @@ static void mat_addeye(double * a, int n)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void ekf_init(ekf_t * ekf)
+void ekf_initialize(ekf_t * ekf)
 {
     zeros(ekf->P, EKF_N, EKF_N);
     zeros(ekf->Q, EKF_N, EKF_N);
@@ -188,18 +188,18 @@ void ekf_init(ekf_t * ekf)
     zeros(ekf->H, EKF_M, EKF_N);
 }
 
-bool ekf_step(ekf_t * ekf, double * z)
+bool ekf_step(ekf_t * ekf, _float_t * z)
 {        
     /* temporary storage */
-    double tmp0[EKF_N*EKF_N];
-    double tmp1[EKF_N*EKF_M];
-    double tmp2[EKF_M*EKF_N];
-    double tmp3[EKF_M*EKF_M];
-    double tmp4[EKF_M*EKF_M];
-    double tmp5[EKF_M]; 
+    _float_t tmp0[EKF_N*EKF_N];
+    _float_t tmp1[EKF_N*EKF_M];
+    _float_t tmp2[EKF_M*EKF_N];
+    _float_t tmp3[EKF_M*EKF_M];
+    _float_t tmp4[EKF_M*EKF_M];
+    _float_t tmp5[EKF_M]; 
 
-    double Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
-    double Ft[EKF_N*EKF_N]; // transpose of process Jacobian
+    _float_t Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
+    _float_t Ft[EKF_N*EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
@@ -234,9 +234,9 @@ bool ekf_step(ekf_t * ekf, double * z)
 void ekf_predict(ekf_t * ekf)
 {        
     /* temporary storage */
-    double tmp0[EKF_N*EKF_N];
+    _float_t tmp0[EKF_N*EKF_N];
 
-    double Ft[EKF_N*EKF_N]; // transpose of process Jacobian
+    _float_t Ft[EKF_N*EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
@@ -245,17 +245,17 @@ void ekf_predict(ekf_t * ekf)
     accum(ekf->Pp, ekf->Q, EKF_N, EKF_N);
 }
 
-bool ekf_update(ekf_t * ekf, double * z)
+bool ekf_update(ekf_t * ekf, _float_t * z)
 {        
     /* temporary storage */
-    double tmp0[EKF_N*EKF_N];
-    double tmp1[EKF_N*EKF_M];
-    double tmp2[EKF_M*EKF_N];
-    double tmp3[EKF_M*EKF_M];
-    double tmp4[EKF_M*EKF_M];
-    double tmp5[EKF_M]; 
+    _float_t tmp0[EKF_N*EKF_N];
+    _float_t tmp1[EKF_N*EKF_M];
+    _float_t tmp2[EKF_M*EKF_N];
+    _float_t tmp3[EKF_M*EKF_M];
+    _float_t tmp4[EKF_M*EKF_M];
+    _float_t tmp5[EKF_M]; 
 
-    double Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
+    _float_t Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(ekf->H, Ht, EKF_M, EKF_N);

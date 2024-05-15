@@ -44,7 +44,7 @@ static void blkfill(ekf_t * ekf, const double * a, int off)
 
 static void init(ekf_t * ekf)
 {
-    ekf_init(ekf);
+    ekf_initialize(ekf);
 
     // Set Q, see [1]
     const double Sf    = 36;
