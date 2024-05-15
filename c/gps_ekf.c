@@ -102,10 +102,10 @@ static void model(ekf_t * ekf, double SV[4][3])
     }
 
     for (j=0; j<8; ++j)
-        ekf->F[j][j] = 1;
+        ekf->F[j*8+j] = 1;
 
     for (j=0; j<4; ++j)
-        ekf->F[2*j][2*j+1] = T;
+        ekf->F[2*j*8+2*j+1] = T;
 
     double dx[4][3];
 

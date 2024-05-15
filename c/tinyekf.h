@@ -20,7 +20,7 @@ typedef struct {
 
     double G[EKF_N*EKF_M];  // Kalman gain; a.k.a. K
 
-    double F[EKF_N][EKF_N];  // Jacobian of process model
+    double F[EKF_N*EKF_N];  // Jacobian of process model
     double H[EKF_M][EKF_N];  // Jacobian of measurement model
 
     double fx[EKF_N];   // output of user defined f() state-transition function
