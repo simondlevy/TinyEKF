@@ -34,7 +34,7 @@ typedef struct {
 
 void ekf_initialize(ekf_t * ekf);
 
-void ekf_predict(ekf_t * ekf);
+void ekf_predict(ekf_t * ekf, const _float_t Q[EKF_N*EKF_N]);
 
 // Returns false iff matrix inversion fails
 bool ekf_update(ekf_t * ekf, _float_t * z);

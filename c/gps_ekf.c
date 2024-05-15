@@ -204,11 +204,9 @@ int main(int argc, char ** argv)
         blkfill(Q, Qxyz, 2);
         blkfill(Q, Qb,   3);
 
-        memcpy(ekf.Q, Q, 8*8*sizeof(double));
-
         model(&ekf, SV_Pos);
 
-        ekf_predict(&ekf);
+        ekf_predict(&ekf, Q);
 
         ekf_update(&ekf, SV_Rho);
 

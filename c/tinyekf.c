@@ -132,7 +132,7 @@ static void transpose(_float_t * a, _float_t * at, int m, int n)
 }
 
 /* A <- A + B */
-static void accum(_float_t * a, _float_t * b, int m, int n)
+static void accum(_float_t * a, const _float_t * b, const int m, const int n)
 {        
     int i,j;
 
@@ -187,7 +187,7 @@ void ekf_initialize(ekf_t * ekf)
     zeros(ekf->H, EKF_M, EKF_N);
 }
 
-void ekf_predict(ekf_t * ekf)
+void ekf_predict(ekf_t * ekf, const _float_t Q[EKF_N*EKF_N])
 {        
     /* temporary storage */
     _float_t tmp0[EKF_N*EKF_N];
@@ -198,7 +198,7 @@ void ekf_predict(ekf_t * ekf)
     mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(ekf->F, Ft, EKF_N, EKF_N);
     mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
-    accum(ekf->Pp, ekf->Q, EKF_N, EKF_N);
+    accum(ekf->Pp, Q, EKF_N, EKF_N);
 }
 
 bool ekf_update(ekf_t * ekf, _float_t * z)
