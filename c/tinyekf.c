@@ -185,7 +185,9 @@ void ekf_initialize(ekf_t * ekf)
     zeros(ekf->H, EKF_M, EKF_N);
 }
 
-void ekf_predict(ekf_t * ekf, const _float_t Q[EKF_N*EKF_N])
+void ekf_predict(
+        ekf_t * ekf, 
+        const _float_t Q[EKF_N*EKF_N])
 {        
     /* temporary storage */
     _float_t tmp0[EKF_N*EKF_N];
@@ -199,7 +201,11 @@ void ekf_predict(ekf_t * ekf, const _float_t Q[EKF_N*EKF_N])
     accum(ekf->Pp, Q, EKF_N, EKF_N);
 }
 
-bool ekf_update(ekf_t * ekf, const _float_t z[EKF_M], const _float_t R[EKF_M*EKF_M])
+bool ekf_update(
+        ekf_t * ekf, 
+        const _float_t z[EKF_M], 
+        const _float_t hx[EKF_N],
+        const _float_t R[EKF_M*EKF_M])
 {        
     /* temporary storage */
     _float_t tmp0[EKF_N*EKF_N];
@@ -222,7 +228,7 @@ bool ekf_update(ekf_t * ekf, const _float_t z[EKF_M], const _float_t R[EKF_M*EKF
     mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-    sub(z, ekf->hx, tmp5, EKF_M);
+    sub(z, hx, tmp5, EKF_M);
     mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
     add(ekf->fx, tmp2, ekf->x, EKF_N);
 

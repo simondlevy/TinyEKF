@@ -71,7 +71,7 @@ static void init(ekf_t * ekf)
     ekf->x[7] = 4.549246345845814e+001;
 }
 
-static void model(ekf_t * ekf, double SV[4][3])
+static void run_model(ekf_t * ekf, const double SV[4][3], double hx[4])
 { 
 
     for (int j=0; j<8; j+=2) {
@@ -88,13 +88,13 @@ static void model(ekf_t * ekf, double SV[4][3])
     double dx[4][3];
 
     for (int i=0; i<4; ++i) {
-        ekf->hx[i] = 0;
+        hx[i] = 0;
         for (int j=0; j<3; ++j) {
             double d = ekf->fx[j*2] - SV[i][j];
             dx[i][j] = d;
-            ekf->hx[i] += d*d;
+            hx[i] += d*d;
         }
-        ekf->hx[i] = pow(ekf->hx[i], 0.5) + ekf->fx[6];
+        hx[i] = pow(hx[i], 0.5) + ekf->fx[6];
     }
 
     double H[4][8] = {0};
@@ -103,7 +103,7 @@ static void model(ekf_t * ekf, double SV[4][3])
 
         for (int j=0; j<3; ++j) {
 
-            H[i][j*2] = dx[i][j] / ekf->hx[i];
+            H[i][j*2] = dx[i][j] / hx[i];
         }
 
         H[i][6] = 1;
@@ -197,7 +197,9 @@ int main(int argc, char ** argv)
 
         // -------------------------------------------------------------------
 
-        model(&ekf, SV_Pos);
+        double hx[4] = {0};
+
+        run_model(&ekf, SV_Pos, hx);
 
         ekf_predict(&ekf, Q);
 
@@ -211,7 +213,7 @@ int main(int argc, char ** argv)
 
         };
 
-        ekf_update(&ekf, SV_Rho, R);
+        ekf_update(&ekf, SV_Rho, hx, R);
 
         // grab positions, ignoring velocities
         for (int k=0; k<3; ++k) {
