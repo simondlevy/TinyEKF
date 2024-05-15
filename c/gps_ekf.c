@@ -196,7 +196,11 @@ int main(int argc, char ** argv)
 
         double Q[8*8] = {0};
 
-        blkfill(Q, Qxyz, 0);
+        Q[0*8+0] = Qxyz0;
+        Q[0*8+0+1] = Qxyz1;
+        Q[(0+1)*8+0] = Qxyz2;
+        Q[(0+1)*8+0+1] = Qxyz3;
+
         blkfill(Q, Qxyz, 2);
         blkfill(Q, Qxyz, 4);
         blkfill(Q, Qb,   6);
