@@ -22,8 +22,6 @@ typedef struct {
     _float_t Q[EKF_N*EKF_N];  // process noise covariance
     _float_t R[EKF_M*EKF_M];  // measurement error covariance
 
-    _float_t G[EKF_N*EKF_M];  // Kalman gain; a.k.a. K
-
     _float_t F[EKF_N*EKF_N];  // Jacobian of process model
     _float_t H[EKF_M*EKF_N];  // Jacobian of measurement model
 
