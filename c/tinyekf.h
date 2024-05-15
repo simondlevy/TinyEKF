@@ -26,7 +26,7 @@ typedef struct {
     double fx[EKF_N];   // output of user defined f() state-transition function
     double hx[EKF_M];   // output of user defined h() measurement function
 
-    double Pp[EKF_N][EKF_N]; // P, post-prediction, pre-update
+    double Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
 
 } ekf_t;
 
