@@ -182,7 +182,7 @@ void error(const char * msg)
 
 int main(int argc, char ** argv)
 {    
-    ekf_t ekf;
+    ekf_t ekf = {0};
 
     init(&ekf);
 
@@ -193,9 +193,9 @@ int main(int argc, char ** argv)
     skipline(ifp);
 
     // Make a place to store the data from the file and the output of the EKF
-    double SV_Pos[4][3];
-    double SV_Rho[4];
-    double Pos_KF[25][3];
+    double SV_Pos[4][3] = {0};
+    double SV_Rho[4] = {0};
+    double Pos_KF[25][3] = {0};
 
     // Open output CSV file and write header
     const char * OUTFILE = "ekf.csv";
@@ -209,15 +209,17 @@ int main(int argc, char ** argv)
 
         // -------------------------------------------------------------------
 
+        // Run our model to get the EKF inputs
         double fx[8] = {0};
         double F[8*8] = {0};
         double hx[4] = {0};
         double H[4*8] = {0};
-
         run_model(&ekf, SV_Pos, fx, F, hx, H);
 
+        // Run the EKF prediction step
         ekf_predict(&ekf, fx, F, Q);
 
+        // Run the EKF update step
         ekf_update(&ekf, SV_Rho, hx, H, R);
 
         // grab positions, ignoring velocities

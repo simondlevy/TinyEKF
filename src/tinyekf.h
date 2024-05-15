@@ -3,7 +3,7 @@
  *
  * tinyekf_config.h: static configuration parameters
  *
- * Copyright (C) 2015 Simon D. Levy
+ * Copyright (C) 2024 Simon D. Levy
  *
  * MIT License
  */
@@ -16,10 +16,8 @@ typedef float _float_t;
 
 typedef struct {
 
-    _float_t x[EKF_N];     // state vector
-
+    _float_t x[EKF_N];         // state vector
     _float_t P[EKF_N*EKF_N];  // prediction error covariance
-
     _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
 
 } ekf_t;
