@@ -50,12 +50,10 @@ static void init(ekf_t * ekf)
     double P0 = 10;
     double R0 = 36;
 
-    int i;
-
-    for (i=0; i<8; ++i)
+    for (int i=0; i<8; ++i)
         ekf->P[i*8+i] = P0;
 
-    for (i=0; i<4; ++i)
+    for (int i=0; i<4; ++i)
         ekf->R[i*4+i] = R0;
 
     // position
@@ -78,24 +76,22 @@ static void init(ekf_t * ekf)
 static void model(ekf_t * ekf, double SV[4][3])
 { 
 
-    int i, j;
-
-    for (j=0; j<8; j+=2) {
+    for (int j=0; j<8; j+=2) {
         ekf->fx[j] = ekf->x[j] + T * ekf->x[j+1];
         ekf->fx[j+1] = ekf->x[j+1];
     }
 
-    for (j=0; j<8; ++j)
+    for (int j=0; j<8; ++j)
         ekf->F[j*8+j] = 1;
 
-    for (j=0; j<4; ++j)
+    for (int j=0; j<4; ++j)
         ekf->F[2*j*8+2*j+1] = T;
 
     double dx[4][3];
 
-    for (i=0; i<4; ++i) {
+    for (int i=0; i<4; ++i) {
         ekf->hx[i] = 0;
-        for (j=0; j<3; ++j) {
+        for (int j=0; j<3; ++j) {
             double d = ekf->fx[j*2] - SV[i][j];
             dx[i][j] = d;
             ekf->hx[i] += d*d;
@@ -105,9 +101,9 @@ static void model(ekf_t * ekf, double SV[4][3])
 
     double H[4][8] = {0};
 
-    for (i=0; i<4; ++i) {
+    for (int i=0; i<4; ++i) {
 
-        for (j=0; j<3; ++j) {
+        for (int j=0; j<3; ++j) {
 
             H[i][j*2] = dx[i][j] / ekf->hx[i];
         }
@@ -131,15 +127,13 @@ static void readdata(FILE * fp, double SV_Pos[4][3], double SV_Rho[4])
 
     char * p = strtok(line, ",");
 
-    int i, j;
-
-    for (i=0; i<4; ++i)
-        for (j=0; j<3; ++j) {
+    for (int i=0; i<4; ++i)
+        for (int j=0; j<3; ++j) {
             SV_Pos[i][j] = atof(p);
             p = strtok(NULL, ",");
         }
 
-    for (j=0; j<4; ++j) {
+    for (int j=0; j<4; ++j) {
         SV_Rho[j] = atof(p);
         p = strtok(NULL, ",");
     }
@@ -179,14 +173,13 @@ int main(int argc, char ** argv)
     FILE * ofp = fopen(OUTFILE, "w");
     fprintf(ofp, "X,Y,Z\n");
 
-    int j, k;
-
     // Loop till no more data
-    for (j=0; j<25; ++j) {
+    for (int j=0; j<25; ++j) {
 
         readdata(ifp, SV_Pos, SV_Rho);
 
-        // Set Q, see [1]
+        // Set Q, see [1]  ---------------------------------------------------
+
         const double Sf    = 36;
         const double Sg    = 0.01;
         const double sigma = 5;         // state transition variance
@@ -204,6 +197,8 @@ int main(int argc, char ** argv)
         blkfill(Q, Qxyz, 2);
         blkfill(Q, Qb,   3);
 
+        // -------------------------------------------------------------------
+
         model(&ekf, SV_Pos);
 
         ekf_predict(&ekf, Q);
@@ -211,21 +206,22 @@ int main(int argc, char ** argv)
         ekf_update(&ekf, SV_Rho);
 
         // grab positions, ignoring velocities
-        for (k=0; k<3; ++k)
+        for (int k=0; k<3; ++k) {
             Pos_KF[j][k] = ekf.x[2*k];
+        }
     }
 
     // Compute means of filtered positions
     double mean_Pos_KF[3] = {0, 0, 0};
-    for (j=0; j<25; ++j) 
-        for (k=0; k<3; ++k)
+    for (int j=0; j<25; ++j) 
+        for (int k=0; k<3; ++k)
             mean_Pos_KF[k] += Pos_KF[j][k];
-    for (k=0; k<3; ++k)
+    for (int k=0; k<3; ++k)
         mean_Pos_KF[k] /= 25;
 
 
     // Dump filtered positions minus their means
-    for (j=0; j<25; ++j) {
+    for (int j=0; j<25; ++j) {
         fprintf(ofp, "%f,%f,%f\n", 
                 Pos_KF[j][0]-mean_Pos_KF[0], 
                 Pos_KF[j][1]-mean_Pos_KF[1], 
