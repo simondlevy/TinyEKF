@@ -32,4 +32,7 @@ typedef struct {
 
 void ekf_init(ekf_t * ekf);
 
-bool ekf_step(ekf_t * ekf, double * z);
+void ekf_predict(ekf_t * ekf);
+
+// Returns false iff matrix inversion fails
+bool ekf_update(ekf_t * ekf, double * z);

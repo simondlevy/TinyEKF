@@ -204,7 +204,9 @@ int main(int argc, char ** argv)
 
         model(&ekf, SV_Pos);
 
-        ekf_step(&ekf, SV_Rho);
+        ekf_predict(&ekf);
+
+        ekf_update(&ekf, SV_Rho);
 
         // grab positions, ignoring velocities
         for (k=0; k<3; ++k)
