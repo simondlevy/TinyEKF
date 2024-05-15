@@ -165,57 +165,6 @@ class TinyEKF {
             }
         } 
 
-        // Cholesky-decomposition matrix-inversion code, adapated from
-        // http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt
-
-        static int choldc1(float * a, float * p, const int n) {
-
-            float sum = 0;
-
-            for (int i = 0; i < n; i++) {
-                for (int j = i; j < n; j++) {
-                    sum = a[i*n+j];
-                    for (int k = i - 1; k >= 0; k--) {
-                        sum -= a[i*n+k] * a[j*n+k];
-                    }
-                    if (i == j) {
-                        if (sum <= 0) {
-                            return 1; /* error */
-                        }
-                        p[i] = sqrt(sum);
-                    }
-                    else {
-                        a[j*n+i] = sum / p[i];
-                    }
-                }
-            }
-
-            return 0; /* success */
-        }
-
-        static int choldcsl(const float * A, float * a, float * p, const int n) 
-        {
-            float sum = 0;
-
-            for (int i = 0; i < n; i++) 
-                for (int j = 0; j < n; j++) 
-                    a[i*n+j] = A[i*n+j];
-            if (choldc1(a, p, n)) return 1;
-            for (int i = 0; i < n; i++) {
-                a[i*n+i] = 1 / p[i];
-                for (int j = i + 1; j < n; j++) {
-                    sum = 0;
-                    for (int k = i; k < j; k++) {
-                        sum -= a[j*n+k] * a[k*n+i];
-                    }
-                    a[j*n+i] = sum / p[j];
-                }
-            }
-
-            return 0; /* success */
-        }
-
-
         // C <- A * B
         static void mulmat(
                 const float * a, const float * b, float * c, 
