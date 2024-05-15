@@ -268,25 +268,25 @@ static void unpack(void * v, ekf_t * ekf, int n, int m)
     ekf->tmp5 = dptr;
   }
 
-void ekf_init(void * v, int n, int m)
+void ekf_init(void * v)
 {
     /* retrieve n, m and set them in incoming data structure */
     int * ptr = (int *)v;
-    *ptr = n;
+    *ptr = EKF_N;
     ptr++;
-    *ptr = m;
+    *ptr = EKF_M;
 
     /* unpack rest of incoming structure for initlization */
     ekf_t ekf;
-    unpack(v, &ekf, n, m);
+    unpack(v, &ekf, EKF_N, EKF_M);
 
     /* zero-out matrices */
-    zeros(ekf.P, n, n);
-    zeros(ekf.Q, n, n);
-    zeros(ekf.R, m, m);
-    zeros(ekf.G, n, m);
-    zeros(ekf.F, n, n);
-    zeros(ekf.H, m, n);
+    zeros(ekf.P, EKF_N, EKF_N);
+    zeros(ekf.Q, EKF_N, EKF_N);
+    zeros(ekf.R, EKF_M, EKF_M);
+    zeros(ekf.G, EKF_N, EKF_M);
+    zeros(ekf.F, EKF_N, EKF_N);
+    zeros(ekf.H, EKF_M, EKF_N);
 }
 
 int ekf_step(void * v, double * z)
