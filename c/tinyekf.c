@@ -256,11 +256,11 @@ void ekf_predict(ekf_t * ekf)
 int ekf_update(ekf_t * ekf, double * z)
 {        
     /* temporary storage */
-    double tmp0[EKF_N][EKF_N];
-    double tmp1[EKF_N][EKF_M];
-    double tmp2[EKF_M][EKF_N];
-    double tmp3[EKF_M][EKF_M];
-    double tmp4[EKF_M][EKF_M];
+    double tmp0[EKF_N*EKF_N];
+    double tmp1[EKF_N*EKF_M];
+    double tmp2[EKF_M*EKF_N];
+    double tmp3[EKF_M*EKF_M];
+    double tmp4[EKF_M*EKF_M];
     double tmp5[EKF_M]; 
 
     double Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
