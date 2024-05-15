@@ -21,7 +21,6 @@ typedef struct {
     _float_t P[EKF_N*EKF_N];  // prediction error covariance
 
     _float_t F[EKF_N*EKF_N];  // Jacobian of process model
-    _float_t H[EKF_M*EKF_N];  // Jacobian of measurement model
 
     _float_t fx[EKF_N];   // output of user defined f() state-transition function
     _float_t hx[EKF_M];   // output of user defined h() measurement function
@@ -42,4 +41,5 @@ bool ekf_update(
         ekf_t * ekf, 
         const _float_t z[EKF_M], 
         const _float_t hx[EKF_N],
+        const _float_t H[EKF_M*EKF_N],
         const _float_t R[EKF_M*EKF_M]);

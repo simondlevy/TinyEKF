@@ -214,13 +214,9 @@ int main(int argc, char ** argv)
 
         run_model(&ekf, SV_Pos, F, hx, H);
 
-        memcpy(ekf.H, H, 4*8*sizeof(double));
-
         ekf_predict(&ekf, F, Q);
 
-        // -------------------------------------------------------------------
-
-        ekf_update(&ekf, SV_Rho, hx, R);
+        ekf_update(&ekf, SV_Rho, hx, H, R);
 
         // grab positions, ignoring velocities
         for (int k=0; k<3; ++k) {

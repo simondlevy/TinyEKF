@@ -187,7 +187,6 @@ static void mat_addeye(_float_t * a, int n)
 void ekf_initialize(ekf_t * ekf)
 {
     zeros(ekf->P, EKF_N, EKF_N);
-    zeros(ekf->H, EKF_M, EKF_N);
 }
 
 void ekf_predict(
@@ -211,6 +210,7 @@ bool ekf_update(
         ekf_t * ekf, 
         const _float_t z[EKF_M], 
         const _float_t hx[EKF_N],
+        const _float_t H[EKF_M*EKF_N],
         const _float_t R[EKF_M*EKF_M])
 {        
     /* temporary storage */
@@ -225,9 +225,9 @@ bool ekf_update(
     _float_t Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    transpose(ekf->H, Ht, EKF_M, EKF_N);
+    transpose(H, Ht, EKF_M, EKF_N);
     mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
-    mulmat(ekf->H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
+    mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
     mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
     accum(tmp3, R, EKF_M, EKF_M);
     if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
@@ -239,7 +239,7 @@ bool ekf_update(
     add(ekf->fx, tmp2, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(G, ekf->H, tmp0, EKF_N, EKF_M, EKF_N);
+    mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
     negate(tmp0, EKF_N, EKF_N);
     mat_addeye(tmp0, EKF_N);
     mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
