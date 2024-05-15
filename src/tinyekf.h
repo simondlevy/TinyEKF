@@ -12,13 +12,77 @@
 #include <stdbool.h>
 #include <string.h>
 
-typedef struct {
+/* A <- A + B */
+static void accum(_float_t * a, const _float_t * b, const int m, const int n)
+{        
+    int i,j;
 
-    _float_t x[EKF_N];         // state vector
-    _float_t P[EKF_N*EKF_N];  // prediction error covariance
-    _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
+    for(i=0; i<m; ++i)
+        for(j=0; j<n; ++j)
+            a[i*n+j] += b[i*n+j];
+}
 
-} ekf_t;
+
+/* C <- A * B */
+static void mulmat(
+        const _float_t * a, 
+        const _float_t * b, 
+        _float_t * c, 
+        const int arows, 
+        const int acols, 
+        const int bcols)
+{
+    int i, j,l;
+
+    for(i=0; i<arows; ++i)
+        for(j=0; j<bcols; ++j) {
+            c[i*bcols+j] = 0;
+            for(l=0; l<acols; ++l)
+                c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
+        }
+}
+
+static void mulvec(
+        const _float_t * a, 
+        const _float_t * x, 
+        _float_t * y, 
+        const int m, 
+        const int n)
+{
+    int i, j;
+
+    for(i=0; i<m; ++i) {
+        y[i] = 0;
+        for(j=0; j<n; ++j)
+            y[i] += x[j] * a[i*n+j];
+    }
+}
+
+static void transpose(
+        const _float_t * a, _float_t * at, const int m, const int n)
+{
+    int i,j;
+
+    for(i=0; i<m; ++i)
+        for(j=0; j<n; ++j) {
+            at[j*m+i] = a[i*n+j];
+        }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef _FOO
+
+/* C <- A + B */
+static void add(
+        const _float_t * a, const _float_t * b, _float_t * c, const int n)
+{
+    int j;
+
+    for(j=0; j<n; ++j)
+        c[j] = a[j] + b[j];
+}
 
 
 /* Cholesky-decomposition matrix-inversion code, adapated from
@@ -100,71 +164,9 @@ static int cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
     return 0; // success
 }
 
-/* C <- A * B */
-static void mulmat(
-        const _float_t * a, 
-        const _float_t * b, 
-        _float_t * c, 
-        const int arows, 
-        const int acols, 
-        const int bcols)
-{
-    int i, j,l;
 
-    for(i=0; i<arows; ++i)
-        for(j=0; j<bcols; ++j) {
-            c[i*bcols+j] = 0;
-            for(l=0; l<acols; ++l)
-                c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
-        }
-}
 
-static void mulvec(
-        const _float_t * a, 
-        const _float_t * x, 
-        _float_t * y, 
-        const int m, 
-        const int n)
-{
-    int i, j;
 
-    for(i=0; i<m; ++i) {
-        y[i] = 0;
-        for(j=0; j<n; ++j)
-            y[i] += x[j] * a[i*n+j];
-    }
-}
-
-static void transpose(
-        const _float_t * a, _float_t * at, const int m, const int n)
-{
-    int i,j;
-
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j) {
-            at[j*m+i] = a[i*n+j];
-        }
-}
-
-/* A <- A + B */
-static void accum(_float_t * a, const _float_t * b, const int m, const int n)
-{        
-    int i,j;
-
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j)
-            a[i*n+j] += b[i*n+j];
-}
-
-/* C <- A + B */
-static void add(
-        const _float_t * a, const _float_t * b, _float_t * c, const int n)
-{
-    int j;
-
-    for(j=0; j<n; ++j)
-        c[j] = a[j] + b[j];
-}
 
 
 /* C <- A - B */
@@ -194,6 +196,15 @@ static void mat_addeye(_float_t * a, const int n)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+
+typedef struct {
+
+    _float_t x[EKF_N];         // state vector
+    _float_t P[EKF_N*EKF_N];  // prediction error covariance
+    _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
+
+} ekf_t;
 
 static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 {
@@ -267,3 +278,4 @@ static bool ekf_update(
     // success
     return true;
 }
+#endif

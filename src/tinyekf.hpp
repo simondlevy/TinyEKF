@@ -6,6 +6,10 @@
  * MIT License
  */
 
+#define _FOO
+#define _float_t float
+#include <tinyekf.h>
+
 class TinyEKF {
 
     public:
@@ -164,74 +168,6 @@ class TinyEKF {
                 }
             }
         } 
-
-        // C <- A * B
-        static void mulmat(
-                const float * a, const float * b, float * c, 
-                const int arows, const int acols, const int bcols)
-        {
-            for (int i=0; i<arows; ++i)
-                for (int j=0; j<bcols; ++j) {
-                    c[i*bcols+j] = 0;
-                    for (int l=0; l<acols; ++l)
-                        c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
-                }
-        }
-
-        static void mulvec(
-                const float * a, const float * x, float * y, 
-                const int m, const int n)
-        {
-            for (int i=0; i<m; ++i) {
-                y[i] = 0;
-                for (int j=0; j<n; ++j)
-                    y[i] += x[j] * a[i*n+j];
-            }
-        }
-
-        static void transpose(
-                const float * a, float * at, const int m, const int n)
-        {
-            for (int i=0; i<m; ++i)
-                for (int j=0; j<n; ++j) {
-                    at[j*m+i] = a[i*n+j];
-                }
-        }
-
-        // A <- A + B
-        static void accum(float * a, const float * b, const int m, const int n)
-        {        
-            for (int i=0; i<m; ++i)
-                for (int j=0; j<n; ++j)
-                    a[i*n+j] += b[i*n+j];
-        }
-
-        // C <- A + B
-        static void add(const float * a, const float * b, float * c, const int n)
-        {
-            for (int j=0; j<n; ++j)
-                c[j] = a[j] + b[j];
-        }
-
-        // C <- A - B
-        static void sub(const float * a, const float * b, float * c, const int n)
-        {
-            for (int j=0; j<n; ++j)
-                c[j] = a[j] - b[j];
-        }
-
-        static void negate(float * a, const int m, const int n)
-        {        
-            for (int i=0; i<m; ++i)
-                for (int j=0; j<n; ++j)
-                    a[i*n+j] = -a[i*n+j];
-        }
-
-        static void mat_addeye(float * a, const int n)
-        {
-            for (int i=0; i<n; ++i)
-                a[i*n+i] += 1;
-        }
 
         static void outer(
                 const float x[EKF_N],
