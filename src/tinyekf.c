@@ -187,9 +187,13 @@ static void mat_addeye(_float_t * a, const int n)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void ekf_initialize(ekf_t * ekf)
+void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 {
     memset(ekf->P, 0, EKF_M*EKF_N*sizeof(_float_t));
+
+    for (int i=0; i<EKF_N; ++i) {
+        ekf->P[i*EKF_N+i] = pdiag[i];
+    }
 }
 
 void ekf_predict(

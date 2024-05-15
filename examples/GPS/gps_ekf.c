@@ -75,11 +75,9 @@ static const double R[4*4] = {
 
 static void init(ekf_t * ekf)
 {
-    ekf_initialize(ekf);
+    const double pdiag[8] = { P0, P0, P0, P0, P0, P0, P0, P0 };
 
-
-    for (int i=0; i<8; ++i)
-        ekf->P[i*8+i] = P0;
+    ekf_initialize(ekf, pdiag);
 
     // position
     ekf->x[0] = -2.168816181271560e+006;

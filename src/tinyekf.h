@@ -22,7 +22,7 @@ typedef struct {
 
 } ekf_t;
 
-void ekf_initialize(ekf_t * ekf);
+void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N]);
 
 void ekf_predict(
         ekf_t * ekf, 
