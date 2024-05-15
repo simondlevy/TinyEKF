@@ -21,10 +21,6 @@ typedef struct {
     double F[EKF_N][EKF_N];  // Jacobian of process model
     double H[EKF_M][EKF_N];  // Jacobian of measurement model
 
-    double Ht[EKF_N][EKF_M]; // transpose of measurement Jacobian
-    double Ft[EKF_N][EKF_N]; // transpose of process Jacobian
-    double Pp[EKF_N][EKF_N]; // P, post-prediction, pre-update
-
     double fx[EKF_N];   // output of user defined f() state-transition function
     double hx[EKF_M];   // output of user defined h() measurement function
 
