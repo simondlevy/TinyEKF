@@ -244,9 +244,9 @@ void ekf_predict(ekf_t * ekf)
     double Ft[EKF_N][EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
+    mulmat(ekf->F, (double *)ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(ekf->F, Ft, EKF_N, EKF_N);
-    mulmat(tmp0, Ft, ekf->P, EKF_N, EKF_N, EKF_N);
+    mulmat(tmp0, Ft, (double *)ekf->P, EKF_N, EKF_N, EKF_N);
     accum(ekf->P, ekf->Q, EKF_N, EKF_N);
 
     // success
@@ -263,16 +263,16 @@ int ekf_update(ekf_t * ekf, double * z)
     double tmp4[EKF_M][EKF_M];
     double tmp5[EKF_M]; 
 
-    double Ht[EKF_N][EKF_M]; // transpose of measurement Jacobian
+    double Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(ekf->H, Ht, EKF_M, EKF_N);
     mulmat(ekf->P, Ht, tmp1, EKF_N, EKF_N, EKF_M);
-    mulmat(ekf->H, ekf->P, tmp2, EKF_M, EKF_N, EKF_N);
+    mulmat(ekf->H, (double *)ekf->P, tmp2, EKF_M, EKF_N, EKF_N);
     mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
     accum(tmp3, ekf->R, EKF_M, EKF_M);
     if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return 1;
-    mulmat(tmp1, tmp4, ekf->G, EKF_N, EKF_M, EKF_M);
+    mulmat(tmp1, tmp4, (double *)ekf->G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     sub(z, ekf->hx, tmp5, EKF_M);
@@ -283,7 +283,7 @@ int ekf_update(ekf_t * ekf, double * z)
     mulmat(ekf->G, ekf->H, tmp0, EKF_N, EKF_M, EKF_N);
     negate(tmp0, EKF_N, EKF_N);
     mat_addeye(tmp0, EKF_N);
-    mulmat(tmp0, ekf->P, ekf->P, EKF_N, EKF_N, EKF_N);
+    mulmat(tmp0, (double *)ekf->P, (double *)ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
     return 0;
