@@ -10,7 +10,9 @@
 
 #include <stdbool.h>
 
-typedef double _float_t;
+#ifndef _float_t
+typedef float _float_t;
+#endif
 
 typedef struct {
 

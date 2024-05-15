@@ -11,7 +11,7 @@ run: gps_ekf
 	./gps_ekf
 
 gps_ekf: gps_ekf.c tinyekf.c tinyekf.h
-	gcc -Wall -I. -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c tinyekf.c -lm
+	gcc -Wall -I. -D_float_t=double -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c tinyekf.c -lm
 
 edit:
 	vim gps_ekf.c
