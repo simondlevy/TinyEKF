@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <tinyekf.h>
 
@@ -93,25 +94,8 @@ static int cholsl(double * A, double * a, double * p, int n)
 
 static void zeros(double * a, int m, int n)
 {
-    int j;
-    for (j=0; j<m*n; ++j)
-        a[j] = 0;
+    memset(a, 0, m*n*sizeof(double));
 }
-
-#ifdef DEBUG
-static void dump(double * a, int m, int n, const char * fmt)
-{
-    int i,j;
-
-    char f[100];
-    sprintf(f, "%s ", fmt);
-    for(i=0; i<m; ++i) {
-        for(j=0; j<n; ++j)
-            printf(f, a[i*n+j]);
-        printf("\n");
-    }
-}
-#endif
 
 /* C <- A * B */
 static void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
@@ -195,7 +179,7 @@ static void mat_addeye(double * a, int n)
 void ekf_init(ekf_t * ekf)
 {
 
-    /* zero-out matrices */
+
     zeros(ekf->P, EKF_N, EKF_N);
     zeros(ekf->Q, EKF_N, EKF_N);
     zeros(ekf->R, EKF_M, EKF_M);
