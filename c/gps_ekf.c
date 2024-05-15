@@ -31,36 +31,20 @@
 // positioning interval
 static const double T = 1;
 
-static void blkfill(ekf_t * ekf, const double * a, int off)
+static void blkfill(double Q[8*8], const double * a, int off)
 {
     off *= 2;
 
-    ekf->Q[off*8+off]   = a[0]; 
-    ekf->Q[off*8+off+1] = a[1];
-    ekf->Q[(off+1)*8+off] = a[2];
-    ekf->Q[(off+1)*8+off+1] = a[3];
+    Q[off*8+off]   = a[0]; 
+    Q[off*8+off+1] = a[1];
+    Q[(off+1)*8+off] = a[2];
+    Q[(off+1)*8+off+1] = a[3];
 }
 
 
 static void init(ekf_t * ekf)
 {
     ekf_initialize(ekf);
-
-    // Set Q, see [1]
-    const double Sf    = 36;
-    const double Sg    = 0.01;
-    const double sigma = 5;         // state transition variance
-    const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
-    const double Qxyz[4] = {
-        sigma*sigma*T*T*T/3, 
-        sigma*sigma*T*T/2, 
-        sigma*sigma*T*T/2, sigma*sigma*T
-    };
-
-    blkfill(ekf, Qxyz, 0);
-    blkfill(ekf, Qxyz, 1);
-    blkfill(ekf, Qxyz, 2);
-    blkfill(ekf, Qb,   3);
 
     // initial covariances of state noise, measurement noise
     double P0 = 10;
@@ -202,6 +186,26 @@ int main(int argc, char ** argv)
 
         readdata(ifp, SV_Pos, SV_Rho);
 
+        // Set Q, see [1]
+        const double Sf    = 36;
+        const double Sg    = 0.01;
+        const double sigma = 5;         // state transition variance
+        const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
+        const double Qxyz[4] = {
+            sigma*sigma*T*T*T/3, 
+            sigma*sigma*T*T/2, 
+            sigma*sigma*T*T/2, sigma*sigma*T
+        };
+
+        double Q[8*8] = {0};
+
+        blkfill(Q, Qxyz, 0);
+        blkfill(Q, Qxyz, 1);
+        blkfill(Q, Qxyz, 2);
+        blkfill(Q, Qb,   3);
+
+        memcpy(ekf.Q, Q, 8*8*sizeof(double));
+
         model(&ekf, SV_Pos);
 
         ekf_predict(&ekf);
@@ -230,7 +234,7 @@ int main(int argc, char ** argv)
                 Pos_KF[j][2]-mean_Pos_KF[2]);
         printf("%f %f %f\n", Pos_KF[j][0], Pos_KF[j][1], Pos_KF[j][2]);
     }
-    
+
     // Done!
     fclose(ifp);
     fclose(ofp);
