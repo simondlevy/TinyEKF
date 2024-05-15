@@ -201,7 +201,11 @@ int main(int argc, char ** argv)
         Q[8] = Qxyz2;
         Q[9] = Qxyz3;
 
-        blkfill(Q, Qxyz, 2);
+        Q[18]   = Qxyz0; 
+        Q[19] = Qxyz1;
+        Q[26] = Qxyz2;
+        Q[27] = Qxyz3;
+
         blkfill(Q, Qxyz, 4);
         blkfill(Q, Qb,   6);
 
