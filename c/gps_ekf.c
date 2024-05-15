@@ -101,14 +101,15 @@ static void init(ekf_t * ekf)
 static void run_model(
         ekf_t * ekf, 
         const double SV[4][3], 
+        double fx[8],
         double F[8*8],
         double hx[4],
         double H[4*8])
 { 
 
     for (int j=0; j<8; j+=2) {
-        ekf->fx[j] = ekf->x[j] + T * ekf->x[j+1];
-        ekf->fx[j+1] = ekf->x[j+1];
+        fx[j] = ekf->x[j] + T * ekf->x[j+1];
+        fx[j+1] = ekf->x[j+1];
     }
 
     for (int j=0; j<8; ++j) {
@@ -124,11 +125,11 @@ static void run_model(
     for (int i=0; i<4; ++i) {
         hx[i] = 0;
         for (int j=0; j<3; ++j) {
-            double d = ekf->fx[j*2] - SV[i][j];
+            double d = fx[j*2] - SV[i][j];
             dx[i][j] = d;
             hx[i] += d*d;
         }
-        hx[i] = pow(hx[i], 0.5) + ekf->fx[6];
+        hx[i] = pow(hx[i], 0.5) + fx[6];
     }
 
     for (int i=0; i<4; ++i) {
@@ -208,11 +209,14 @@ int main(int argc, char ** argv)
 
         // -------------------------------------------------------------------
 
-        double hx[4] = {0};
+        double fx[8] = {0};
         double F[8*8] = {0};
+        double hx[4] = {0};
         double H[4*8] = {0};
 
-        run_model(&ekf, SV_Pos, F, hx, H);
+        run_model(&ekf, SV_Pos, fx, F, hx, H);
+
+        memcpy(ekf.fx, fx, 8*sizeof(double));
 
         ekf_predict(&ekf, F, Q);
 
