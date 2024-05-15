@@ -60,7 +60,11 @@ static void init(ekf_t * ekf)
     ekf->x[7] = 4.549246345845814e+001;
 }
 
-static void run_model(ekf_t * ekf, const double SV[4][3], double hx[4])
+static void run_model(
+        ekf_t * ekf, 
+        const double SV[4][3], 
+        double F[8*8],
+        double hx[4])
 { 
 
     for (int j=0; j<8; j+=2) {
@@ -68,11 +72,13 @@ static void run_model(ekf_t * ekf, const double SV[4][3], double hx[4])
         ekf->fx[j+1] = ekf->x[j+1];
     }
 
-    for (int j=0; j<8; ++j)
-        ekf->F[j*8+j] = 1;
+    for (int j=0; j<8; ++j) {
+        F[j*8+j] = 1;
+    }
 
-    for (int j=0; j<4; ++j)
-        ekf->F[2*j*8+2*j+1] = T;
+    for (int j=0; j<4; ++j) {
+        F[2*j*8+2*j+1] = T;
+    }
 
     double dx[4][3];
 
@@ -165,7 +171,7 @@ int main(int argc, char ** argv)
 
         readdata(ifp, SV_Pos, SV_Rho);
 
-        // Set Q, see [1]  ---------------------------------------------------
+        // Set process-noise covariance matrix Q, see [1]  --------------------
 
         const double Sf    = 36;
         const double Sg    = 0.01;
@@ -197,11 +203,13 @@ int main(int argc, char ** argv)
 
         double hx[4] = {0};
 
-        run_model(&ekf, SV_Pos, hx);
+        double F[8*8] = {0};
 
-        ekf_predict(&ekf, Q);
+        run_model(&ekf, SV_Pos, F, hx);
 
-        // Set R --------------------------------------------------------------
+        ekf_predict(&ekf, F, Q);
+
+        // Set measurement noise covariance matrix R --------------------------
 
         const double R[4*4] = {
             R0, 0, 0, 0,
@@ -210,6 +218,8 @@ int main(int argc, char ** argv)
             0, 0, 0, R0
 
         };
+
+        // -------------------------------------------------------------------
 
         ekf_update(&ekf, SV_Rho, hx, R);
 

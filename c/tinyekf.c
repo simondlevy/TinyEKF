@@ -98,7 +98,13 @@ static void zeros(_float_t * a, int m, int n)
 }
 
 /* C <- A * B */
-static void mulmat(_float_t * a, _float_t * b, _float_t * c, int arows, int acols, int bcols)
+static void mulmat(
+        const _float_t * a, 
+        const _float_t * b, 
+        _float_t * c, 
+        const int arows, 
+        const int acols, 
+        const int bcols)
 {
     int i, j,l;
 
@@ -121,7 +127,7 @@ static void mulvec(_float_t * a, _float_t * x, _float_t * y, int m, int n)
     }
 }
 
-static void transpose(_float_t * a, _float_t * at, int m, int n)
+static void transpose(const _float_t * a, _float_t * at, const int m, const int n)
 {
     int i,j;
 
@@ -181,12 +187,12 @@ static void mat_addeye(_float_t * a, int n)
 void ekf_initialize(ekf_t * ekf)
 {
     zeros(ekf->P, EKF_N, EKF_N);
-    zeros(ekf->F, EKF_N, EKF_N);
     zeros(ekf->H, EKF_M, EKF_N);
 }
 
 void ekf_predict(
         ekf_t * ekf, 
+        const _float_t F[EKF_N*EKF_N],
         const _float_t Q[EKF_N*EKF_N])
 {        
     /* temporary storage */
@@ -195,8 +201,8 @@ void ekf_predict(
     _float_t Ft[EKF_N*EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
-    transpose(ekf->F, Ft, EKF_N, EKF_N);
+    mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
+    transpose(F, Ft, EKF_N, EKF_N);
     mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
     accum(ekf->Pp, Q, EKF_N, EKF_N);
 }
