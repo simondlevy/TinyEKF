@@ -7,16 +7,16 @@
 
 SRC = ../../src
 
-all: gps_ekf
+all: gps
 
-run: gps_ekf
-	./gps_ekf
+run: gps
+	./gps
 
-gps_ekf: gps_ekf.c $(SRC)/tinyekf.c $(SRC)/tinyekf.h ekf_config.h
-	gcc -Wall -I. -I$(SRC) -o gps_ekf gps_ekf.c $(SRC)/tinyekf.c -lm
+gps: gps.c $(SRC)/tinyekf.c $(SRC)/tinyekf.h ekf_config.h
+	gcc -Wall -I. -I$(SRC) -o gps gps.c $(SRC)/tinyekf.c -lm
 
 edit:
-	vim gps_ekf.c
+	vim gps.c
 
 clean:
-	rm -f gps_ekf *.o *~ ekf.csv
+	rm -f gps *.o *~ ekf.csv

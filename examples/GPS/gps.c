@@ -3,7 +3,7 @@
  *   http://www.mathworks.com/matlabcentral/fileexchange/
  *     31487-extended-kalman-filter-ekf--for-gps
  * 
- * Reads file gps.csv of satellite data and writes file ekf.csv of
+ * Reads file data.csv of satellite data and writes file ekf.csv of
  * mean-subtracted estimated positions.
  *
  *
@@ -185,7 +185,7 @@ int main(int argc, char ** argv)
     init(&ekf);
 
     // Open input data file
-    FILE * ifp = fopen("gps.csv", "r");
+    FILE * ifp = fopen("data.csv", "r");
 
     // Skip CSV header
     skipline(ifp);
