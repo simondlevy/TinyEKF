@@ -8,6 +8,8 @@
  * MIT License
  */
 
+#include <stdbool.h>
+
 typedef struct {
 
     double x[EKF_N];     // state vector
@@ -30,4 +32,4 @@ typedef struct {
 
 void ekf_init(ekf_t * ekf);
 
-int ekf_step(ekf_t * ekf, double * z);
+bool ekf_step(ekf_t * ekf, double * z);

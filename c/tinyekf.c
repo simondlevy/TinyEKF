@@ -188,7 +188,7 @@ void ekf_init(ekf_t * ekf)
     zeros(ekf->H, EKF_M, EKF_N);
 }
 
-int ekf_step(ekf_t * ekf, double * z)
+bool ekf_step(ekf_t * ekf, double * z)
 {        
     /* temporary storage */
     double tmp0[EKF_N][EKF_N];
@@ -213,7 +213,7 @@ int ekf_step(ekf_t * ekf, double * z)
     mulmat(ekf->H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
     mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
     accum(tmp3, ekf->R, EKF_M, EKF_M);
-    if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return 1;
+    if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
     mulmat(tmp1, tmp4, ekf->G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
@@ -228,7 +228,7 @@ int ekf_step(ekf_t * ekf, double * z)
     mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
-    return 0;
+    return true;
 }
 
 void ekf_predict(ekf_t * ekf)
