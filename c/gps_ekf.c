@@ -35,6 +35,35 @@ static const double T = 1;
 static const double P0 = 10;
 static const double R0 = 36;
 
+// Set process-noise covariance matrix Q, see [1]  --------------------
+
+static const double Sf    = 36;
+static const double Sg    = 0.01;
+static const double sigma = 5;         // state transition variance
+
+static const double b0 = Sf * T+Sg * T * T * T/3; 
+static const double b1 = Sg * T * T/2; 
+static const double b2 = Sg * T * T/2; 
+static const double b3 = Sg * T;
+
+static const double xyz0 = sigma * sigma * T * T * T/3; 
+static const double xyz1 = sigma * sigma * T * T/2; 
+static const double xyz2 = sigma * sigma * T * T/2; 
+static const double xyz3 = sigma * sigma * T;
+
+static const double Q[8*8] = {
+
+    xyz0, xyz1,  0,     0,     0,     0,     0,   0,
+    xyz2, xyz3,  0,     0,     0,     0,     0,   0,
+    0,     0,      xyz0, xyz1, 0,     0,     0,   0,
+    0,     0,      xyz2, xyz3, 0,     0,     0,   0,
+    0,     0,      0,     0,     xyz0, xyz1, 0,   0,
+    0,     0,      0,     0,     xyz2, xyz3, 0,   0,
+    0,     0,      0,     0,     0,     0,     b0, b1,
+    0,     0,      0,     0,     0,     0,     b2, b3
+};
+
+
 static void init(ekf_t * ekf)
 {
     ekf_initialize(ekf);
@@ -170,34 +199,6 @@ int main(int argc, char ** argv)
     for (int j=0; j<25; ++j) {
 
         readdata(ifp, SV_Pos, SV_Rho);
-
-        // Set process-noise covariance matrix Q, see [1]  --------------------
-
-        const double Sf    = 36;
-        const double Sg    = 0.01;
-        const double sigma = 5;         // state transition variance
-
-        const double b0 = Sf * T+Sg * T * T * T/3; 
-        const double b1 = Sg * T * T/2; 
-        const double b2 = Sg * T * T/2; 
-        const double b3 = Sg * T;
-
-        const double xyz0 = sigma * sigma * T * T * T/3; 
-        const double xyz1 = sigma * sigma * T * T/2; 
-        const double xyz2 = sigma * sigma * T * T/2; 
-        const double xyz3 = sigma * sigma * T;
-
-        const double Q[8*8] = {
-
-            xyz0, xyz1,  0,     0,     0,     0,     0,   0,
-            xyz2, xyz3,  0,     0,     0,     0,     0,   0,
-            0,     0,      xyz0, xyz1, 0,     0,     0,   0,
-            0,     0,      xyz2, xyz3, 0,     0,     0,   0,
-            0,     0,      0,     0,     xyz0, xyz1, 0,   0,
-            0,     0,      0,     0,     xyz2, xyz3, 0,   0,
-            0,     0,      0,     0,     0,     0,     b0, b1,
-            0,     0,      0,     0,     0,     0,     b2, b3
-        };
 
         // -------------------------------------------------------------------
 
