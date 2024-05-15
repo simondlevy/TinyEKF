@@ -130,16 +130,16 @@ static void run_model(
         hx[i] = pow(hx[i], 0.5) + ekf->fx[6];
     }
 
-    double H[4][8] = {0};
+    double H[4*8] = {0};
 
     for (int i=0; i<4; ++i) {
 
         for (int j=0; j<3; ++j) {
 
-            H[i][j*2] = dx[i][j] / hx[i];
+            H[i*8+j*2] = dx[i][j] / hx[i];
         }
 
-        H[i][6] = 1;
+        H[i*8+6] = 1;
     }   
 
     memcpy(ekf->H, H, 4*8*sizeof(double));
