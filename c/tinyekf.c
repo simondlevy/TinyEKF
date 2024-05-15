@@ -202,30 +202,30 @@ bool ekf_step(ekf_t * ekf, double * z)
     double Ft[EKF_N*EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat((double *)ekf->F, (double *)ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
-    transpose((double *)ekf->F, Ft, EKF_N, EKF_N);
-    mulmat((double *)tmp0, Ft, (double *)ekf->Pp, EKF_N, EKF_N, EKF_N);
-    accum((double *)ekf->Pp, (double *)ekf->Q, EKF_N, EKF_N);
+    mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
+    transpose(ekf->F, Ft, EKF_N, EKF_N);
+    mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
+    accum(ekf->Pp, ekf->Q, EKF_N, EKF_N);
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    transpose((double *)ekf->H, Ht, EKF_M, EKF_N);
-    mulmat((double *)ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
-    mulmat((double *)ekf->H, (double *)ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
-    mulmat((double *)tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
-    accum((double *)tmp3, (double *)ekf->R, EKF_M, EKF_M);
+    transpose(ekf->H, Ht, EKF_M, EKF_N);
+    mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
+    mulmat(ekf->H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
+    mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
+    accum(tmp3, ekf->R, EKF_M, EKF_M);
     if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
-    mulmat((double *)tmp1, tmp4, (double *)ekf->G, EKF_N, EKF_M, EKF_M);
+    mulmat(tmp1, tmp4, ekf->G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-    sub(z, (double *)ekf->hx, tmp5, EKF_M);
-    mulvec((double *)ekf->G, tmp5, tmp2, EKF_N, EKF_M);
-    add((double *)ekf->fx, tmp2, (double *)ekf->x, EKF_N);
+    sub(z, ekf->hx, tmp5, EKF_M);
+    mulvec(ekf->G, tmp5, tmp2, EKF_N, EKF_M);
+    add(ekf->fx, tmp2, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat((double *)ekf->G, (double *)ekf->H, tmp0, EKF_N, EKF_M, EKF_N);
+    mulmat(ekf->G, ekf->H, tmp0, EKF_N, EKF_M, EKF_N);
     negate(tmp0, EKF_N, EKF_N);
     mat_addeye(tmp0, EKF_N);
-    mulmat((double *)tmp0, (double *)ekf->Pp, (double *)ekf->P, EKF_N, EKF_N, EKF_N);
+    mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
     return true;
