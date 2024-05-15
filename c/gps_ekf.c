@@ -185,15 +185,14 @@ int main(int argc, char ** argv)
         const double Qb2 = Sg * T * T/2; 
         const double Qb3 = Sg * T;
 
+        const double Qxyz0 = sigma * sigma * T * T * T/3; 
+        const double Qxyz1 = sigma * sigma * T * T/2; 
+        const double Qxyz2 = sigma * sigma * T * T/2; 
+        const double Qxyz3 = sigma * sigma * T;
+
         const double Qb[4] = {Qb0, Qb1, Qb2, Qb3};
             
-            
-        const double Qxyz[4] = {
-            sigma * sigma * T * T * T/3, 
-            sigma * sigma * T * T/2, 
-            sigma * sigma * T * T/2, 
-            sigma * sigma * T
-        };
+        const double Qxyz[4] = {Qxyz0, Qxyz1, Qxyz2, Qxyz3};
 
         double Q[8*8] = {0};
 
