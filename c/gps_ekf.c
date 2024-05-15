@@ -201,11 +201,15 @@ int main(int argc, char ** argv)
 
         ekf_predict(&ekf, Q);
 
-        double R[4*4] = {0};
+        // Set R --------------------------------------------------------------
 
-        for (int i=0; i<4; ++i) {
-            R[i*4+i] = R0;
-        }
+        const double R[4*4] = {
+            R0, 0, 0, 0,
+            0, R0, 0, 0,
+            0, 0, R0, 0,
+            0, 0, 0, R0
+
+        };
 
         ekf_update(&ekf, SV_Rho, R);
 
