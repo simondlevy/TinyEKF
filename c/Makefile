@@ -11,7 +11,7 @@ run: gps_ekf
 	./gps_ekf
 
 gps_ekf: gps_ekf.c tiny_ekf.c tiny_ekf.h
-	gcc -Wall -o gps_ekf gps_ekf.c tiny_ekf.c -lm
+	gcc -Wall -DEKF_N=8 -DEKF_M=4 -o gps_ekf gps_ekf.c tiny_ekf.c -lm
 
 edit:
 	vim gps_ekf.c
