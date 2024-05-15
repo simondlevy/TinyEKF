@@ -69,7 +69,7 @@ static void init(ekf_t * ekf)
     int i;
 
     for (i=0; i<8; ++i)
-        ekf->P[i][i] = P0;
+        ekf->P[i*8+i] = P0;
 
     for (i=0; i<4; ++i)
         ekf->R[i][i] = R0;

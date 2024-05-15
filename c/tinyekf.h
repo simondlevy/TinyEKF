@@ -14,7 +14,7 @@ typedef struct {
 
     double x[EKF_N];     // state vector
 
-    double P[EKF_N][EKF_N];  // prediction error covariance
+    double P[EKF_N*EKF_N];  // prediction error covariance
     double Q[EKF_N][EKF_N];  // process noise covariance
     double R[EKF_M][EKF_M];  // measurement error covariance
 
