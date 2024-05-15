@@ -102,7 +102,8 @@ static void run_model(
         ekf_t * ekf, 
         const double SV[4][3], 
         double F[8*8],
-        double hx[4])
+        double hx[4],
+        double H[4*8])
 { 
 
     for (int j=0; j<8; j+=2) {
@@ -130,8 +131,6 @@ static void run_model(
         hx[i] = pow(hx[i], 0.5) + ekf->fx[6];
     }
 
-    double H[4*8] = {0};
-
     for (int i=0; i<4; ++i) {
 
         for (int j=0; j<3; ++j) {
@@ -141,8 +140,6 @@ static void run_model(
 
         H[i*8+6] = 1;
     }   
-
-    memcpy(ekf->H, H, 4*8*sizeof(double));
 }
 
 static void readline(char * line, FILE * fp)
@@ -212,10 +209,12 @@ int main(int argc, char ** argv)
         // -------------------------------------------------------------------
 
         double hx[4] = {0};
-
         double F[8*8] = {0};
+        double H[4*8] = {0};
 
-        run_model(&ekf, SV_Pos, F, hx);
+        run_model(&ekf, SV_Pos, F, hx, H);
+
+        memcpy(ekf.H, H, 4*8*sizeof(double));
 
         ekf_predict(&ekf, F, Q);
 
