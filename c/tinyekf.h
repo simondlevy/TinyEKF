@@ -20,8 +20,6 @@ typedef struct {
 
     _float_t P[EKF_N*EKF_N];  // prediction error covariance
 
-    _float_t F[EKF_N*EKF_N];  // Jacobian of process model
-
     _float_t fx[EKF_N];   // output of user defined f() state-transition function
 
     _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
