@@ -69,6 +69,23 @@ static void transpose(
         }
 }
 
+typedef struct {
+
+    _float_t x[EKF_N];         // state vector
+    _float_t P[EKF_N*EKF_N];  // prediction error covariance
+    _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
+
+} ekf_t;
+
+static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
+{
+    memset(ekf->P, 0, EKF_M*EKF_N*sizeof(_float_t));
+
+    for (int i=0; i<EKF_N; ++i) {
+        ekf->P[i*EKF_N+i] = pdiag[i];
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -198,23 +215,6 @@ static void mat_addeye(_float_t * a, const int n)
 //////////////////////////////////////////////////////////////////////////////
 
 
-typedef struct {
-
-    _float_t x[EKF_N];         // state vector
-    _float_t P[EKF_N*EKF_N];  // prediction error covariance
-    _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
-
-} ekf_t;
-
-static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
-{
-    memset(ekf->P, 0, EKF_M*EKF_N*sizeof(_float_t));
-
-    for (int i=0; i<EKF_N; ++i) {
-        ekf->P[i*EKF_N+i] = pdiag[i];
-    }
-}
-
 static void ekf_predict(
         ekf_t * ekf, 
         const _float_t fx[EKF_N],
@@ -233,7 +233,6 @@ static void ekf_predict(
     mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(F, Ft, EKF_N, EKF_N);
     mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
-
     accum(ekf->Pp, Q, EKF_N, EKF_N);
 }
 

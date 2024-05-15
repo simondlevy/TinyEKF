@@ -24,12 +24,9 @@ class TinyEKF {
             _min_covariance = min_covariance;
             _max_covariance = max_covariance;
 
+            ekf_initialize(&_ekf, pdiag);
+
             for (uint8_t i=0; i<EKF_N; ++i) {
-
-                for (uint8_t j=0; j<EKF_N; ++j) {
-
-                    _P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
-                }
 
                 _x[i] = 0;
             }
@@ -46,7 +43,7 @@ class TinyEKF {
             }
 
             multiplyCovariance(F);
-            accum(_P, Q, EKF_N, EKF_N);
+            accum(_ekf.P, Q, EKF_N, EKF_N);
             cleanupCovariance();
         }
 
@@ -57,7 +54,7 @@ class TinyEKF {
                 const float r)
         {
             float ph[EKF_N] = {};
-            mulvec(_P, h, ph, EKF_N, EKF_N);
+            mulvec(_ekf.P, h, ph, EKF_N, EKF_N);
             const auto hphr = r + dot(h, ph); // HPH' + R
 
             float g[EKF_N] = {};
@@ -83,7 +80,7 @@ class TinyEKF {
             // Add the measurement variance 
             for (int i=0; i<EKF_N; i++) {
                 for (int j=0; j<EKF_N; j++) {
-                    _P[i*EKF_N+j] += j < i ? 0 : r * g[i] * g[j];
+                    _ekf.P[i*EKF_N+j] += j < i ? 0 : r * g[i] * g[j];
                 }
             }
 
@@ -128,11 +125,10 @@ class TinyEKF {
 
     private:
 
+        ekf_t _ekf;
+
         // State
         float _x[EKF_N];
-
-        // Covariance matrix
-        float _P[EKF_N * EKF_N];
 
         float _min_covariance;
         float _max_covariance;
@@ -144,8 +140,8 @@ class TinyEKF {
             float at[EKF_N*EKF_N] = {};
             transpose(a, at, EKF_N, EKF_N);  
             float ap[EKF_N*EKF_N] = {};
-            mulmat(a, _P,  ap, EKF_N, EKF_N, EKF_N);
-            mulmat(ap, at, _P, EKF_N, EKF_N, EKF_N);
+            mulmat(a, _ekf.P,  ap, EKF_N, EKF_N, EKF_N);
+            mulmat(ap, at, _ekf.P, EKF_N, EKF_N, EKF_N);
         }
 
         void cleanupCovariance(void)
@@ -158,9 +154,9 @@ class TinyEKF {
 
                     for (int j=i; j<EKF_N; j++) {
 
-                        const auto pval = (_P[i*EKF_N+j] + _P[EKF_N*j+i]) / 2;
+                        const auto pval = (_ekf.P[i*EKF_N+j] + _ekf.P[EKF_N*j+i]) / 2;
 
-                        _P[i*EKF_N+j] = _P[j*EKF_N+i] = 
+                        _ekf.P[i*EKF_N+j] = _ekf.P[j*EKF_N+i] = 
                             pval > _max_covariance ?  _max_covariance :
                             (i==j && pval < _min_covariance) ?  _min_covariance :
                             pval;
