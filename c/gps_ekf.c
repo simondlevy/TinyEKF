@@ -119,11 +119,19 @@ static void model(ekf_t * ekf, double SV[4][3])
         ekf->hx[i] = pow(ekf->hx[i], 0.5) + ekf->fx[6];
     }
 
+    double H[4][8] = {0};
+
     for (i=0; i<4; ++i) {
-        for (j=0; j<3; ++j) 
-            ekf->H[i][j*2]  = dx[i][j] / ekf->hx[i];
-        ekf->H[i][6] = 1;
+
+        for (j=0; j<3; ++j) {
+
+            H[i][j*2] = dx[i][j] / ekf->hx[i];
+        }
+
+        H[i][6] = 1;
     }   
+
+    memcpy(ekf->H, H, 4*8*sizeof(double));
 }
 
 static void readline(char * line, FILE * fp)
