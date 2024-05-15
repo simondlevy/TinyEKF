@@ -35,15 +35,6 @@ static const double T = 1;
 static const double P0 = 10;
 static const double R0 = 36;
 
-static void blkfill(double Q[8*8], const double * a, const int off)
-{
-    Q[off*8+off]   = a[0]; 
-    Q[off*8+off+1] = a[1];
-    Q[(off+1)*8+off] = a[2];
-    Q[(off+1)*8+off+1] = a[3];
-}
-
-
 static void init(ekf_t * ekf)
 {
     ekf_initialize(ekf);
@@ -190,8 +181,6 @@ int main(int argc, char ** argv)
         const double Qxyz2 = sigma * sigma * T * T/2; 
         const double Qxyz3 = sigma * sigma * T;
 
-        const double Qb[4] = {Qb0, Qb1, Qb2, Qb3};
-            
         double Q[8*8] = {0};
 
         Q[0] = Qxyz0;
@@ -209,7 +198,10 @@ int main(int argc, char ** argv)
         Q[44] = Qxyz2;
         Q[45] = Qxyz3;
 
-        blkfill(Q, Qb,   6);
+        Q[6*8+6]   = Qb0; 
+        Q[6*8+6+1] = Qb1;
+        Q[(6+1)*8+6] = Qb2;
+        Q[(6+1)*8+6+1] = Qb3;
 
         // -------------------------------------------------------------------
 
