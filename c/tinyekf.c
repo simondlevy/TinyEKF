@@ -152,7 +152,7 @@ static void add(_float_t * a, _float_t * b, _float_t * c, int n)
 
 
 /* C <- A - B */
-static void sub(_float_t * a, _float_t * b, _float_t * c, int n)
+static void sub(const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
     int j;
 
@@ -181,7 +181,6 @@ static void mat_addeye(_float_t * a, int n)
 void ekf_initialize(ekf_t * ekf)
 {
     zeros(ekf->P, EKF_N, EKF_N);
-    zeros(ekf->R, EKF_M, EKF_M);
     zeros(ekf->F, EKF_N, EKF_N);
     zeros(ekf->H, EKF_M, EKF_N);
 }
@@ -200,7 +199,7 @@ void ekf_predict(ekf_t * ekf, const _float_t Q[EKF_N*EKF_N])
     accum(ekf->Pp, Q, EKF_N, EKF_N);
 }
 
-bool ekf_update(ekf_t * ekf, _float_t * z)
+bool ekf_update(ekf_t * ekf, const _float_t z[EKF_M], const _float_t R[EKF_M*EKF_M])
 {        
     /* temporary storage */
     _float_t tmp0[EKF_N*EKF_N];
@@ -218,7 +217,7 @@ bool ekf_update(ekf_t * ekf, _float_t * z)
     mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
     mulmat(ekf->H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
     mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
-    accum(tmp3, ekf->R, EKF_M, EKF_M);
+    accum(tmp3, R, EKF_M, EKF_M);
     if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
     mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
 

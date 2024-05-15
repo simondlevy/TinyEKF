@@ -19,7 +19,6 @@ typedef struct {
     _float_t x[EKF_N];     // state vector
 
     _float_t P[EKF_N*EKF_N];  // prediction error covariance
-    _float_t R[EKF_M*EKF_M];  // measurement error covariance
 
     _float_t F[EKF_N*EKF_N];  // Jacobian of process model
     _float_t H[EKF_M*EKF_N];  // Jacobian of measurement model
@@ -36,4 +35,5 @@ void ekf_initialize(ekf_t * ekf);
 void ekf_predict(ekf_t * ekf, const _float_t Q[EKF_N*EKF_N]);
 
 // Returns false iff matrix inversion fails
-bool ekf_update(ekf_t * ekf, _float_t * z);
+bool ekf_update(
+        ekf_t * ekf, const _float_t z[EKF_M], const _float_t R[EKF_M*EKF_M]);

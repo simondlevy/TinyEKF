@@ -31,6 +31,10 @@
 // positioning interval
 static const double T = 1;
 
+// initial covariances of state noise, measurement noise
+static const double P0 = 10;
+static const double R0 = 36;
+
 static void blkfill(double Q[8*8], const double * a, int off)
 {
     off *= 2;
@@ -46,15 +50,9 @@ static void init(ekf_t * ekf)
 {
     ekf_initialize(ekf);
 
-    // initial covariances of state noise, measurement noise
-    double P0 = 10;
-    double R0 = 36;
 
     for (int i=0; i<8; ++i)
         ekf->P[i*8+i] = P0;
-
-    for (int i=0; i<4; ++i)
-        ekf->R[i*4+i] = R0;
 
     // position
     ekf->x[0] = -2.168816181271560e+006;
@@ -203,7 +201,13 @@ int main(int argc, char ** argv)
 
         ekf_predict(&ekf, Q);
 
-        ekf_update(&ekf, SV_Rho);
+        double R[4*4] = {0};
+
+        for (int i=0; i<4; ++i) {
+            R[i*4+i] = R0;
+        }
+
+        ekf_update(&ekf, SV_Rho, R);
 
         // grab positions, ignoring velocities
         for (int k=0; k<3; ++k) {
