@@ -179,11 +179,20 @@ int main(int argc, char ** argv)
         const double Sf    = 36;
         const double Sg    = 0.01;
         const double sigma = 5;         // state transition variance
-        const double Qb[4] = {Sf*T+Sg*T*T*T/3, Sg*T*T/2, Sg*T*T/2, Sg*T};
+
+        const double Qb0 = Sf * T+Sg * T * T * T/3; 
+        const double Qb1 = Sg * T * T/2; 
+        const double Qb2 = Sg * T * T/2; 
+        const double Qb3 = Sg * T;
+
+        const double Qb[4] = {Qb0, Qb1, Qb2, Qb3};
+            
+            
         const double Qxyz[4] = {
-            sigma*sigma*T*T*T/3, 
-            sigma*sigma*T*T/2, 
-            sigma*sigma*T*T/2, sigma*sigma*T
+            sigma * sigma * T * T * T/3, 
+            sigma * sigma * T * T/2, 
+            sigma * sigma * T * T/2, 
+            sigma * sigma * T
         };
 
         double Q[8*8] = {0};
