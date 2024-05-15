@@ -44,6 +44,8 @@ static void blkfill(ekf_t * ekf, const double * a, int off)
 
 static void init(ekf_t * ekf)
 {
+    ekf_init(ekf);
+
     // Set Q, see [1]
     const double Sf    = 36;
     const double Sg    = 0.01;
@@ -161,11 +163,8 @@ void error(const char * msg)
 
 int main(int argc, char ** argv)
 {    
-    // Do generic EKF initialization
     ekf_t ekf;
-    ekf_init(&ekf);
 
-    // Do local initialization
     init(&ekf);
 
     // Open input data file

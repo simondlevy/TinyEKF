@@ -178,8 +178,6 @@ static void mat_addeye(double * a, int n)
 
 void ekf_init(ekf_t * ekf)
 {
-
-
     zeros(ekf->P, EKF_N, EKF_N);
     zeros(ekf->Q, EKF_N, EKF_N);
     zeros(ekf->R, EKF_M, EKF_M);
@@ -202,14 +200,13 @@ int ekf_step(ekf_t * ekf, double * z)
     double Ft[EKF_N][EKF_N]; // transpose of process Jacobian
     double Pp[EKF_N][EKF_N]; // P, post-prediction, pre-update
 
-
-    /* P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1} */
+    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     mulmat(ekf->F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(ekf->F, Ft, EKF_N, EKF_N);
     mulmat(tmp0, Ft, Pp, EKF_N, EKF_N, EKF_N);
     accum(Pp, ekf->Q, EKF_N, EKF_N);
 
-    /* G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1} */
+    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
     transpose(ekf->H, Ht, EKF_M, EKF_N);
     mulmat(Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
     mulmat(ekf->H, Pp, tmp2, EKF_M, EKF_N, EKF_N);
@@ -218,17 +215,17 @@ int ekf_step(ekf_t * ekf, double * z)
     if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return 1;
     mulmat(tmp1, tmp4, ekf->G, EKF_N, EKF_M, EKF_M);
 
-    /* \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k)) */
+    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     sub(z, ekf->hx, tmp5, EKF_M);
     mulvec(ekf->G, tmp5, tmp2, EKF_N, EKF_M);
     add(ekf->fx, tmp2, ekf->x, EKF_N);
 
-    /* P_k = (I - G_k H_k) P_k */
+    // P_k = (I - G_k H_k) P_k
     mulmat(ekf->G, ekf->H, tmp0, EKF_N, EKF_M, EKF_N);
     negate(tmp0, EKF_N, EKF_N);
     mat_addeye(tmp0, EKF_N);
     mulmat(tmp0, Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
-    /* success */
+    // success
     return 0;
 }
