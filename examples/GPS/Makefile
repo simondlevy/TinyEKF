@@ -5,7 +5,7 @@
 #
 # MIT License
 
-SRC = ../src
+SRC = ../../src
 
 all: gps_ekf
 
