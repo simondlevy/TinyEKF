@@ -35,7 +35,7 @@ static const double T = 1;
 static const double P0 = 10;
 static const double R0 = 36;
 
-// Set process-noise covariance matrix Q, see [1]  --------------------
+// Set fixed process-noise covariance matrix Q, see [1]  ---------------------
 
 static const double Sf    = 36;
 static const double Sg    = 0.01;
@@ -63,6 +63,15 @@ static const double Q[8*8] = {
     0,     0,      0,     0,     0,     0,     b2, b3
 };
 
+// Set fixed measurement noise covariance matrix R ----------------------------
+
+static const double R[4*4] = {
+    R0, 0, 0, 0,
+    0, R0, 0, 0,
+    0, 0, R0, 0,
+    0, 0, 0, R0
+
+};
 
 static void init(ekf_t * ekf)
 {
@@ -209,16 +218,6 @@ int main(int argc, char ** argv)
         run_model(&ekf, SV_Pos, F, hx);
 
         ekf_predict(&ekf, F, Q);
-
-        // Set measurement noise covariance matrix R --------------------------
-
-        const double R[4*4] = {
-            R0, 0, 0, 0,
-            0, R0, 0, 0,
-            0, 0, R0, 0,
-            0, 0, 0, R0
-
-        };
 
         // -------------------------------------------------------------------
 
