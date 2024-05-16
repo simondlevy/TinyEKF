@@ -197,7 +197,7 @@ static void negate(_float_t * a, const int m, const int n)
     }
 }
 
-static void mat_addeye(_float_t * a, const int n)
+static void addeye(_float_t * a, const int n)
 {
     for (int i=0; i<n; ++i) {
         a[i*n+i] += 1;
@@ -263,7 +263,7 @@ static bool ekf_update(
     // P_k = (I - G_k H_k) P_k
     mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
     negate(tmp0, EKF_N, EKF_N);
-    mat_addeye(tmp0, EKF_N);
+    addeye(tmp0, EKF_N);
     mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
