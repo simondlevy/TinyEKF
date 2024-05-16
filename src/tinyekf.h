@@ -234,8 +234,6 @@ static bool ekf_update(
         const _float_t R[EKF_M*EKF_M])
 {        
     /* temporary storage */
-    _float_t tmp3[EKF_M*EKF_M];
-    _float_t tmp4[EKF_M*EKF_M];
     _float_t tmp5[EKF_M]; 
 
     _float_t G[EKF_N*EKF_M];  // Kalman gain; a.k.a. K
@@ -247,10 +245,14 @@ static bool ekf_update(
     _mulmat(ekf->Pp, Ht, PHt, EKF_N, EKF_N, EKF_M);
     _float_t HP[EKF_M*EKF_N];
     _mulmat(H, ekf->Pp, HP, EKF_M, EKF_N, EKF_N);
-    _mulmat(HP, Ht, tmp3, EKF_M, EKF_N, EKF_M);
-    _addmat(tmp3, R, tmp3, EKF_M, EKF_M);
-    if (_cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
-    _mulmat(PHt, tmp4, G, EKF_N, EKF_M, EKF_M);
+    _float_t HpHt[EKF_M*EKF_M];
+    _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
+    _addmat(HpHt, R, HpHt, EKF_M, EKF_M);
+    _float_t HPHtRinv[EKF_M*EKF_M];
+    if (_cholsl(HpHt, HPHtRinv, tmp5, EKF_M)) {
+        return false;
+    }
+    _mulmat(PHt, HPHtRinv, G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     _float_t z_hx[EKF_M];
