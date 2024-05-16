@@ -38,11 +38,9 @@ static void mulvec(
         const int m, 
         const int n)
 {
-    int i, j;
-
-    for (i=0; i<m; ++i) {
+    for (int i=0; i<m; ++i) {
         y[i] = 0;
-        for (j=0; j<n; ++j)
+        for (int j=0; j<n; ++j)
             y[i] += x[j] * a[i*n+j];
     }
 }
@@ -50,10 +48,8 @@ static void mulvec(
 static void transpose(
         const _float_t * a, _float_t * at, const int m, const int n)
 {
-    int i,j;
-
-    for (i=0; i<m; ++i)
-        for (j=0; j<n; ++j) {
+    for (int i=0; i<m; ++i)
+        for (int j=0; j<n; ++j) {
             at[j*m+i] = a[i*n+j];
         }
 }
@@ -184,10 +180,9 @@ static int cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
 static void sub(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
-    int j;
-
-    for (j=0; j<n; ++j)
+    for (int j=0; j<n; ++j) {
         c[j] = a[j] - b[j];
+    }
 }
 
 static void negate(_float_t * a, const int m, const int n)
