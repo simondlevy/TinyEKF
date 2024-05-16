@@ -8,6 +8,7 @@
 
 #include <math.h>
 #include <stdbool.h>
+#include <string.h>
 
 /* C <- A * B */
 static void _mulmat(
@@ -53,9 +54,8 @@ static void _transpose(
 
 typedef struct {
 
-    _float_t x[EKF_N];         // state vector
+    _float_t x[EKF_N];        // state vector
     _float_t P[EKF_N*EKF_N];  // prediction error covariance
-    _float_t Pp[EKF_N*EKF_N]; // P, post-prediction, pre-update
 
 } ekf_t;
 
@@ -218,9 +218,7 @@ static void ekf_predict(
         const _float_t Q[EKF_N*EKF_N])
 {        
     // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
-    for (int i=0; i<EKF_N; ++i) {
-        ekf->x[i] = fx[i];
-    }
+    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     _float_t FP[EKF_N*EKF_N];
@@ -229,7 +227,7 @@ static void ekf_predict(
     _transpose(F, Ft, EKF_N, EKF_N);
     _float_t FPFt[EKF_N*EKF_N];
     _mulmat(FP, Ft, FPFt, EKF_N, EKF_N, EKF_N);
-    _addmat(FPFt, Q, ekf->Pp, EKF_N, EKF_N);
+    _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
 }
 
 static bool ekf_update(
@@ -245,9 +243,9 @@ static bool ekf_update(
     _float_t Ht[EKF_N*EKF_M];
     _transpose(H, Ht, EKF_M, EKF_N);
     _float_t PHt[EKF_N*EKF_M];
-    _mulmat(ekf->Pp, Ht, PHt, EKF_N, EKF_N, EKF_M);
+    _mulmat(ekf->P, Ht, PHt, EKF_N, EKF_N, EKF_M);
     _float_t HP[EKF_M*EKF_N];
-    _mulmat(H, ekf->Pp, HP, EKF_M, EKF_N, EKF_N);
+    _mulmat(H, ekf->P, HP, EKF_M, EKF_N, EKF_N);
     _float_t HpHt[EKF_M*EKF_M];
     _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
     _float_t HpHtR[EKF_M*EKF_M];
@@ -270,7 +268,10 @@ static bool ekf_update(
     _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
     _negate(GH, EKF_N, EKF_N);
     _addeye(GH, EKF_N);
-    _mulmat(GH, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
+    _float_t GHP[EKF_N*EKF_N];
+    _mulmat(GH, ekf->P, GHP, EKF_N, EKF_N, EKF_N);
+    memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
+
 
     // success
     return true;
