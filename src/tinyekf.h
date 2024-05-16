@@ -59,18 +59,22 @@ typedef struct {
 
 } ekf_t;
 
+static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
+{
+    for (int i=0; i<EKF_N; ++i) {
+
+        for (int j=0; j<EKF_N; ++j) {
+
+            ekf->P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
+        }
+
+        ekf->x[i] = 0;
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef _FOO
-
-static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
-{
-    memset(ekf->P, 0, EKF_M*EKF_N*sizeof(_float_t));
-
-    for (int i=0; i<EKF_N; ++i) {
-        ekf->P[i*EKF_N+i] = pdiag[i];
-    }
-}
 
 
 static void _addmat(
