@@ -234,8 +234,6 @@ static bool ekf_update(
         const _float_t R[EKF_M*EKF_M])
 {        
     /* temporary storage */
-    _float_t tmp0[EKF_N*EKF_N];
-    _float_t tmp2[EKF_M*EKF_N];
     _float_t tmp3[EKF_M*EKF_M];
     _float_t tmp4[EKF_M*EKF_M];
     _float_t tmp5[EKF_M]; 
@@ -247,22 +245,26 @@ static bool ekf_update(
     _transpose(H, Ht, EKF_M, EKF_N);
     _float_t PHt[EKF_N*EKF_M];
     _mulmat(ekf->Pp, Ht, PHt, EKF_N, EKF_N, EKF_M);
-    _mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
-    _mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
+    _float_t HP[EKF_M*EKF_N];
+    _mulmat(H, ekf->Pp, HP, EKF_M, EKF_N, EKF_N);
+    _mulmat(HP, Ht, tmp3, EKF_M, EKF_N, EKF_M);
     _addmat(tmp3, R, tmp3, EKF_M, EKF_M);
     if (_cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
     _mulmat(PHt, tmp4, G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-    _sub(z, hx, tmp5, EKF_M);
-    _mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-    _addvec(ekf->x, tmp2, ekf->x, EKF_N);
+    _float_t z_hx[EKF_M];
+    _sub(z, hx, z_hx, EKF_M);
+    _float_t Gz_hx[EKF_M*EKF_N];
+    _mulvec(G, z_hx, Gz_hx, EKF_N, EKF_M);
+    _addvec(ekf->x, Gz_hx, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
-    _mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
-    _negate(tmp0, EKF_N, EKF_N);
-    _addeye(tmp0, EKF_N);
-    _mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
+    _float_t GH[EKF_N*EKF_N];
+    _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
+    _negate(GH, EKF_N, EKF_N);
+    _addeye(GH, EKF_N);
+    _mulmat(GH, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
     return true;
