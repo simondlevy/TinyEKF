@@ -68,19 +68,9 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef _FOO
-
-/* C <- A + B */
-static void _addvec(
-        const _float_t * a, const _float_t * b, _float_t * c, const int n)
-{
-    for (int j=0; j<n; ++j) {
-        c[j] = a[j] + b[j];
-    }
-}
 
 static void _addmat(
         const _float_t * a, const _float_t * b, _float_t * c, 
@@ -90,6 +80,16 @@ static void _addmat(
         for (int j=0; j<n; ++j) {
             c[i*n+j] = a[i*n+j] + b[i*n+j];
         }
+    }
+}
+
+
+/* C <- A + B */
+static void _addvec(
+        const _float_t * a, const _float_t * b, _float_t * c, const int n)
+{
+    for (int j=0; j<n; ++j) {
+        c[j] = a[j] + b[j];
     }
 }
 
