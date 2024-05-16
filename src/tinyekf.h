@@ -285,8 +285,6 @@ static bool ekf_update(
     _mulmat(GH, ekf->P, GHP, EKF_N, EKF_N, EKF_N);
     memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
 
-
     // success
     return true;
 }
-
