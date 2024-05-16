@@ -221,8 +221,9 @@ static void ekf_predict(
     _mulmat(F, ekf->P, FP, EKF_N, EKF_N, EKF_N);
     _float_t Ft[EKF_N*EKF_N];
     _transpose(F, Ft, EKF_N, EKF_N);
-    _mulmat(FP, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
-    _addmat(ekf->Pp, Q, ekf->Pp, EKF_N, EKF_N);
+    _float_t FPFt[EKF_N*EKF_N];
+    _mulmat(FP, Ft, FPFt, EKF_N, EKF_N, EKF_N);
+    _addmat(FPFt, Q, ekf->Pp, EKF_N, EKF_N);
 }
 
 static bool ekf_update(
