@@ -24,8 +24,8 @@ static void mulmat(
     for (int i=0; i<arows; ++i) {
         for (int j=0; j<bcols; ++j) {
             c[i*bcols+j] = 0;
-            for (int l=0; l<acols; ++l) {
-                c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
+            for (int k=0; k<acols; ++k) {
+                c[i*bcols+j] += a[i*acols+k] * b[k*bcols+j];
             }
         }
     }
