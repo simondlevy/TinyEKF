@@ -194,9 +194,30 @@ static bool invert(const _float_t * a, _float_t * ainv)
     return _cholsl(a, ainv, tmp, EKF_M) == 0;
 }
 
+static void outer(
+        const _float_t x[EKF_N],
+        const _float_t y[EKF_N],
+        _float_t a[EKF_N*EKF_N]) 
+{
+    for (int i=0; i<EKF_N; i++) {
+        for (int j=0; j<EKF_N; j++) {
+            a[i*EKF_N+j] = x[i] * y[j];
+        }
+    }
+}
 
+static _float_t dot(const _float_t x[EKF_N], const _float_t y[EKF_N]) 
+{
+    _float_t d = 0;
 
-// EKF code //////////////////////////////////////////////////////////////////
+    for (int k=0; k<EKF_N; k++) {
+        d += x[k] * y[k];
+    }
+
+    return d;
+}
+
+// EKF ///////////////////////////////////////////////////////////////////////
 
 typedef struct {
 
@@ -299,7 +320,7 @@ static bool ekf_update(
     return true;
 }
 
-void ekf_cleanup_covariance(
+static void ekf_cleanup_covariance(
         ekf_t * ekf, const float minval, const float maxval)
 {
     // Enforce symmetry of the covariance matrix, and ensure the
@@ -318,3 +339,36 @@ void ekf_cleanup_covariance(
     }
 }
 
+static void ekf_scalar_update(
+        ekf_t * ekf,
+        const _float_t z,
+        const _float_t hx,
+        const _float_t h[EKF_N], 
+        const _float_t r)
+{
+    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+    _float_t ph[EKF_N] = {};
+    _mulvec(ekf->P, h, ph, EKF_N, EKF_N);
+    const _float_t hphtr_inv = 1 / (r + dot(h, ph)); 
+    _float_t g[EKF_N] = {};
+    for (int i=0; i<EKF_N; ++i) {
+        g[i] = ph[i] * hphtr_inv;
+    }
+
+    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
+    for (int i=0; i<EKF_N; ++i) {
+        ekf->x[i] += g[i] * (z - hx);
+    }
+
+    // P_k = (I - G_k H_k) P_k$
+    _float_t GH[EKF_N*EKF_N];
+    outer(g, h, GH); 
+    ekf_update_step3(ekf, GH);
+
+    // Does this belong here, or in caller?
+    for (int i=0; i<EKF_N; i++) {
+        for (int j=i; j<EKF_N; j++) {
+            ekf->P[i*EKF_N+j] += r * g[i] * g[j];
+        }
+    }
+}
