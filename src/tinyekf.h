@@ -12,15 +12,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-/* A <- A + B */
-static void accum(_float_t * a, const _float_t * b, const int m, const int n)
-{        
-    for(int i=0; i<m; ++i)
-        for(int j=0; j<n; ++j)
-            a[i*n+j] += b[i*n+j];
-}
-
-
 /* C <- A * B */
 static void mulmat(
         const _float_t * a, 
@@ -30,10 +21,10 @@ static void mulmat(
         const int acols, 
         const int bcols)
 {
-    for(int i=0; i<arows; ++i) {
-        for(int j=0; j<bcols; ++j) {
+    for (int i=0; i<arows; ++i) {
+        for (int j=0; j<bcols; ++j) {
             c[i*bcols+j] = 0;
-            for(int l=0; l<acols; ++l) {
+            for (int l=0; l<acols; ++l) {
                 c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
             }
         }
@@ -49,9 +40,9 @@ static void mulvec(
 {
     int i, j;
 
-    for(i=0; i<m; ++i) {
+    for (i=0; i<m; ++i) {
         y[i] = 0;
-        for(j=0; j<n; ++j)
+        for (j=0; j<n; ++j)
             y[i] += x[j] * a[i*n+j];
     }
 }
@@ -61,8 +52,8 @@ static void transpose(
 {
     int i,j;
 
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j) {
+    for (i=0; i<m; ++i)
+        for (j=0; j<n; ++j) {
             at[j*m+i] = a[i*n+j];
         }
 }
@@ -93,16 +84,17 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 static void addvec(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
-    for(int j=0; j<n; ++j)
+    for (int j=0; j<n; ++j) {
         c[j] = a[j] + b[j];
+    }
 }
 
 static void addmat(
         const _float_t * a, const _float_t * b, _float_t * c, 
         const int m, const int n)
 {
-    for(int i=0; i<m; ++i) {
-        for(int j=0; j<n; ++j) {
+    for (int i=0; i<m; ++i) {
+        for (int j=0; j<n; ++j) {
             c[i*n+j] = a[i*n+j] + b[i*n+j];
         }
     }
@@ -188,35 +180,30 @@ static int cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
     return 0; // success
 }
 
-
-
-
-
-
 /* C <- A - B */
 static void sub(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
     int j;
 
-    for(j=0; j<n; ++j)
+    for (j=0; j<n; ++j)
         c[j] = a[j] - b[j];
 }
 
 static void negate(_float_t * a, const int m, const int n)
 {        
-    int i, j;
-
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j)
+    for (int i=0; i<m; ++i) {
+        for (int j=0; j<n; ++j) {
             a[i*n+j] = -a[i*n+j];
+        }
+    }
 }
 
 static void mat_addeye(_float_t * a, const int n)
 {
-    int i;
-    for (i=0; i<n; ++i)
+    for (int i=0; i<n; ++i) {
         a[i*n+i] += 1;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -266,7 +253,7 @@ static bool ekf_update(
     mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
     mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
     mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
-    accum(tmp3, R, EKF_M, EKF_M);
+    addmat(tmp3, R, tmp3, EKF_M, EKF_M);
     if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
     mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
 
