@@ -100,14 +100,12 @@ static void addmat(
 /* Cholesky-decomposition matrix-inversion code, adapated from
 http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
 
-static int choldc1(_float_t * a, _float_t * p, const int n) {
-    int i,j,k;
-    _float_t sum;
-
-    for (i = 0; i < n; i++) {
-        for (j = i; j < n; j++) {
-            sum = a[i*n+j];
-            for (k = i - 1; k >= 0; k--) {
+static int choldc1(_float_t * a, _float_t * p, const int n) 
+{
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            _float_t sum = a[i*n+j];
+            for (int k = i - 1; k >= 0; k--) {
                 sum -= a[i*n+k] * a[j*n+k];
             }
             if (i == j) {
