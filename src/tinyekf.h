@@ -213,6 +213,18 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
     }
 }
 
+static void ekf_multiply_covariance(
+        ekf_t * ekf, const _float_t A[EKF_N*EKF_N], _float_t APAt[EKF_N*EKF_N]) 
+{
+    _float_t AP[EKF_N*EKF_N] = {};
+    _mulmat(A, ekf->P,  AP, EKF_N, EKF_N, EKF_N);
+
+    _float_t At[EKF_N*EKF_N] = {};
+    _transpose(A, At, EKF_N, EKF_N);
+
+    _mulmat(AP, At, APAt, EKF_N, EKF_N, EKF_N);
+}
+
 static void ekf_predict(
         ekf_t * ekf, 
         const _float_t fx[EKF_N],
@@ -224,14 +236,9 @@ static void ekf_predict(
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
 
-    _float_t FP[EKF_N*EKF_N];
-    _mulmat(F, ekf->P, FP, EKF_N, EKF_N, EKF_N);
-
-    _float_t Ft[EKF_N*EKF_N];
-    _transpose(F, Ft, EKF_N, EKF_N);
-
     _float_t FPFt[EKF_N*EKF_N];
-    _mulmat(FP, Ft, FPFt, EKF_N, EKF_N, EKF_N);
+
+    ekf_multiply_covariance(ekf, F, FPFt);
 
     _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
 }
