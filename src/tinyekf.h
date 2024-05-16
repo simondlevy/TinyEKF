@@ -70,15 +70,49 @@ static void _addmat(
     }
 }
 
-/* C <- A + B */
-static void _addvec(
-        const _float_t * a, const _float_t * b, _float_t * c, const int n)
-{
-    for (int j=0; j<n; ++j) {
-        c[j] = a[j] + b[j];
+
+
+
+static void _negate(_float_t * a, const int m, const int n)
+{        
+    for (int i=0; i<m; ++i) {
+        for (int j=0; j<n; ++j) {
+            a[i*n+j] = -a[i*n+j];
+        }
     }
 }
 
+static void _addeye(_float_t * a, const int n)
+{
+    for (int i=0; i<n; ++i) {
+        a[i*n+i] += 1;
+    }
+}
+
+#ifdef EKF_CUSTOM
+static void outer(
+        const _float_t x[EKF_N],
+        const _float_t y[EKF_N],
+        _float_t a[EKF_N*EKF_N]) 
+{
+    for (int i=0; i<EKF_N; i++) {
+        for (int j=0; j<EKF_N; j++) {
+            a[i*EKF_N+j] = x[i] * y[j];
+        }
+    }
+}
+
+static _float_t dot(const _float_t x[EKF_N], const _float_t y[EKF_N]) 
+{
+    _float_t d = 0;
+
+    for (int k=0; k<EKF_N; k++) {
+        d += x[k] * y[k];
+    }
+
+    return d;
+}
+#else
 
 /* Cholesky-decomposition matrix-inversion code, adapated from
 http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/_choles_cpp.txt */
@@ -162,28 +196,21 @@ static int _cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
     return 0; // success
 }
 
-/* C <- A - B */
+
+
+static void _addvec(
+        const _float_t * a, const _float_t * b, _float_t * c, const int n)
+{
+    for (int j=0; j<n; ++j) {
+        c[j] = a[j] + b[j];
+    }
+}
+
 static void _sub(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
     for (int j=0; j<n; ++j) {
         c[j] = a[j] - b[j];
-    }
-}
-
-static void _negate(_float_t * a, const int m, const int n)
-{        
-    for (int i=0; i<m; ++i) {
-        for (int j=0; j<n; ++j) {
-            a[i*n+j] = -a[i*n+j];
-        }
-    }
-}
-
-static void _addeye(_float_t * a, const int n)
-{
-    for (int i=0; i<n; ++i) {
-        a[i*n+i] += 1;
     }
 }
 
@@ -194,28 +221,7 @@ static bool invert(const _float_t * a, _float_t * ainv)
     return _cholsl(a, ainv, tmp, EKF_M) == 0;
 }
 
-static void outer(
-        const _float_t x[EKF_N],
-        const _float_t y[EKF_N],
-        _float_t a[EKF_N*EKF_N]) 
-{
-    for (int i=0; i<EKF_N; i++) {
-        for (int j=0; j<EKF_N; j++) {
-            a[i*EKF_N+j] = x[i] * y[j];
-        }
-    }
-}
-
-static _float_t dot(const _float_t x[EKF_N], const _float_t y[EKF_N]) 
-{
-    _float_t d = 0;
-
-    for (int k=0; k<EKF_N; k++) {
-        d += x[k] * y[k];
-    }
-
-    return d;
-}
+#endif
 
 // EKF ///////////////////////////////////////////////////////////////////////
 
@@ -278,48 +284,7 @@ static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
     memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
 }
 
-static bool ekf_update(
-        ekf_t * ekf, 
-        const _float_t z[EKF_M], 
-        const _float_t hx[EKF_N],
-        const _float_t H[EKF_M*EKF_N],
-        const _float_t R[EKF_M*EKF_M])
-{        
-
-    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    _float_t G[EKF_N*EKF_M];
-    _float_t Ht[EKF_N*EKF_M];
-    _transpose(H, Ht, EKF_M, EKF_N);
-    _float_t PHt[EKF_N*EKF_M];
-    _mulmat(ekf->P, Ht, PHt, EKF_N, EKF_N, EKF_M);
-    _float_t HP[EKF_M*EKF_N];
-    _mulmat(H, ekf->P, HP, EKF_M, EKF_N, EKF_N);
-    _float_t HpHt[EKF_M*EKF_M];
-    _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
-    _float_t HpHtR[EKF_M*EKF_M];
-    _addmat(HpHt, R, HpHtR, EKF_M, EKF_M);
-    _float_t HPHtRinv[EKF_M*EKF_M];
-    if (!invert(HpHtR, HPHtRinv)) {
-        return false;
-    }
-    _mulmat(PHt, HPHtRinv, G, EKF_N, EKF_M, EKF_M);
-
-    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-    _float_t z_hx[EKF_M];
-    _sub(z, hx, z_hx, EKF_M);
-    _float_t Gz_hx[EKF_M*EKF_N];
-    _mulvec(G, z_hx, Gz_hx, EKF_N, EKF_M);
-    _addvec(ekf->x, Gz_hx, ekf->x, EKF_N);
-
-    // P_k = (I - G_k H_k) P_k
-    _float_t GH[EKF_N*EKF_N];
-    _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
-    ekf_update_step3(ekf, GH);
-
-    // success
-    return true;
-}
-
+#ifdef EKF_CUSTOM
 static void ekf_cleanup_covariance(
         ekf_t * ekf, const float minval, const float maxval)
 {
@@ -372,3 +337,46 @@ static void ekf_scalar_update(
         }
     }
 }
+#else
+static bool ekf_update(
+        ekf_t * ekf, 
+        const _float_t z[EKF_M], 
+        const _float_t hx[EKF_N],
+        const _float_t H[EKF_M*EKF_N],
+        const _float_t R[EKF_M*EKF_M])
+{        
+
+    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+    _float_t G[EKF_N*EKF_M];
+    _float_t Ht[EKF_N*EKF_M];
+    _transpose(H, Ht, EKF_M, EKF_N);
+    _float_t PHt[EKF_N*EKF_M];
+    _mulmat(ekf->P, Ht, PHt, EKF_N, EKF_N, EKF_M);
+    _float_t HP[EKF_M*EKF_N];
+    _mulmat(H, ekf->P, HP, EKF_M, EKF_N, EKF_N);
+    _float_t HpHt[EKF_M*EKF_M];
+    _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
+    _float_t HpHtR[EKF_M*EKF_M];
+    _addmat(HpHt, R, HpHtR, EKF_M, EKF_M);
+    _float_t HPHtRinv[EKF_M*EKF_M];
+    if (!invert(HpHtR, HPHtRinv)) {
+        return false;
+    }
+    _mulmat(PHt, HPHtRinv, G, EKF_N, EKF_M, EKF_M);
+
+    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
+    _float_t z_hx[EKF_M];
+    _sub(z, hx, z_hx, EKF_M);
+    _float_t Gz_hx[EKF_M*EKF_N];
+    _mulvec(G, z_hx, Gz_hx, EKF_N, EKF_M);
+    _addvec(ekf->x, Gz_hx, ekf->x, EKF_N);
+
+    // P_k = (I - G_k H_k) P_k
+    _float_t GH[EKF_N*EKF_N];
+    _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
+    ekf_update_step3(ekf, GH);
+
+    // success
+    return true;
+}
+#endif
