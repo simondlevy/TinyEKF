@@ -243,6 +243,15 @@ static void ekf_predict(
     _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
 }
 
+static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
+{
+    _negate(GH, EKF_N, EKF_N);
+    _addeye(GH, EKF_N);
+    _float_t GHP[EKF_N*EKF_N];
+    _mulmat(GH, ekf->P, GHP, EKF_N, EKF_N, EKF_N);
+    memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
+}
+
 static bool ekf_update(
         ekf_t * ekf, 
         const _float_t z[EKF_M], 
@@ -279,11 +288,7 @@ static bool ekf_update(
     // P_k = (I - G_k H_k) P_k
     _float_t GH[EKF_N*EKF_N];
     _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
-    _negate(GH, EKF_N, EKF_N);
-    _addeye(GH, EKF_N);
-    _float_t GHP[EKF_N*EKF_N];
-    _mulmat(GH, ekf->P, GHP, EKF_N, EKF_N, EKF_N);
-    memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
+    ekf_update_step3(ekf, GH);
 
     // success
     return true;
