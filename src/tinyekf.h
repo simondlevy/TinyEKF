@@ -180,7 +180,7 @@ static int _cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
 }
 
 /* C <- A - B */
-static void sub(
+static void _sub(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
     for (int j=0; j<n; ++j) {
@@ -188,7 +188,7 @@ static void sub(
     }
 }
 
-static void negate(_float_t * a, const int m, const int n)
+static void _negate(_float_t * a, const int m, const int n)
 {        
     for (int i=0; i<m; ++i) {
         for (int j=0; j<n; ++j) {
@@ -197,7 +197,7 @@ static void negate(_float_t * a, const int m, const int n)
     }
 }
 
-static void addeye(_float_t * a, const int n)
+static void _addeye(_float_t * a, const int n)
 {
     for (int i=0; i<n; ++i) {
         a[i*n+i] += 1;
@@ -256,14 +256,14 @@ static bool ekf_update(
     _mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-    sub(z, hx, tmp5, EKF_M);
+    _sub(z, hx, tmp5, EKF_M);
     _mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
     _addvec(ekf->x, tmp2, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
     _mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
-    negate(tmp0, EKF_N, EKF_N);
-    addeye(tmp0, EKF_N);
+    _negate(tmp0, EKF_N, EKF_N);
+    _addeye(tmp0, EKF_N);
     _mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
