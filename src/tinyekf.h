@@ -8,7 +8,6 @@
 
 #include <math.h>
 #include <stdbool.h>
-#include <string.h>
 
 /* C <- A * B */
 static void _mulmat(
@@ -219,7 +218,9 @@ static void ekf_predict(
         const _float_t Q[EKF_N*EKF_N])
 {        
     // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
-    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
+    for (int i=0; i<EKF_N; ++i) {
+        ekf->x[i] = fx[i];
+    }
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
     _float_t FP[EKF_N*EKF_N];
