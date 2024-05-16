@@ -125,16 +125,19 @@ static int choldc1(_float_t * a, _float_t * p, const int n)
 
 static int choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
 {
-    int i,j,k; _float_t sum;
-    for (i = 0; i < n; i++) 
-        for (j = 0; j < n; j++) 
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
             a[i*n+j] = A[i*n+j];
-    if (choldc1(a, p, n)) return 1;
-    for (i = 0; i < n; i++) {
+        }
+    }
+    if (choldc1(a, p, n)) {
+        return 1;
+    }
+    for (int i = 0; i < n; i++) {
         a[i*n+i] = 1 / p[i];
-        for (j = i + 1; j < n; j++) {
-            sum = 0;
-            for (k = i; k < j; k++) {
+        for (int j = i + 1; j < n; j++) {
+            _float_t sum = 0;
+            for (int k = i; k < j; k++) {
                 sum -= a[j*n+k] * a[k*n+i];
             }
             a[j*n+i] = sum / p[j];
@@ -147,26 +150,28 @@ static int choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
 
 static int cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
 {
-    int i,j,k;
-    if (choldcsl(A,a,p,n)) return 1;
-    for (i = 0; i < n; i++) {
-        for (j = i + 1; j < n; j++) {
+    if (choldcsl(A,a,p,n)) {
+        return 1;
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
             a[i*n+j] = 0.0;
         }
     }
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         a[i*n+i] *= a[i*n+i];
-        for (k = i + 1; k < n; k++) {
+        for (int k = i + 1; k < n; k++) {
             a[i*n+i] += a[k*n+i] * a[k*n+i];
         }
-        for (j = i + 1; j < n; j++) {
-            for (k = j; k < n; k++) {
+        for (int j = i + 1; j < n; j++) {
+            for (int k = j; k < n; k++) {
                 a[i*n+j] += a[k*n+i] * a[k*n+j];
             }
         }
     }
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < i; j++) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < i; j++) {
             a[i*n+j] = a[j*n+i];
         }
     }
