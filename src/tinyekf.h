@@ -1,7 +1,7 @@
 /*
  * TinyEKF: Extended Kalman Filter for embedded processors
  *
- * Copyright (C) 2015 Simon D. Levy
+ * Copyright (C) 2024 Simon D. Levy
  *
  * MIT License
  */
@@ -9,6 +9,11 @@
 #include <math.h>
 #include <stdbool.h>
 #include <string.h>
+
+// Support double precision, but default to single
+#ifndef _float_t
+#define _float_t float
+#endif
 
 // Linear alegbra ////////////////////////////////////////////////////////////
 
