@@ -13,7 +13,7 @@
 #include <string.h>
 
 /* C <- A * B */
-static void mulmat(
+static void _mulmat(
         const _float_t * a, 
         const _float_t * b, 
         _float_t * c, 
@@ -31,7 +31,7 @@ static void mulmat(
     }
 }
 
-static void mulvec(
+static void _mulvec(
         const _float_t * a, 
         const _float_t * x, 
         _float_t * y, 
@@ -45,7 +45,7 @@ static void mulvec(
     }
 }
 
-static void transpose(
+static void _transpose(
         const _float_t * a, _float_t * at, const int m, const int n)
 {
     for (int i=0; i<m; ++i)
@@ -77,7 +77,7 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 #ifndef _FOO
 
 /* C <- A + B */
-static void addvec(
+static void _addvec(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
     for (int j=0; j<n; ++j) {
@@ -98,9 +98,9 @@ static void addmat(
 
 
 /* Cholesky-decomposition matrix-inversion code, adapated from
-http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
+http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/_choles_cpp.txt */
 
-static int choldc1(_float_t * a, _float_t * p, const int n) 
+static int _choldc1(_float_t * a, _float_t * p, const int n) 
 {
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
@@ -123,14 +123,14 @@ static int choldc1(_float_t * a, _float_t * p, const int n)
     return 0; // success:w
 }
 
-static int choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
+static int _choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
 {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             a[i*n+j] = A[i*n+j];
         }
     }
-    if (choldc1(a, p, n)) {
+    if (_choldc1(a, p, n)) {
         return 1;
     }
     for (int i = 0; i < n; i++) {
@@ -148,9 +148,9 @@ static int choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
 }
 
 
-static int cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
+static int _cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
 {
-    if (choldcsl(A,a,p,n)) {
+    if (_choldcsl(A,a,p,n)) {
         return 1;
     }
 
@@ -222,9 +222,9 @@ static void ekf_predict(
     _float_t Ft[EKF_N*EKF_N]; // transpose of process Jacobian
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
-    transpose(F, Ft, EKF_N, EKF_N);
-    mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
+    _mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
+    _transpose(F, Ft, EKF_N, EKF_N);
+    _mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
     addmat(ekf->Pp, Q, ekf->Pp, EKF_N, EKF_N);
 }
 
@@ -247,24 +247,24 @@ static bool ekf_update(
     _float_t Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    transpose(H, Ht, EKF_M, EKF_N);
-    mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
-    mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
-    mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
+    _transpose(H, Ht, EKF_M, EKF_N);
+    _mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
+    _mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
+    _mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
     addmat(tmp3, R, tmp3, EKF_M, EKF_M);
-    if (cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
-    mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
+    if (_cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
+    _mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     sub(z, hx, tmp5, EKF_M);
-    mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-    addvec(ekf->x, tmp2, ekf->x, EKF_N);
+    _mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
+    _addvec(ekf->x, tmp2, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
-    mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
+    _mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
     negate(tmp0, EKF_N, EKF_N);
     addeye(tmp0, EKF_N);
-    mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
+    _mulmat(tmp0, ekf->Pp, ekf->P, EKF_N, EKF_N, EKF_N);
 
     // success
     return true;
