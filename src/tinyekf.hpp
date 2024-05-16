@@ -6,6 +6,9 @@
  * MIT License
  */
 
+#define _FOO
+#include <tinyekf.h>
+
 class TinyEKF {
 
     public:
@@ -53,7 +56,7 @@ class TinyEKF {
                 const float r)
         {
             float ph[EKF_N] = {};
-            mulvec(_P, h, ph, EKF_N, EKF_N);
+            _mulvec(_P, h, ph, EKF_N, EKF_N);
             const auto hphr = r + dot(h, ph); // HPH' + R
 
             float g[EKF_N] = {};
@@ -138,10 +141,10 @@ class TinyEKF {
         void multiplyCovariance(const float a[EKF_N*EKF_N])
         {
             float at[EKF_N*EKF_N] = {};
-            transpose(a, at, EKF_N, EKF_N);  
+            _transpose(a, at, EKF_N, EKF_N);  
             float ap[EKF_N*EKF_N] = {};
-            mulmat(a, _P,  ap, EKF_N, EKF_N, EKF_N);
-            mulmat(ap, at, _P, EKF_N, EKF_N, EKF_N);
+            _mulmat(a, _P,  ap, EKF_N, EKF_N, EKF_N);
+            _mulmat(ap, at, _P, EKF_N, EKF_N, EKF_N);
         }
 
         void cleanupCovariance(void)
@@ -164,39 +167,6 @@ class TinyEKF {
                 }
             }
         } 
-
-        // C <- A * B
-        static void mulmat(
-                const float * a, const float * b, float * c, 
-                const int arows, const int acols, const int bcols)
-        {
-            for (int i=0; i<arows; ++i)
-                for (int j=0; j<bcols; ++j) {
-                    c[i*bcols+j] = 0;
-                    for (int l=0; l<acols; ++l)
-                        c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
-                }
-        }
-
-        static void mulvec(
-                const float * a, const float * x, float * y, 
-                const int m, const int n)
-        {
-            for (int i=0; i<m; ++i) {
-                y[i] = 0;
-                for (int j=0; j<n; ++j)
-                    y[i] += x[j] * a[i*n+j];
-            }
-        }
-
-        static void transpose(
-                const float * a, float * at, const int m, const int n)
-        {
-            for (int i=0; i<m; ++i)
-                for (int j=0; j<n; ++j) {
-                    at[j*m+i] = a[i*n+j];
-                }
-        }
 
         // A <- A + B
         static void accum(float * a, const float * b, const int m, const int n)

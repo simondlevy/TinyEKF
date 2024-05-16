@@ -59,6 +59,10 @@ typedef struct {
 
 } ekf_t;
 
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef _FOO
+
 static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 {
     memset(ekf->P, 0, EKF_M*EKF_N*sizeof(_float_t));
@@ -68,9 +72,6 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-
-#ifndef _FOO
 
 static void _addmat(
         const _float_t * a, const _float_t * b, _float_t * c, 
