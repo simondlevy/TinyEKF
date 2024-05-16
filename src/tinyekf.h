@@ -298,3 +298,23 @@ static bool ekf_update(
     // success
     return true;
 }
+
+void ekf_cleanup_covariance(
+        ekf_t * ekf, const float minval, const float maxval)
+{
+    // Enforce symmetry of the covariance matrix, and ensure the
+    // values stay bounded
+    for (int i=0; i<EKF_N; i++) {
+
+        for (int j=i; j<EKF_N; j++) {
+
+            const _float_t pval = (ekf->P[i*EKF_N+j] + ekf->P[EKF_N*j+i]) / 2;
+
+            ekf->P[i*EKF_N+j] = ekf->P[j*EKF_N+i] =
+                pval > maxval ?  maxval :
+                (i==j && pval < minval) ?  minval :
+                pval;
+        }
+    }
+}
+
