@@ -15,10 +15,8 @@
 /* A <- A + B */
 static void accum(_float_t * a, const _float_t * b, const int m, const int n)
 {        
-    int i,j;
-
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j)
+    for(int i=0; i<m; ++i)
+        for(int j=0; j<n; ++j)
             a[i*n+j] += b[i*n+j];
 }
 
@@ -32,14 +30,14 @@ static void mulmat(
         const int acols, 
         const int bcols)
 {
-    int i, j,l;
-
-    for(i=0; i<arows; ++i)
-        for(j=0; j<bcols; ++j) {
+    for(int i=0; i<arows; ++i) {
+        for(int j=0; j<bcols; ++j) {
             c[i*bcols+j] = 0;
-            for(l=0; l<acols; ++l)
+            for(int l=0; l<acols; ++l) {
                 c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
+            }
         }
+    }
 }
 
 static void mulvec(
@@ -92,18 +90,27 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 #ifndef _FOO
 
 /* C <- A + B */
-static void add(
+static void addvec(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
-    int j;
-
-    for(j=0; j<n; ++j)
+    for(int j=0; j<n; ++j)
         c[j] = a[j] + b[j];
+}
+
+static void addmat(
+        const _float_t * a, const _float_t * b, _float_t * c, 
+        const int m, const int n)
+{
+    for(int i=0; i<m; ++i) {
+        for(int j=0; j<n; ++j) {
+            c[i*n+j] = a[i*n+j] + b[i*n+j];
+        }
+    }
 }
 
 
 /* Cholesky-decomposition matrix-inversion code, adapated from
-   http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
+http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/choles_cpp.txt */
 
 static int choldc1(_float_t * a, _float_t * p, const int n) {
     int i,j,k;
@@ -233,7 +240,7 @@ static void ekf_predict(
     mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
     transpose(F, Ft, EKF_N, EKF_N);
     mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
-    accum(ekf->Pp, Q, EKF_N, EKF_N);
+    addmat(ekf->Pp, Q, ekf->Pp, EKF_N, EKF_N);
 }
 
 static bool ekf_update(
@@ -266,7 +273,7 @@ static bool ekf_update(
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     sub(z, hx, tmp5, EKF_M);
     mulvec(G, tmp5, tmp2, EKF_N, EKF_M);
-    add(ekf->x, tmp2, ekf->x, EKF_N);
+    addvec(ekf->x, tmp2, ekf->x, EKF_N);
 
     // P_k = (I - G_k H_k) P_k
     mulmat(G, H, tmp0, EKF_N, EKF_M, EKF_N);
