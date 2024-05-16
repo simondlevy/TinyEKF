@@ -85,7 +85,7 @@ static void _addvec(
     }
 }
 
-static void addmat(
+static void _addmat(
         const _float_t * a, const _float_t * b, _float_t * c, 
         const int m, const int n)
 {
@@ -216,16 +216,13 @@ static void ekf_predict(
     // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
     memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
 
-    // temporary storage
-    _float_t tmp0[EKF_N*EKF_N];
-
-    _float_t Ft[EKF_N*EKF_N]; // transpose of process Jacobian
-
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    _mulmat(F, ekf->P, tmp0, EKF_N, EKF_N, EKF_N);
+    _float_t FP[EKF_N*EKF_N];
+    _mulmat(F, ekf->P, FP, EKF_N, EKF_N, EKF_N);
+    _float_t Ft[EKF_N*EKF_N];
     _transpose(F, Ft, EKF_N, EKF_N);
-    _mulmat(tmp0, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
-    addmat(ekf->Pp, Q, ekf->Pp, EKF_N, EKF_N);
+    _mulmat(FP, Ft, ekf->Pp, EKF_N, EKF_N, EKF_N);
+    _addmat(ekf->Pp, Q, ekf->Pp, EKF_N, EKF_N);
 }
 
 static bool ekf_update(
@@ -251,7 +248,7 @@ static bool ekf_update(
     _mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
     _mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
     _mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
-    addmat(tmp3, R, tmp3, EKF_M, EKF_M);
+    _addmat(tmp3, R, tmp3, EKF_M, EKF_M);
     if (_cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
     _mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
 
