@@ -235,23 +235,23 @@ static bool ekf_update(
 {        
     /* temporary storage */
     _float_t tmp0[EKF_N*EKF_N];
-    _float_t tmp1[EKF_N*EKF_M];
     _float_t tmp2[EKF_M*EKF_N];
     _float_t tmp3[EKF_M*EKF_M];
     _float_t tmp4[EKF_M*EKF_M];
     _float_t tmp5[EKF_M]; 
 
     _float_t G[EKF_N*EKF_M];  // Kalman gain; a.k.a. K
-    _float_t Ht[EKF_N*EKF_M]; // transpose of measurement Jacobian
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+    _float_t Ht[EKF_N*EKF_M];
     _transpose(H, Ht, EKF_M, EKF_N);
-    _mulmat(ekf->Pp, Ht, tmp1, EKF_N, EKF_N, EKF_M);
+    _float_t PHt[EKF_N*EKF_M];
+    _mulmat(ekf->Pp, Ht, PHt, EKF_N, EKF_N, EKF_M);
     _mulmat(H, ekf->Pp, tmp2, EKF_M, EKF_N, EKF_N);
     _mulmat(tmp2, Ht, tmp3, EKF_M, EKF_N, EKF_M);
     _addmat(tmp3, R, tmp3, EKF_M, EKF_M);
     if (_cholsl(tmp3, tmp4, tmp5, EKF_M)) return false;
-    _mulmat(tmp1, tmp4, G, EKF_N, EKF_M, EKF_M);
+    _mulmat(PHt, tmp4, G, EKF_N, EKF_M, EKF_M);
 
     // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
     _sub(z, hx, tmp5, EKF_M);
