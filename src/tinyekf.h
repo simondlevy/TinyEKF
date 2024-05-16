@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+// Linear alegbra ////////////////////////////////////////////////////////////
+
 /* C <- A * B */
 static void _mulmat(
         const _float_t * a, 
@@ -52,25 +54,6 @@ static void _transpose(
         }
 }
 
-typedef struct {
-
-    _float_t x[EKF_N];        // state vector
-    _float_t P[EKF_N*EKF_N];  // prediction error covariance
-
-} ekf_t;
-
-static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
-{
-    for (int i=0; i<EKF_N; ++i) {
-
-        for (int j=0; j<EKF_N; ++j) {
-
-            ekf->P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
-        }
-
-        ekf->x[i] = 0;
-    }
-}
 static void _addmat(
         const _float_t * a, const _float_t * b, _float_t * c, 
         const int m, const int n)
@@ -81,30 +64,6 @@ static void _addmat(
         }
     }
 }
-
-static void ekf_predict(
-        ekf_t * ekf, 
-        const _float_t fx[EKF_N],
-        const _float_t F[EKF_N*EKF_N],
-        const _float_t Q[EKF_N*EKF_N])
-{        
-    // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
-    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
-
-    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-    _float_t FP[EKF_N*EKF_N];
-    _mulmat(F, ekf->P, FP, EKF_N, EKF_N, EKF_N);
-    _float_t Ft[EKF_N*EKF_N];
-    _transpose(F, Ft, EKF_N, EKF_N);
-    _float_t FPFt[EKF_N*EKF_N];
-    _mulmat(FP, Ft, FPFt, EKF_N, EKF_N, EKF_N);
-    _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
-}
-//////////////////////////////////////////////////////////////////////////////
-
-#ifndef _FOO
-
-
 
 /* C <- A + B */
 static void _addvec(
@@ -230,10 +189,52 @@ static bool invert(const _float_t * a, _float_t * ainv)
     return _cholsl(a, ainv, tmp, EKF_M) == 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
 
 
+// EKF code //////////////////////////////////////////////////////////////////
 
+typedef struct {
+
+    _float_t x[EKF_N];        // state vector
+    _float_t P[EKF_N*EKF_N];  // prediction error covariance
+
+} ekf_t;
+
+static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
+{
+    for (int i=0; i<EKF_N; ++i) {
+
+        for (int j=0; j<EKF_N; ++j) {
+
+            ekf->P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
+        }
+
+        ekf->x[i] = 0;
+    }
+}
+
+static void ekf_predict(
+        ekf_t * ekf, 
+        const _float_t fx[EKF_N],
+        const _float_t F[EKF_N*EKF_N],
+        const _float_t Q[EKF_N*EKF_N])
+{        
+    // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
+    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
+
+    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+
+    _float_t FP[EKF_N*EKF_N];
+    _mulmat(F, ekf->P, FP, EKF_N, EKF_N, EKF_N);
+
+    _float_t Ft[EKF_N*EKF_N];
+    _transpose(F, Ft, EKF_N, EKF_N);
+
+    _float_t FPFt[EKF_N*EKF_N];
+    _mulmat(FP, Ft, FPFt, EKF_N, EKF_N, EKF_N);
+
+    _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
+}
 
 static bool ekf_update(
         ekf_t * ekf, 
@@ -281,4 +282,4 @@ static bool ekf_update(
     // success
     return true;
 }
-#endif
+
