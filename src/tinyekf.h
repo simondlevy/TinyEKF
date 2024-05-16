@@ -204,6 +204,13 @@ static void _addeye(_float_t * a, const int n)
     }
 }
 
+static bool invert(const _float_t * a, _float_t * ainv)
+{
+    _float_t tmp[EKF_M];
+
+    return _cholsl(a, ainv, tmp, EKF_M) == 0;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -233,12 +240,9 @@ static bool ekf_update(
         const _float_t H[EKF_M*EKF_N],
         const _float_t R[EKF_M*EKF_M])
 {        
-    /* temporary storage */
-    _float_t tmp5[EKF_M]; 
-
-    _float_t G[EKF_N*EKF_M];  // Kalman gain; a.k.a. K
 
     // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+    _float_t G[EKF_N*EKF_M];
     _float_t Ht[EKF_N*EKF_M];
     _transpose(H, Ht, EKF_M, EKF_N);
     _float_t PHt[EKF_N*EKF_M];
@@ -247,9 +251,10 @@ static bool ekf_update(
     _mulmat(H, ekf->Pp, HP, EKF_M, EKF_N, EKF_N);
     _float_t HpHt[EKF_M*EKF_M];
     _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
-    _addmat(HpHt, R, HpHt, EKF_M, EKF_M);
+    _float_t HpHtR[EKF_M*EKF_M];
+    _addmat(HpHt, R, HpHtR, EKF_M, EKF_M);
     _float_t HPHtRinv[EKF_M*EKF_M];
-    if (_cholsl(HpHt, HPHtRinv, tmp5, EKF_M)) {
+    if (!invert(HpHtR, HPHtRinv)) {
         return false;
     }
     _mulmat(PHt, HPHtRinv, G, EKF_N, EKF_M, EKF_M);
