@@ -239,6 +239,7 @@ typedef struct {
 
 } ekf_t;
 
+/// @private
 static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
 {
     _negate(GH, EKF_N, EKF_N);
@@ -248,8 +249,15 @@ static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
     memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
 }
 
+
+#ifdef EKF_CUSTOM
+
+/**
+  * Runs a custom update on the covariance matrix
+  * @param ekf pointer to an ekf_t structure
+  */
 static void ekf_custom_multiply_covariance(
-        ekf_t * ekf, const _float_t A[EKF_N*EKF_N], _float_t APAt[EKF_N*EKF_N]) 
+        ekf_t * ekf, const _float_t A[EKF_N*EKF_N]) 
 {
     _float_t AP[EKF_N*EKF_N] = {};
     _mulmat(A, ekf->P,  AP, EKF_N, EKF_N, EKF_N);
@@ -257,15 +265,20 @@ static void ekf_custom_multiply_covariance(
     _float_t At[EKF_N*EKF_N] = {};
     _transpose(A, At, EKF_N, EKF_N);
 
-    _mulmat(AP, At, APAt, EKF_N, EKF_N, EKF_N);
+    _mulmat(AP, At, ekf->P, EKF_N, EKF_N, EKF_N);
 }
 
-#ifdef EKF_CUSTOM
+/**
+  * Enforces symmetry of the covariance matrix and ensures that the its values stay bounded
+  * @param ekf pointer to an ekf_t structure
+  * @param minval minimum covariance bound
+  * @param maxval maximum covariance bound
+  * 
+  */
 static void ekf_custom_cleanup_covariance(
         ekf_t * ekf, const float minval, const float maxval)
 {
-    // Enforce symmetry of the covariance matrix, and ensure the
-    // values stay bounded
+
     for (int i=0; i<EKF_N; i++) {
 
         for (int j=i; j<EKF_N; j++) {
@@ -280,6 +293,15 @@ static void ekf_custom_cleanup_covariance(
     }
 }
 
+/**
+  * Updates the EKF with a single scalar observation
+  * @param ekf pointer to an ekf_t structure
+  * @param z the observation
+  * @param hx the predicted value
+  * @param h one column of the sensor-function Jacobian matrix H
+  * @param r one entry in the measurement-noise matrix R
+  * 
+  */
 static void ekf_custom_scalar_update(
         ekf_t * ekf,
         const _float_t z,
@@ -314,6 +336,16 @@ static void ekf_custom_scalar_update(
     }
 }
 #else
+
+/**
+  * Runs the EKF update step
+  * @param ekf pointer to an ekf_t structure
+  * @param z observations
+  * @param hx predicted values
+  * @param H sensor-function Jacobian matrix
+  * @param R measurement-noise matrix
+  * 
+  */
 static bool ekf_update(
         ekf_t * ekf, 
         const _float_t z[EKF_M], 
@@ -375,9 +407,14 @@ static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
     }
 }
 
-
-
-static void ekf_predict(
+/**
+  * Runs the EKF prediction step
+  * @param ekf pointer to an ekf_t structure
+  * @param fx predicted values
+  * @param F Jacobian of state-transition function
+  * @param Q process noise matrix
+  * 
+  */static void ekf_predict(
         ekf_t * ekf, 
         const _float_t fx[EKF_N],
         const _float_t F[EKF_N*EKF_N],
@@ -388,9 +425,14 @@ static void ekf_predict(
 
     // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
 
-    _float_t FPFt[EKF_N*EKF_N];
+    _float_t FP[EKF_N*EKF_N] = {};
+    _mulmat(F, ekf->P,  FP, EKF_N, EKF_N, EKF_N);
 
-    ekf_custom_multiply_covariance(ekf, F, FPFt);
+    _float_t Ft[EKF_N*EKF_N] = {};
+    _transpose(F, Ft, EKF_N, EKF_N);
+
+    _float_t FPFt[EKF_N*EKF_N] = {};
+    _mulmat(FP, Ft, FPFt, EKF_N, EKF_N, EKF_N);
 
     _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
 }
