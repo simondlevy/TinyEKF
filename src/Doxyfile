@@ -72,7 +72,6 @@ GENERATE_BUGLIST       = YES
 GENERATE_DEPRECATEDLIST= YES
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
-ENABLE_PREPROCESSING   = NO
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------

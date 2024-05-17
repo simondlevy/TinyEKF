@@ -1,4 +1,4 @@
-/**
+/*
  * Extended Kalman Filter for embedded processors
  *
  * Copyright (C) 2024 Simon D. Levy
@@ -10,11 +10,11 @@
 #include <stdbool.h>
 #include <string.h>
 
-#ifndef _float_t
 /**
   * Floating-point precision defaults to single but can be made double via
     <tt><b>#define _float_t double</b></tt> before <tt>#include <tinyekf.h></tt>
   */
+#ifndef _float_t
 #define _float_t float
 #endif
 
@@ -210,17 +210,20 @@ static bool invert(const _float_t * a, _float_t * ainv)
 
 typedef struct {
 
-    _float_t x[EKF_N];        // state vector
-    _float_t P[EKF_N*EKF_N];  // prediction error covariance
+    /** State vector **/
+    _float_t x[EKF_N];        
+
+    /** Prediction error covariance **/
+    _float_t P[EKF_N*EKF_N];  
 
 } ekf_t;
 
 /**
-  * Initializes the EKF
-  * @param ekf pointer to an ekf_t structure
-  * @param pdiag a vector of length EKF_N containing the initial values for the
-  * covariance matrix diagonal
-  */
+ * Initializes the EKF
+ * @param ekf pointer to an ekf_t structure
+ * @param pdiag a vector of length EKF_N containing the initial values for the
+ * covariance matrix diagonal
+ */
 static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
 {
     for (int i=0; i<EKF_N; ++i) {
