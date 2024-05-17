@@ -301,6 +301,61 @@ static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
     memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
 }
 
+#ifndef EKF_CUSTOM
+
+/**
+  * Runs the EKF update step
+  * @param ekf pointer to an ekf_t structure
+  * @param z observations
+  * @param hx predicted values
+  * @param H sensor-function Jacobian matrix
+  * @param R measurement-noise matrix
+  * 
+  */
+static bool ekf_update(
+        ekf_t * ekf, 
+        const _float_t z[EKF_M], 
+        const _float_t hx[EKF_N],
+        const _float_t H[EKF_M*EKF_N],
+        const _float_t R[EKF_M*EKF_M])
+{        
+
+    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
+    _float_t G[EKF_N*EKF_M];
+    _float_t Ht[EKF_N*EKF_M];
+    _transpose(H, Ht, EKF_M, EKF_N);
+    _float_t PHt[EKF_N*EKF_M];
+    _mulmat(ekf->P, Ht, PHt, EKF_N, EKF_N, EKF_M);
+    _float_t HP[EKF_M*EKF_N];
+    _mulmat(H, ekf->P, HP, EKF_M, EKF_N, EKF_N);
+    _float_t HpHt[EKF_M*EKF_M];
+    _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
+    _float_t HpHtR[EKF_M*EKF_M];
+    _addmat(HpHt, R, HpHtR, EKF_M, EKF_M);
+    _float_t HPHtRinv[EKF_M*EKF_M];
+    if (!invert(HpHtR, HPHtRinv)) {
+        return false;
+    }
+    _mulmat(PHt, HPHtRinv, G, EKF_N, EKF_M, EKF_M);
+
+    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
+    _float_t z_hx[EKF_M];
+    _sub(z, hx, z_hx, EKF_M);
+    _float_t Gz_hx[EKF_M*EKF_N];
+    _mulvec(G, z_hx, Gz_hx, EKF_N, EKF_M);
+    _addvec(ekf->x, Gz_hx, ekf->x, EKF_N);
+
+    // P_k = (I - G_k H_k) P_k
+    _float_t GH[EKF_N*EKF_N];
+    _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
+    ekf_update_step3(ekf, GH);
+
+    // success
+    return true;
+}
+
+#endif
+
 
 #ifdef EKF_CUSTOM
 
@@ -390,55 +445,5 @@ static void ekf_custom_scalar_update(
 }
 #else
 
-/**
-  * Runs the EKF update step
-  * @param ekf pointer to an ekf_t structure
-  * @param z observations
-  * @param hx predicted values
-  * @param H sensor-function Jacobian matrix
-  * @param R measurement-noise matrix
-  * 
-  */
-static bool ekf_update(
-        ekf_t * ekf, 
-        const _float_t z[EKF_M], 
-        const _float_t hx[EKF_N],
-        const _float_t H[EKF_M*EKF_N],
-        const _float_t R[EKF_M*EKF_M])
-{        
-
-    // G_k = P_k H^T_k (H_k P_k H^T_k + R)^{-1}
-    _float_t G[EKF_N*EKF_M];
-    _float_t Ht[EKF_N*EKF_M];
-    _transpose(H, Ht, EKF_M, EKF_N);
-    _float_t PHt[EKF_N*EKF_M];
-    _mulmat(ekf->P, Ht, PHt, EKF_N, EKF_N, EKF_M);
-    _float_t HP[EKF_M*EKF_N];
-    _mulmat(H, ekf->P, HP, EKF_M, EKF_N, EKF_N);
-    _float_t HpHt[EKF_M*EKF_M];
-    _mulmat(HP, Ht, HpHt, EKF_M, EKF_N, EKF_M);
-    _float_t HpHtR[EKF_M*EKF_M];
-    _addmat(HpHt, R, HpHtR, EKF_M, EKF_M);
-    _float_t HPHtRinv[EKF_M*EKF_M];
-    if (!invert(HpHtR, HPHtRinv)) {
-        return false;
-    }
-    _mulmat(PHt, HPHtRinv, G, EKF_N, EKF_M, EKF_M);
-
-    // \hat{x}_k = \hat{x_k} + G_k(z_k - h(\hat{x}_k))
-    _float_t z_hx[EKF_M];
-    _sub(z, hx, z_hx, EKF_M);
-    _float_t Gz_hx[EKF_M*EKF_N];
-    _mulvec(G, z_hx, Gz_hx, EKF_N, EKF_M);
-    _addvec(ekf->x, Gz_hx, ekf->x, EKF_N);
-
-    // P_k = (I - G_k H_k) P_k
-    _float_t GH[EKF_N*EKF_N];
-    _mulmat(G, H, GH, EKF_N, EKF_M, EKF_N);
-    ekf_update_step3(ekf, GH);
-
-    // success
-    return true;
-}
 #endif
 

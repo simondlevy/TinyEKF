@@ -72,6 +72,7 @@ GENERATE_BUGLIST       = YES
 GENERATE_DEPRECATEDLIST= YES
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
+PREDEFINED             = EKF_CUSTOM
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
