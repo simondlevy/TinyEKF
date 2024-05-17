@@ -10,8 +10,11 @@
 #include <stdbool.h>
 #include <string.h>
 
-// Support double precision, but default to single
 #ifndef _float_t
+/**
+  * Floating-point precision defaults to single but can be made double via
+    <tt><b>#define _float_t double</b></tt> before <tt>#include <tinyekf.h></tt>
+  */
 #define _float_t float
 #endif
 
@@ -255,6 +258,7 @@ static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
 /**
   * Runs a custom update on the covariance matrix
   * @param ekf pointer to an ekf_t structure
+  * @param A from the update P <- A P A^T
   */
 static void ekf_custom_multiply_covariance(
         ekf_t * ekf, const _float_t A[EKF_N*EKF_N]) 
