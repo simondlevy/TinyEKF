@@ -7,7 +7,7 @@
 #
 # downloaded 21 March 2014
 #
-# Copyright (C) Simon D. Levy 2015
+# Copyright (C) Simon D. Levy 2024
 #
 # MIT License
 #---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ GENERATE_BUGLIST       = YES
 GENERATE_DEPRECATEDLIST= YES
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
-PREDEFINED             = EKF_CUSTOM
+ENABLE_PREPROCESSING   = NO
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -85,7 +85,7 @@ WARN_FORMAT            = "$file:$line: $text"
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = tinyekf.h
+INPUT                  = tinyekf.h, tinyekf_custom.h
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c  *.cc  *.cxx  *.cpp  *.c++ \
                         *.h  *.hh  *.hxx  *.hpp  *.h++ *.m  *.mm  *.dox \
