@@ -17,7 +17,7 @@
 
 // Linear alegbra ////////////////////////////////////////////////////////////
 
-/* C <- A * B */
+/// @private
 static void _mulmat(
         const _float_t * a, 
         const _float_t * b, 
@@ -36,6 +36,7 @@ static void _mulmat(
     }
 }
 
+/// @private
 static void _mulvec(
         const _float_t * a, 
         const _float_t * x, 
@@ -50,6 +51,7 @@ static void _mulvec(
     }
 }
 
+/// @private
 static void _transpose(
         const _float_t * a, _float_t * at, const int m, const int n)
 {
@@ -59,6 +61,7 @@ static void _transpose(
         }
 }
 
+/// @private
 static void _addmat(
         const _float_t * a, const _float_t * b, _float_t * c, 
         const int m, const int n)
@@ -70,9 +73,7 @@ static void _addmat(
     }
 }
 
-
-
-
+/// @private
 static void _negate(_float_t * a, const int m, const int n)
 {        
     for (int i=0; i<m; ++i) {
@@ -82,6 +83,7 @@ static void _negate(_float_t * a, const int m, const int n)
     }
 }
 
+/// @private
 static void _addeye(_float_t * a, const int n)
 {
     for (int i=0; i<n; ++i) {
@@ -90,6 +92,7 @@ static void _addeye(_float_t * a, const int n)
 }
 
 #ifdef EKF_CUSTOM
+/// @private
 static void outer(
         const _float_t x[EKF_N],
         const _float_t y[EKF_N],
@@ -102,6 +105,7 @@ static void outer(
     }
 }
 
+/// @private
 static _float_t dot(const _float_t x[EKF_N], const _float_t y[EKF_N]) 
 {
     _float_t d = 0;
@@ -117,6 +121,7 @@ static _float_t dot(const _float_t x[EKF_N], const _float_t y[EKF_N])
 /* Cholesky-decomposition matrix-inversion code, adapated from
 http://jean-pierre.moreau.pagesperso-orange.fr/Cplus/_choles_cpp.txt */
 
+/// @private
 static int _choldc1(_float_t * a, _float_t * p, const int n) 
 {
     for (int i = 0; i < n; i++) {
@@ -140,6 +145,7 @@ static int _choldc1(_float_t * a, _float_t * p, const int n)
     return 0; // success:w
 }
 
+/// @private
 static int _choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
 {
     for (int i = 0; i < n; i++) {
@@ -164,7 +170,7 @@ static int _choldcsl(const _float_t * A, _float_t * a, _float_t * p, const int n
     return 0; // success
 }
 
-
+/// @private
 static int _cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n) 
 {
     if (_choldcsl(A,a,p,n)) {
@@ -196,8 +202,7 @@ static int _cholsl(const _float_t * A, _float_t * a, _float_t * p, const int n)
     return 0; // success
 }
 
-
-
+/// @private
 static void _addvec(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
@@ -206,6 +211,7 @@ static void _addvec(
     }
 }
 
+/// @private
 static void _sub(
         const _float_t * a, const _float_t * b, _float_t * c, const int n)
 {
@@ -214,6 +220,7 @@ static void _sub(
     }
 }
 
+/// @private
 static bool invert(const _float_t * a, _float_t * ainv)
 {
     _float_t tmp[EKF_M];
@@ -232,20 +239,16 @@ typedef struct {
 
 } ekf_t;
 
-static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
+static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
 {
-    for (int i=0; i<EKF_N; ++i) {
-
-        for (int j=0; j<EKF_N; ++j) {
-
-            ekf->P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
-        }
-
-        ekf->x[i] = 0;
-    }
+    _negate(GH, EKF_N, EKF_N);
+    _addeye(GH, EKF_N);
+    _float_t GHP[EKF_N*EKF_N];
+    _mulmat(GH, ekf->P, GHP, EKF_N, EKF_N, EKF_N);
+    memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
 }
 
-static void ekf_multiply_covariance(
+static void ekf_custom_multiply_covariance(
         ekf_t * ekf, const _float_t A[EKF_N*EKF_N], _float_t APAt[EKF_N*EKF_N]) 
 {
     _float_t AP[EKF_N*EKF_N] = {};
@@ -257,35 +260,8 @@ static void ekf_multiply_covariance(
     _mulmat(AP, At, APAt, EKF_N, EKF_N, EKF_N);
 }
 
-static void ekf_predict(
-        ekf_t * ekf, 
-        const _float_t fx[EKF_N],
-        const _float_t F[EKF_N*EKF_N],
-        const _float_t Q[EKF_N*EKF_N])
-{        
-    // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
-    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
-
-    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
-
-    _float_t FPFt[EKF_N*EKF_N];
-
-    ekf_multiply_covariance(ekf, F, FPFt);
-
-    _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
-}
-
-static void ekf_update_step3(ekf_t * ekf, _float_t GH[EKF_N*EKF_N])
-{
-    _negate(GH, EKF_N, EKF_N);
-    _addeye(GH, EKF_N);
-    _float_t GHP[EKF_N*EKF_N];
-    _mulmat(GH, ekf->P, GHP, EKF_N, EKF_N, EKF_N);
-    memcpy(ekf->P, GHP, EKF_N*EKF_N*sizeof(_float_t));
-}
-
 #ifdef EKF_CUSTOM
-static void ekf_cleanup_covariance(
+static void ekf_custom_cleanup_covariance(
         ekf_t * ekf, const float minval, const float maxval)
 {
     // Enforce symmetry of the covariance matrix, and ensure the
@@ -304,7 +280,7 @@ static void ekf_cleanup_covariance(
     }
 }
 
-static void ekf_scalar_update(
+static void ekf_custom_scalar_update(
         ekf_t * ekf,
         const _float_t z,
         const _float_t hx,
@@ -380,3 +356,43 @@ static bool ekf_update(
     return true;
 }
 #endif
+/**
+  * Initializes the EKF
+  * @param ekf pointer to an ekf_t structure
+  * @param pdiag a vector of length EKF_N containing the initial values for the
+  * covariance matrix diagonal
+  */
+static void ekf_initialize(ekf_t * ekf, const _float_t pdiag[EKF_N])
+{
+    for (int i=0; i<EKF_N; ++i) {
+
+        for (int j=0; j<EKF_N; ++j) {
+
+            ekf->P[i*EKF_N+j] = i==j ? pdiag[i] : 0;
+        }
+
+        ekf->x[i] = 0;
+    }
+}
+
+
+
+static void ekf_predict(
+        ekf_t * ekf, 
+        const _float_t fx[EKF_N],
+        const _float_t F[EKF_N*EKF_N],
+        const _float_t Q[EKF_N*EKF_N])
+{        
+    // \hat{x}_k = f(\hat{x}_{k-1}, u_k)
+    memcpy(ekf->x, fx, EKF_N*sizeof(_float_t));
+
+    // P_k = F_{k-1} P_{k-1} F^T_{k-1} + Q_{k-1}
+
+    _float_t FPFt[EKF_N*EKF_N];
+
+    ekf_custom_multiply_covariance(ekf, F, FPFt);
+
+    _addmat(FPFt, Q, ekf->P, EKF_N, EKF_N);
+}
+
+
