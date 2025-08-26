@@ -108,10 +108,10 @@ static void init(ekf_t * ekf)
 static void run_model(
         ekf_t * ekf, 
         const double SV[4][3], 
-        double fx[8],
-        double F[8*8],
-        double hx[4],
-        double H[4*8])
+        double fx[EKF_N],
+        double F[EKF_N*EKF_N],
+        double hx[EKF_M],
+        double H[EKF_M*EKF_N])
 { 
 
     for (int j=0; j<8; j+=2) {
@@ -217,10 +217,10 @@ int main(int argc, char ** argv)
         // -------------------------------------------------------------------
 
         // Run our model to get the EKF inputs
-        double fx[8] = {0};
-        double F[8*8] = {0};
-        double hx[4] = {0};
-        double H[4*8] = {0};
+        double fx[EKF_N] = {0};
+        double F[EKF_N*EKF_N] = {0};
+        double hx[EKF_M] = {0};
+        double H[EKF_M*EKF_N] = {0};
         run_model(&ekf, SV_Pos, fx, F, hx, H);
 
         // Run the EKF prediction step
