@@ -24,3 +24,5 @@ from the LM35 should go to the A0 pin of your Arduino or Teensy.
 
 In addition to the class definition, the **python** folder has an example of mouse tracking, using OpenCV. 
 So you will have to install OpenCV to run this example. There is also a sensor-fusion example in this folder.
+
+Related projects: [ekfpp](https://github.com/simondlevy/ekfpp)
