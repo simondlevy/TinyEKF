@@ -1,4 +1,4 @@
-SKETCH = SensorFusion
+SKETCH = $(shell basename "`pwd`")
 
 PORT = /dev/ttyACM0
 
